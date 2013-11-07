@@ -1,0 +1,42 @@
+{% extends 'base_index.html' %}
+
+{% block title %}Mails{% endblock %}
+
+{% block content %}
+    {% if user.is_anonymous %}
+        <div class="alert alert-danger">Please Login first!</div>
+    {% elif mails %}
+        <div class="panel panel-default">
+            <div class="container">
+                <table class="table table-striped">
+                    <tr>
+                        <th>
+                            Subject
+                        </th>
+                        <th>
+                            Sent
+                        </th>
+                        <th>
+                            Due
+                        </th>
+                    </tr>
+                    {% for mail in mails %}
+                        <tr>
+                            <td>
+                                {{ mail.subject }}
+                            </td>
+                            <td>
+                                {{ mail.sent }}
+                            </td>
+                            <td>
+                                {{ mail.due }}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </table>
+            </div>
+        </div>
+    {% else %}
+        <div class="alert alert-info">There aren't any mails!</div>
+    {% endif %}
+{% endblock %}

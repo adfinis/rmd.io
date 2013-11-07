@@ -1,0 +1,14 @@
+body {
+    background-color: #BABABA;
+    background-image: url("images/background.png");
+    background-repeat: repeat-x;
+}
+
+.navbar {
+    margin-bottom: 20px;
+    border-radius: 0px;
+}
+
+.panel {
+    padding-top: 20px;
+}
