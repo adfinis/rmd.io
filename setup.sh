@@ -1,7 +1,7 @@
 #!/bin/bash
  
 if [ ! -f bin/activate ]; then
-    virtualenv .
+    virtualenv2 .
 fi
  
 source bin/activate

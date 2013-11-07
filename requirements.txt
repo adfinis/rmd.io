@@ -1,17 +1,6 @@
-Cheetah (2.4.4)
-Django (1.5.5)
-django-browserid (0.9)
-django-extensions (1.2.2)
-email (4.0.2)
-ipdb (0.8)
-ipython (1.1.0)
-Jinja2 (2.7.1)
-jquery (1.2.3)
-logging (0.4.9.6)
-MySQL-python (1.2.4)
-python-dateutil (1.5)
-pytz (2013.7)
-pyzmq (13.1.0)
-requests (2.0.0)
-tornado (3.1.1)
-wsgiref (0.1.2)
+Django>=1.5.5
+django-browserid>=0.9
+django-extensions>=1.2.2
+email>=4.0.2
+ipdb>=0.8
+ipython>=1.1.0

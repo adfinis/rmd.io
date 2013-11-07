@@ -19,7 +19,7 @@ class Command(BaseCommand):
         try:
             smtp = smtplib.SMTP('maildelay.tk')
             smtp.starttls()
-            smtp.login(my_email, '3p7KDn4FugQQ')
+            smtp.login('maildelay@maildelay.tk', '3p7KDn4FugQQ')
         except Exception, e:
             print "Connection to SMTP-Server failed: %s" % repr(e)
 
