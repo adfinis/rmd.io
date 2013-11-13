@@ -3,3 +3,6 @@ local/
 bin/
 include/
 *.pyc
+.*.swp
+.*.swo
+*.db
