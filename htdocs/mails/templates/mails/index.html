@@ -26,10 +26,15 @@
                                 {{ mail.subject }}
                             </td>
                             <td>
-                                {{ mail.sent }}
+                                {{ mail.sent | date:"Y-m-d H:i"}}
                             </td>
                             <td>
-                                {{ mail.due }}
+                                <div class="form-group">
+                                    <div class="input-group date form_datetime">
+                                        <input class="form-control" size="16" type="text" value="{{ mail.due | date:"Y-m-d H:i" }}" readonly>
+                                        <span class="input-group-addon"><span class="glyphicon glyphicon-calendar"></span></span>
+                                    </div>
+                                </div>
                             </td>
                         </tr>
                     {% endfor %}
@@ -39,4 +44,14 @@
     {% else %}
         <div class="alert alert-info">There aren't any mails!</div>
     {% endif %}
+    <script type="text/javascript">
+        $('.form_datetime').datetimepicker({
+            format: "yyyy-mm-dd hh:ii",
+            todayBtn:  1,
+            autoclose: 1,
+            todayHighlight: 1,
+            pickerPosition: "bottom-left",
+            minuteStep: 10,
+        });
+    </script>
 {% endblock %}
