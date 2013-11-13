@@ -1,6 +1,3 @@
-Django>=1.5.5
-django-browserid>=0.9
-django-extensions>=1.2.2
-email>=4.0.2
-ipdb>=0.8
-ipython>=1.1.0
+Django
+django-browserid
+django_extensions

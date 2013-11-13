@@ -1,7 +1,7 @@
 #!/bin/bash
  
 if [ ! -f bin/activate ]; then
-    virtualenv2 .
+    virtualenv -p python2.7 .
 fi
  
 source bin/activate
