@@ -86,12 +86,6 @@ class Command(BaseCommand):
                             continue
                         return mailbox_to_days[mailbox_key]
 
-        header_texts = [
-            fix_pair(hdr)
-            for hdr
-            in subj_headers
-        ]
-
         for mail in mails:
             results, data = imap.fetch(mail, 'RFC822')
             raw_email = data[0][1]
@@ -101,8 +95,16 @@ class Command(BaseCommand):
             sent_from = msg['return-path']
             sent_from = re.sub(r'([<>])', '', sent_from)
             days = delay_days_from_message(msg)
+
+            header_texts = [
+                fix_pair(hdr)
+                for hdr
+                in subj_headers
+            ]
+
             subject = " ".join(header_texts)
             subject = re.sub(r'[\r\n]+[\t]*', '', subject)
+
             try:
                 sent = parsedate(msg['date'])
                 due = sent + datetime.timedelta(delay_days_from_message(msg))
