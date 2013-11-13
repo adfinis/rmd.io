@@ -9,6 +9,7 @@ from django.utils import timezone
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from mails.models import Mail
+from django.conf import settings
 from django.core.management.base import BaseCommand, CommandError
 
 
@@ -16,22 +17,24 @@ class Command(BaseCommand):
 
     def handle(self, *args, **kwargs):
 
-        my_email = 'maildelay@maildelay.tk'
+        email_address = settings.EMAIL_ADDRESS
+        email_password = settings.EMAIL_PASSWORD
+        email_server = settings.EMAIL_SERVER
+        mailbox = settings.MAILBOX
 
         try:
-            smtp = smtplib.SMTP('maildelay.tk')
+            smtp = smtplib.SMTP(email_server)
             smtp.starttls()
-            smtp.login(my_email, '3p7KDn4FugQQ')
+            smtp.login(email_address, email_password)
         except Exception, e:
             print "Connection to SMTP-Server failed: %s" % repr(e)
 
         try:
-            imap = imaplib.IMAP4_SSL('maildelay.tk')
-            imap.login(my_email, '3p7KDn4FugQQ')
-            imap.select('INBOX')
+            imap = imaplib.IMAP4_SSL(email_server)
+            imap.login(email_address, email_password)
+            imap.select(mailbox)
         except Exception, e:
             print "Connection to IMAP4-Server failed: %s" % repr(e)
-            return
 
         parser = email.Parser.Parser()
 
@@ -66,12 +69,12 @@ class Command(BaseCommand):
                         msg['Subject'] = "Reminder after %s day: %s" % (mail_to_send.days, mail_to_send.subject)
                     else:
                         msg['Subject'] = "Reminder after %s days: %s" % (mail_to_send.days, mail_to_send.subject)
-                    msg['From'] = my_email
+                    msg['From'] = email_address
                     msg['To'] = mail_to_send.sent_from
                 except:
                     print "failed to write new header"
 
-                smtp.sendmail(my_email, mail_to_send.sent_from, msg.as_string())
+                smtp.sendmail(email_address, mail_to_send.sent_from, msg.as_string())
                 imap.store(mail_in_imap, '+FLAGS', '\\Deleted')
                 mail_to_send.delete()
 

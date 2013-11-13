@@ -187,3 +187,11 @@ LOGGING = {
 
 CSP_SCRIPT_SRC = ("'self'", 'https://login.persona.org')
 CSP_FRAME_SRC = ("'self'", 'https://login.persona.org')
+
+
+# Mailserver login settings
+
+EMAIL_ADDRESS = 'maildelay@maildelay.tk'
+EMAIL_PASSWORD = '3p7KDn4FugQQ'
+EMAIL_SERVER = 'maildelay.tk'
+MAILBOX = 'INBOX'
