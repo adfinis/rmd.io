@@ -19,6 +19,7 @@ $.ajaxSetup({
          }
      } 
 });
+$('#error').modal('hide')
 $('.form-datetime').datetimepicker({
     format: "yyyy-mm-dd hh:ii",
     todayBtn:  1,
@@ -57,7 +58,19 @@ $(function() {
             $(element).effect("highlight", {color: '#58FA58'}, 2000)
         })
         .fail( function() {
-            alert('Failed to change due date. Please try again.')
+            var error_popup = $('#error_popup');
+            if(error_popup.length == 0) {
+                $('body').append('<div id="error_popup" class="modal fade" role="dialog"/>');
+                    error_popup = $('#error_popup');
+            }
+            $.get(
+                "/error/",
+                {},
+                function(resp, status, xhr) {
+                    error_popup.html(resp);
+                    error_popup.modal();
+                }
+            )
         });
     });
     function updateDelta() {
@@ -74,7 +87,6 @@ $(function() {
         setTimeout(scheduleUpdateDelta, 20000);
     }
     function scheduleUpdate() {
-        
     }
     scheduleUpdateDelta()
 });

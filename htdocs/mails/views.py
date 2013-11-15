@@ -25,4 +25,6 @@ class DeleteMailView(generic.DeleteView):
 class UpdateMailView(generic.UpdateView):
     model = Mail
     fields = ['due']
-    success_url = "/"
+
+class ErrorView(generic.TemplateView):
+    template_name = 'mails/error.html'
