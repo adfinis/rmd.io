@@ -1,5 +1,5 @@
 .form-datetime {
-    width: 130px;
+    width: 300px;
 }
 
 #adsylogo {
@@ -34,7 +34,7 @@ body {
 }
 
 .delete-mail {
-    width:50px;
+    width:20px;
 }
 
 .navbar {
@@ -45,7 +45,7 @@ body {
 .date-button {
     background: transparent;
     border: none;
-    padding: 0px 2px 0px 0px;
+    padding-top: 2px;
     margin: 0px 5px;
     float:right;
 }
@@ -74,11 +74,6 @@ body {
     color: black;
 }
 
-.glyphicon-pencil {
-    top: -1px;
-    margin-right: 2px;
-}
-
 .form-datetime {
-    margin-bottom: -15px;
+    margin-bottom:-21px;
 }

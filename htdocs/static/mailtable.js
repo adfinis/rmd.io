@@ -19,7 +19,6 @@ $.ajaxSetup({
          }
      } 
 });
-$('#error').modal('hide')
 $('.form-datetime').datetimepicker({
     format: "yyyy-mm-dd hh:ii",
     todayBtn:  1,
