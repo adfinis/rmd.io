@@ -1,3 +1,7 @@
+.form-datetime {
+    width: 130px;
+}
+
 #adsylogo {
     height:30px;
     float:right;
@@ -43,6 +47,7 @@ body {
     border: none;
     padding: 0px 2px 0px 0px;
     margin: 0px 5px;
+    float:right;
 }
 
 .delete-button {
@@ -58,23 +63,6 @@ body {
     }
 
     .delete-button:visited {
-        color:black;
-        text-decoration:none;
-    }
-
-.update-button {
-    color:black;
-    text-decoration:none;
-    float:right;
-    padding: 2px 2px;
-}
-
-    .update-button:hover {
-        color:black;
-        text-decoration:none;
-    }
-
-    .update-button:visited {
         color:black;
         text-decoration:none;
     }
