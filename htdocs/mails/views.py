@@ -16,3 +16,13 @@ class MailView(generic.ListView):
                 mails = mails.filter(subject__contains = search)
 
             return mails.order_by("due")
+
+class DeleteMailView(generic.DeleteView):
+    model = Mail
+    template_name = 'mails/delete.html'
+    success_url = "/"
+
+class UpdateMailView(generic.UpdateView):
+    model = Mail
+    fields = ['due']
+    success_url = "/"

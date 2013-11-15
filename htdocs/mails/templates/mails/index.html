@@ -1,57 +1,59 @@
 {% extends 'base_index.html' %}
+{% load staticfiles %}
 
 {% block title %}Mails{% endblock %}
 
 {% block content %}
+    {{ mail.subject }}
     {% if user.is_anonymous %}
         <div class="alert alert-danger">Please Login first!</div>
     {% elif mails %}
-        <div class="panel panel-default">
-            <div class="container">
-                <table class="table table-striped">
-                    <tr>
-                        <th>
-                            Subject
-                        </th>
-                        <th>
-                            Sent
-                        </th>
-                        <th>
-                            Due
-                        </th>
-                    </tr>
-                    {% for mail in mails %}
-                        <tr>
-                            <td>
-                                {{ mail.subject }}
-                            </td>
-                            <td>
-                                {{ mail.sent | date:"Y-m-d H:i"}}
-                            </td>
-                            <td>
-                                <div class="form-group">
-                                    <div class="input-group date form_datetime">
-                                        <input class="form-control" size="16" type="text" value="{{ mail.due | date:"Y-m-d H:i" }}" readonly>
-                                        <span class="input-group-addon"><span class="glyphicon glyphicon-calendar"></span></span>
-                                    </div>
-                                </div>
-                            </td>
-                        </tr>
-                    {% endfor %}
-                </table>
-            </div>
-        </div>
+        <table class="table table-striped">
+            <tr>
+                <th>
+                    Subject
+                </th>
+                <th>
+                    Sent
+                </th>
+                <th>
+                    Due
+                </th>
+                <th></th>
+            </tr>
+            {% for mail in mails %}
+                <tr>
+                    <td class="mail-subject">
+                        {{ mail.subject }}
+                    </td>
+                    <td class="sent-date">
+                        {{ mail.sent | date:"Y-m-d H:i"}}
+                    </td>
+                    <td class="due-mail">
+                        <form class="form-group duedate" method="POST" action="/update/{{ mail.id }}/">
+                            <div class="input-group date form-datetime">
+                                <span class="timedelta""></span>
+                                <span class="input-group-addon date-button" style="display:inline">
+                                    <span class="glyphicon glyphicon-pencil"></span>
+                                </span>
+                                <input class="date-form due" type="hidden" name="due" value="{{ mail.due | date:"Y-m-d H:i" }}" disabled>
+                            </div>
+                        </form>
+                    </td>
+                    <td class="delete-mail">
+                        <a href="/delete/{{ mail.id }}/" class="delete-button glyphicon glyphicon-trash"></a>
+                    </td>
+                </tr>
+            {% endfor %}
+        </table>
     {% else %}
         <div class="alert alert-info">There aren't any mails!</div>
     {% endif %}
-    <script type="text/javascript">
-        $('.form_datetime').datetimepicker({
-            format: "yyyy-mm-dd hh:ii",
-            todayBtn:  1,
-            autoclose: 1,
-            todayHighlight: 1,
-            pickerPosition: "bottom-left",
-            minuteStep: 10,
-        });
-    </script>
 {% endblock %}
+
+{%block bottomscripts%}
+    <script src="{% static 'bootstrap-datetimepicker/js/bootstrap-datetimepicker.js' %}"></script>
+    <script src="{% static 'moment.js' %}"></script>
+    <script src="{% static 'jQuery/jquery-ui-1.10.3.custom.js' %}"></script>
+    <script src="{% static 'mailtable.js' %}"></script>
+{%endblock%}
