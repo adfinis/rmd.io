@@ -49,6 +49,11 @@ class Command(BaseCommand):
             dt = datetime.datetime.fromtimestamp(timestamp)
             return dt
 
+        def count_days(mail_to_send):
+            days = (mail_to_send.due - mail_to_send.sent).days
+            print days
+            return days
+
         mails_to_send = Mail.objects.filter(due__lte=timezone.now())
 
         for mail_to_send in mails_to_send:
@@ -58,6 +63,7 @@ class Command(BaseCommand):
                 results, data = imap.fetch(mail_in_imap, 'RFC822')
                 raw_email = data[0][1]
                 msg = parser.parsestr(raw_email)
+                days = count_days(mail_to_send)
 
                 if msg.is_multipart():
                     msg = msg.get_payload(0)
@@ -65,10 +71,10 @@ class Command(BaseCommand):
                     msg = MIMEText(msg.get_payload())
 
                 try:
-                    if mail_to_send.days == '1':
-                        msg['Subject'] = "Reminder after %s day: %s" % (mail_to_send.days, mail_to_send.subject)
+                    if days == '1':
+                        msg['Subject'] = "Reminder after %s day: %s" % (days, mail_to_send.subject)
                     else:
-                        msg['Subject'] = "Reminder after %s days: %s" % (mail_to_send.days, mail_to_send.subject)
+                        msg['Subject'] = "Reminder after %s days: %s" % (days, mail_to_send.subject)
                     msg['From'] = email_address
                     msg['To'] = mail_to_send.sent_from
                 except:
