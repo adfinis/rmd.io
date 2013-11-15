@@ -1,7 +1,36 @@
+#adsylogo {
+    height:30px;
+    float:right;
+}
+
+hr {
+    margin-top:70px;
+}
+
+#logo {
+    margin:3px 5px;
+    position:relative;
+    left:200px;
+}
+
 body {
-    background-color: #BABABA;
-    background-image: url("images/background.png");
-    background-repeat: repeat-x;
+    padding-top: 70px;
+}
+
+.sent-date {
+    width:250px;
+}
+
+.tooltip-inner {
+    width:120px;
+}
+
+.due-mail {
+    width:300px
+}
+
+.delete-mail {
+    width:50px;
 }
 
 .navbar {
@@ -9,6 +38,59 @@ body {
     border-radius: 0px;
 }
 
-.panel {
-    padding-top: 20px;
+.date-button {
+    background: transparent;
+    border: none;
+    padding: 0px 2px 0px 0px;
+    margin: 0px 5px;
+}
+
+.delete-button {
+    color:black;
+    text-decoration:none;
+    float:right;
+    padding: 2px 2px;
+}
+
+    .delete-button:hover {
+        color:black;
+        text-decoration:none;
+    }
+
+    .delete-button:visited {
+        color:black;
+        text-decoration:none;
+    }
+
+.update-button {
+    color:black;
+    text-decoration:none;
+    float:right;
+    padding: 2px 2px;
+}
+
+    .update-button:hover {
+        color:black;
+        text-decoration:none;
+    }
+
+    .update-button:visited {
+        color:black;
+        text-decoration:none;
+    }
+
+.date-form {
+    margin: 2px 2px 0px;
+    background: transparent;
+    border: none;
+    color: black;
+}
+
+.glyphicon-pencil {
+    top: -1px;
+    margin-right: 2px;
+}
+
+.form-datetime {
+    margin-bottom: -15px;
 }
