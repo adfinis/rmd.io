@@ -25,7 +25,7 @@ class Command(BaseCommand):
                 results, data = imap.fetch(mail_in_imap, 'RFC822')
                 raw_email = data[0][1]
                 msg = parser.parsestr(raw_email)
-                days = tools.count_days(mail_to_send)
+                days = int(tools.count_days(mail_to_send))
 
                 if msg.is_multipart():
                     msg = msg.get_payload(0)
@@ -33,7 +33,7 @@ class Command(BaseCommand):
                     msg = MIMEText(msg.get_payload())
 
                 try:
-                    if days == '1':
+                    if days == 1:
                         msg['Subject'] = "Reminder after %s day: %s" % (days, mail_to_send.subject)
                     else:
                         msg['Subject'] = "Reminder after %s days: %s" % (days, mail_to_send.subject)

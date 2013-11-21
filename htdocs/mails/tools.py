@@ -13,16 +13,9 @@ recipient_headers = [
 ]
 
 mailbox_to_days = {
-    '1d' : 1,
-    '2d' : 2,
-    '3d' : 3,
-    '4d' : 4,
-    '5d' : 5,
-    '6d' : 6,
-    '1w' : 7,
-    '2w' : 14,
-    '3w' : 21,
-    '4w' : 28,
+    entry[0]: entry[1]
+    for entry
+    in settings.MAILBOXES
 }
 
 def smtp_login():
@@ -41,7 +34,7 @@ def imap_login():
     try:
         imap = imaplib.IMAP4_SSL(settings.EMAIL_SERVER)
         imap.login(settings.EMAIL_ADDRESS, settings.EMAIL_PASSWORD)
-        imap.select(settings.MAILBOX)
+        imap.select(settings.FOLDER)
     except Exception, e:
         print "Connection to IMAP4-Server failed: %s" % repr(e)
 
@@ -104,6 +97,7 @@ def subject_from_message(msg):
 def delete_imap_mail(mail_id):
     imap = imap_login()
     results, data = imap.search(None, '(KEYWORD "MAILDELAY-%s")' % mail_id)
-    imap_mail_id = data[0][0]
-    imap.store(imap_mail_id, '+FLAGS', '\\Deleted')
+    imap_mail_id = data[0].split()
+    for mailid in imap_mail_id:
+        imap.store(mailid, '+FLAGS', '\\Deleted')
     imap.expunge()
