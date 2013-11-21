@@ -19,6 +19,7 @@ $.ajaxSetup({
          }
      } 
 });
+
 $('.form-datetime').datetimepicker({
     format: "yyyy-mm-dd hh:ii",
     todayBtn:  1,
@@ -26,8 +27,9 @@ $('.form-datetime').datetimepicker({
     autoclose: 1,
     todayHighlight: 1,
     pickerPosition: "bottom-right",
-    minuteStep: 30,
+    minuteStep: 15,
 });
+
 $('.delete-button').click(function(evt){
     evt.preventDefault();
     var popup = $('#popup');
@@ -44,17 +46,17 @@ $('.delete-button').click(function(evt){
         }
     );
 });
+
 $(function() {
-    $('.due').change(function() {
-        var sent = $(this).closest('tr').find('.sent_date').text()
-        var element = $(this).closest('td').find('.timedelta')
+    $('.date-form').change(function() {
+        var delta = $(this).closest('td').find('.timedelta')
         $.post(
             $(this).closest('form').attr('action'),
-            {due: this.value,}
+            {due: this.value}
         )
         .done( function() {
             updateDelta()
-            $(element).effect("highlight", {color: '#58FA58'}, 2000)
+            $(delta).effect("highlight", {color: '#58FA58'}, 2000)
         })
         .fail( function() {
             var error_popup = $('#error_popup');
@@ -69,13 +71,14 @@ $(function() {
                     error_popup.html(resp);
                     error_popup.modal();
                 }
-            )
+            );
         });
     });
+
     function updateDelta() {
-        $('.duedate').each(function(i, elem) {
-            var due = $(elem).find('.due').val()
-            var delta = $(elem).find('.timedelta')
+        $('.duedate').each(function(i, form) {
+            var due = $(form).find('.date-form').val()
+            var delta = $(form).find('.timedelta')
             delta.text(moment(due, "YYYY-MM-DD HH:mm").fromNow())
             delta.attr("data-original-title", due)
             delta.tooltip({placement: 'left'})
@@ -88,4 +91,20 @@ $(function() {
     function scheduleUpdate() {
     }
     scheduleUpdateDelta()
+});
+
+$(function() {
+    $('#searchMails').keyup(function() {
+        var key = $(this).val()
+        var regex = new RegExp(key, 'i')
+        $('.mailTableRow').each( function() {
+            var subject = $(this).find('.subject').text()
+            if (subject.search(regex) < 0) {
+                $(this).hide()
+            }
+            else {
+                $(this).show()
+            }
+        })
+    })
 });
