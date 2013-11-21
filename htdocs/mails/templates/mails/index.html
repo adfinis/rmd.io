@@ -1,4 +1,5 @@
 {% extends 'base_index.html' %}
+
 {% load staticfiles %}
 
 {% block title %}Mails{% endblock %}
@@ -13,48 +14,7 @@
                 <input type="text" class="form-control" id="searchMails" placeholder="Search">
             </div>
         </form>
-        <table class="table table-striped" id="datatable_mails">
-            <thead>
-                <tr>
-                    <th>
-                        Subject
-                    </th>
-                    <th>
-                        Sent
-                    </th>
-                    <th>
-                        Due
-                    </th>
-                    <th></th>
-                </tr>
-            </thead>
-            <tbody>
-            {% for mail in mails %}
-                <tr class="mailTableRow">
-                    <td class="subject">
-                        {{ mail.subject }}
-                    </td>
-                    <td class="sent-date">
-                        {{ mail.sent | date:"Y-m-d H:i"}}
-                    </td>
-                    <td class="due-date">
-                        <form class="form-group duedate" action="/update/{{ mail.id }}/">
-                            <div class="input-group date form-datetime">
-                                <span class="timedelta"></span>
-                                <span class="input-group-addon date-button" style="display:inline">
-                                    <span class="glyphicon glyphicon-pencil"></span>
-                                </span>
-                                <input name="due{{ mail.id }}" class="date-form" type="hidden" value="{{ mail.due | date:"Y-m-d H:i" }}">
-                            </div>
-                        </form>
-                    </td>
-                    <td class="delete">
-                        <a href="/delete_confirmation/{{ mail.id }}/" class="delete-button glyphicon glyphicon-trash"></a>
-                    </td>
-                </tr>
-            {% endfor %}
-            </tbody>
-        </table>
+        {% include "mails/table.html" %}
     {% else %}
         <div class="alert alert-info">There aren't any mails!</div>
     {% endif %}

@@ -88,8 +88,6 @@ $(function() {
         updateDelta();
         setTimeout(scheduleUpdateDelta, 20000);
     }
-    function scheduleUpdate() {
-    }
     scheduleUpdateDelta()
 });
 
@@ -108,3 +106,19 @@ $(function() {
         })
     })
 });
+
+function refresh() {
+    $.ajax({
+        url: '/table/',
+        success: function(data) {
+            $('#datatable_mails').html(data);
+        }
+    })
+};
+
+function scheduleRefresh(){
+    refresh();
+    setTimeout(scheduleRefresh, 20000)
+};
+
+scheduleRefresh();
