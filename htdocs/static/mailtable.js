@@ -20,105 +20,105 @@ $.ajaxSetup({
      } 
 });
 
-$('.form-datetime').datetimepicker({
-    format: "yyyy-mm-dd hh:ii",
-    todayBtn:  1,
-    startDate: new Date(),
-    autoclose: 1,
-    todayHighlight: 1,
-    pickerPosition: "bottom-right",
-    minuteStep: 15,
-});
-
-$('.delete-button').click(function(evt){
-    evt.preventDefault();
-    var popup = $('#popup');
-    if(popup.length == 0) {
-        $('body').append('<div id="popup" class="modal fade" role="dialog"/>');
-        popup = $('#popup');
-    }
-    $.get(
-        this.href,
-        {},
-        function(resp, status, xhr) {
-            popup.html(resp);
-            popup.modal();
-        }
-    );
-});
-
-$(function() {
-    $('.date-form').change(function() {
-        var delta = $(this).closest('td').find('.timedelta')
-        $.post(
-            $(this).closest('form').attr('action'),
-            {due: this.value}
-        )
-        .done( function() {
-            updateDelta()
-            $(delta).effect("highlight", {color: '#58FA58'}, 2000)
-        })
-        .fail( function() {
-            var error_popup = $('#error_popup');
-            if(error_popup.length == 0) {
-                $('body').append('<div id="error_popup" class="modal fade" role="dialog"/>');
-                    error_popup = $('#error_popup');
-            }
-            $.get(
-                "/error/",
-                {},
-                function(resp, status, xhr) {
-                    error_popup.html(resp);
-                    error_popup.modal();
-                }
-            );
-        });
-    });
-
-    function updateDelta() {
-        $('.duedate').each(function(i, form) {
-            var due = $(form).find('.date-form').val()
-            var delta = $(form).find('.timedelta')
-            delta.text(moment(due, "YYYY-MM-DD HH:mm").fromNow())
-            delta.attr("data-original-title", due)
-            delta.tooltip({placement: 'left'})
-        })
-    }
-    function scheduleUpdateDelta() {
-        updateDelta();
-        setTimeout(scheduleUpdateDelta, 20000);
-    }
-    scheduleUpdateDelta()
-});
-
-$(function() {
-    $('#searchMails').keyup(function() {
-        var key = $(this).val()
-        var regex = new RegExp(key, 'i')
-        $('.mailTableRow').each( function() {
-            var subject = $(this).find('.subject').text()
-            if (subject.search(regex) < 0) {
-                $(this).hide()
-            }
-            else {
-                $(this).show()
-            }
-        })
-    })
-});
-
 function refresh() {
     $.ajax({
         url: '/table/',
         success: function(data) {
             $('#datatable_mails').html(data);
+
+            $('.form-datetime').datetimepicker({
+                format: "yyyy-mm-dd hh:ii",
+                todayBtn:  1,
+                startDate: new Date(),
+                autoclose: 1,
+                todayHighlight: 1,
+                pickerPosition: "bottom-right",
+                minuteStep: 15,
+            });
+
+            $('.delete-button').click(function(evt){
+                evt.preventDefault();
+                var popup = $('#popup');
+                if(popup.length == 0) {
+                    $('body').append('<div id="popup" class="modal fade" role="dialog"/>');
+                    popup = $('#popup');
+                }
+                $.get(
+                    this.href,
+                    {},
+                    function(resp, status, xhr) {
+                        popup.html(resp);
+                        popup.modal();
+                    }
+                );
+            });
+
+            $(function() {
+                $('.date-form').change(function() {
+                    var delta = $(this).closest('td').find('.timedelta')
+                    $.post(
+                        $(this).closest('form').attr('action'),
+                        {due: this.value}
+                    )
+                    .done( function() {
+                        updateDelta()
+                        $(delta).effect("highlight", {color: '#58FA58'}, 2000)
+                    })
+                    .fail( function() {
+                        var error_popup = $('#error_popup');
+                        if(error_popup.length == 0) {
+                            $('body').append('<div id="error_popup" class="modal fade" role="dialog"/>');
+                                error_popup = $('#error_popup');
+                        }
+                        $.get(
+                            "/error/",
+                            {},
+                            function(resp, status, xhr) {
+                                error_popup.html(resp);
+                                error_popup.modal();
+                            }
+                        );
+                    });
+                });
+
+                function updateDelta() {
+                    $('.duedate').each(function(i, form) {
+                        var due = $(form).find('.date-form').val()
+                        var delta = $(form).find('.timedelta')
+                        delta.text(moment(due, "YYYY-MM-DD HH:mm").fromNow())
+                        delta.attr("data-original-title", due)
+                        delta.tooltip({placement: 'left'})
+                    })
+                }
+                function scheduleUpdateDelta() {
+                    updateDelta();
+                    setTimeout(scheduleUpdateDelta, 10000);
+                }
+                scheduleUpdateDelta()
+            });
+
+            $(function() {
+                $('#searchMails').keyup(function() {
+                    var key = $(this).val()
+                    var regex = new RegExp(key, 'i')
+                    $('.mailTableRow').each( function() {
+                        var subject = $(this).find('.subject').text()
+                        if (subject.search(regex) < 0) {
+                            $(this).hide()
+                        }
+                        else {
+                            $(this).show()
+                        }
+                    })
+                })
+            });
         }
     })
 };
 
 function scheduleRefresh(){
     refresh();
-    setTimeout(scheduleRefresh, 20000)
+    setTimeout(scheduleRefresh, 10000)
 };
 
 scheduleRefresh();
