@@ -5,7 +5,6 @@ import time
 import email.utils
 import email.header
 import imaplib
-import smtplib
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.utils import timezone
@@ -21,13 +20,6 @@ class Command(BaseCommand):
         email_password = settings.EMAIL_PASSWORD
         email_server = settings.EMAIL_SERVER
         mailbox = settings.MAILBOX
-
-        try:
-            smtp = smtplib.SMTP(email_server)
-            smtp.starttls()
-            smtp.login(email_address, email_password)
-        except Exception, e:
-            print "Connection to SMTP-Server failed: %s" % repr(e)
 
         try:
             imap = imaplib.IMAP4_SSL(email_server)

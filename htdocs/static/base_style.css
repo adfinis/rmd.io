@@ -1,5 +1,13 @@
+.glyphicon-off {
+    color:red;
+}
+
 .form-datetime {
     width: 300px;
+}
+
+#searchMails {
+    width:250px;
 }
 
 #adsylogo {
@@ -25,16 +33,16 @@ body {
     width:250px;
 }
 
+.due-date {
+    width:30px
+}
+
+.delete {
+    width:20px;
+}
+
 .tooltip-inner {
     width:120px;
-}
-
-.due-mail {
-    width:300px
-}
-
-.delete-mail {
-    width:20px;
 }
 
 .navbar {
@@ -67,12 +75,20 @@ body {
         text-decoration:none;
     }
 
+/*
 .date-form {
     margin: 2px 2px 0px;
     background: transparent;
     border: none;
     color: black;
 }
+*/
+    
+/*    
+.date-form {
+    display: none;
+}
+*/
 
 .form-datetime {
     margin-bottom:-21px;

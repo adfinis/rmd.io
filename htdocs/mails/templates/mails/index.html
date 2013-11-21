@@ -8,43 +8,52 @@
     {% if user.is_anonymous %}
         <div class="alert alert-danger">Please Login first!</div>
     {% elif mails %}
-        <table class="table table-striped">
-            <tr>
-                <th>
-                    Subject
-                </th>
-                <th>
-                    Sent
-                </th>
-                <th>
-                    Due
-                </th>
-                <th></th>
-            </tr>
-            {% for mail in mails %}
+        <form role="form" method="post">
+            <div class="form-group pull-right">
+                <input type="text" class="form-control" id="searchMails" placeholder="Search">
+            </div>
+        </form>
+        <table class="table table-striped" id="datatable_mails">
+            <thead>
                 <tr>
-                    <td class="mail-subject">
+                    <th>
+                        Subject
+                    </th>
+                    <th>
+                        Sent
+                    </th>
+                    <th>
+                        Due
+                    </th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for mail in mails %}
+                <tr class="mailTableRow">
+                    <td class="subject">
                         {{ mail.subject }}
                     </td>
                     <td class="sent-date">
                         {{ mail.sent | date:"Y-m-d H:i"}}
                     </td>
-                    <td class="due-mail">
-                        <form class="form-group duedate" method="POST" action="/update/{{ mail.id }}/">
+                    <td class="due-date">
+                        <form class="form-group duedate" action="/update/{{ mail.id }}/">
                             <div class="input-group date form-datetime">
-                                <span class="timedelta""></span>
+                                <span class="timedelta"></span>
                                 <span class="input-group-addon date-button" style="display:inline">
                                     <span class="glyphicon glyphicon-pencil"></span>
                                 </span>
-                                <input class="date-form due" type="hidden" name="due" value="{{ mail.due | date:"Y-m-d H:i" }}" disabled>
+                                <input name="due{{ mail.id }}" class="date-form" type="hidden" value="{{ mail.due | date:"Y-m-d H:i" }}">
                             </div>
                         </form>
                     </td>
-                    <td class="delete-mail">
-                        <a href="/delete/{{ mail.id }}/" class="delete-button glyphicon glyphicon-trash"></a>
+                    <td class="delete">
+                        <a href="/delete_confirmation/{{ mail.id }}/" class="delete-button glyphicon glyphicon-trash"></a>
                     </td>
                 </tr>
             {% endfor %}
+            </tbody>
         </table>
     {% else %}
         <div class="alert alert-info">There aren't any mails!</div>
