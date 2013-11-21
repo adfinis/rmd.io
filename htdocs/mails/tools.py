@@ -100,3 +100,10 @@ def subject_from_message(msg):
     subject = re.sub(r'[\r\n]+[\t]*', '', subject)
 
     return subject
+
+def delete_imap_mail(mail_id):
+    imap = imap_login()
+    results, data = imap.search(None, '(KEYWORD "MAILDELAY-%s")' % mail_id)
+    imap_mail_id = data[0][0]
+    imap.store(imap_mail_id, '+FLAGS', '\\Deleted')
+    imap.expunge()

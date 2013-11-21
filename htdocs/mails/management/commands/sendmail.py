@@ -44,8 +44,7 @@ class Command(BaseCommand):
                     break
 
                 smtp.sendmail(settings.EMAIL_ADDRESS, mail_to_send.sent_from, msg.as_string())
-                imap.store(mail_in_imap, '+FLAGS', '\\Deleted')
+                tools.delete_imap_mail(mail_in_imap)
                 mail_to_send.delete()
 
-        imap.expunge()
         smtp.quit()
