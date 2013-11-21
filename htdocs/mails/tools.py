@@ -58,7 +58,7 @@ def count_days(mail_to_send):
     print days
     return days
 
-def mails_with_id(mail_id):
+def mails_with_id(mail_id, imap):
     results, data = imap.search(None, '(KEYWORD "MAILDELAY-%d")' % mail_id)
     ids = data[0]
     return ids.split()
