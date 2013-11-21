@@ -14,8 +14,7 @@ class MailView(generic.ListView):
     def get_queryset(self):
         if self.request.user.is_authenticated():
             mails = Mail.objects.filter(sent_from=self.request.user.email)
-            return mails.order_by("due")
-
+            return mails.order_by("sent")
 
 def delete_confirmation(request, mail_id):
     mail = get_object_or_404(Mail, pk=mail_id)
@@ -34,3 +33,15 @@ class UpdateMailView(generic.UpdateView):
 
 class ErrorView(generic.TemplateView):
     template_name = 'mails/error.html'
+
+def download_vcard(request):
+    mail_addresses = [
+        ('{2}'.format(*entry), '{0}@maildelay.tk'.format(*entry))
+        for entry
+        in settings.MAILBOXES
+    ]
+    response = render(request, 'mails/maildelay.vcf', { 'mail_addresses' : mail_addresses }, content_type='text/x-vcard')
+
+    response['Content-disposition'] = "attachment;filename=MailDelay.vcf"
+
+    return response

@@ -197,4 +197,17 @@ CSP_FRAME_SRC = ("'self'", 'https://login.persona.org')
 EMAIL_ADDRESS = 'maildelay@maildelay.tk'
 EMAIL_PASSWORD = '3p7KDn4FugQQ'
 EMAIL_SERVER = 'maildelay.tk'
-MAILBOX = 'INBOX'
+FOLDER = 'INBOX'
+
+MAILBOXES = [
+    ('1d', 1, 'Mail Delay for 1 day'),
+    ('2d', 2, 'Mail Delay for 2 days'),
+    ('3d', 3, 'Mail Delay for 3 days'),
+    ('4d', 4, 'Mail Delay for 4 days'),
+    ('5d', 5, 'Mail Delay for 5 days'),
+    ('6d', 6, 'Mail Delay for 6 days'),
+    ('1w', 7, 'Mail Delay for 1 week'),
+    ('2w', 14, 'Mail Delay for 2 weeks'),
+    ('3w', 21, 'Mail Delay for 3 weeks'),
+    ('4w', 28, 'Mail Delay for 4 weeks'),
+]
