@@ -29,11 +29,11 @@
                         </ul>
                         <ul class="nav navbar-nav navbar-right">
                             {% if user.is_authenticated %}
-                                <li class="dropdown">
+                            <button type="button" onclick="location.href='/download/';" class="btn btn-primary navbar-btn"><i class="glyphicon glyphicon-save"></i> Download Addresses</button>
+                                <li id="dropdown" class="dropdown">
                                     <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="glyphicon glyphicon-user"></i>{{ user.email }}  <i class="caret"></i></a>
                                     <ul class="dropdown-menu pull-right" role="menu">
                                         <li><a href="/browserid/logout"><i class="glyphicon glyphicon-off"></i>  Logout</a></li>
-                                        <li><a href="/download"><i class="glyphicon glyphicon-save"></i>  Download Mail-Addresses</a></li>
                                     </ul>
                                 </li>
                             {% else %}

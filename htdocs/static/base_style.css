@@ -33,6 +33,11 @@ hr {
     width:250px;
 }
 
+#dropdown {
+    float:right;
+    padding-left:5px;
+}
+
 #adsylogo {
     height:30px;
 }
