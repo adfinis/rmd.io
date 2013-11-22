@@ -57,6 +57,10 @@ hr {
     line-height:30px
 }
 
+.navbar-btn {
+    margin-top:14px;
+}
+
 .footer-text {
     color:#999999;
 }
