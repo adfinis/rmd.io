@@ -34,7 +34,7 @@ def download_vcard(request):
         in settings.MAILBOXES
     ]
     response = render(request, 'mails/maildelay.vcf', { 'mail_addresses' : mail_addresses }, content_type='text/x-vcard')
-    response['Content-disposition'] = 'attachment;filename=rmd.io.vcf'
+    response['Content-disposition'] = 'attachment;filename=maildelay.vcf'
     return response
 
 def delete_confirmation(request, mail_id):
