@@ -58,6 +58,10 @@ hr {
     line-height:30px
 }
 
+.navbar .nav {
+    -webkit-transform:translate3d(0px, 0px , 0px);
+}
+
 .navbar-btn {
     margin-top:14px;
 }
