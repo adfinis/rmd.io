@@ -29,7 +29,7 @@ class TermsView(generic.TemplateView):
 
 def download_vcard(request):
     mail_addresses = [
-        ('{2}'.format(*entry), '{0}@maildelay.tk'.format(*entry))
+        ('{2}'.format(*entry), '{0}@rmd.io'.format(*entry))
         for entry
         in settings.MAILBOXES
     ]
