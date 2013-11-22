@@ -1,0 +1,8 @@
+{% for fullname, address in mail_addresses %}
+BEGIN:VCARD
+VERSION:3.0
+N:Delay;Mail
+FN:{{ fullname }}
+EMAIL;PREF;INTERNET:{{ address }}
+END:VCARD
+{% endfor %}
