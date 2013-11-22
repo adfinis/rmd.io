@@ -7,6 +7,12 @@ from mails import tools
 import imaplib
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
+from django.utils.decorators import method_decorator
+
+class LoginRequiredMixin(object):
+    @method_decorator(login_required)
+    def dispatch(self, request, *args, **kwargs):
+        return super(LoginRequiredMixin, self).dispatch(request, *args, **kwargs)
 
 class MailView(generic.ListView):
     template_name = 'mails/index.html'
@@ -17,12 +23,12 @@ class MailView(generic.ListView):
             mails = Mail.objects.filter(sent_from=self.request.user.email)
             return mails.order_by('due')
 
-class UpdateMailView(generic.UpdateView):
+class UpdateMailView(LoginRequiredMixin, generic.UpdateView):
     model = Mail
     fields = ['due']
     success_url = '/'
 
-class ErrorView(generic.TemplateView):
+class ErrorView(LoginRequiredMixin, generic.TemplateView):
     template_name = 'mails/error.html'
 
 class TermsView(generic.TemplateView):
