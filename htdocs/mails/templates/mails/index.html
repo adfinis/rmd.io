@@ -7,7 +7,11 @@
 {% block content %}
     {{ mail.subject }}
     {% if user.is_anonymous %}
-        <div class="alert alert-danger">Please Login first!</div>
+        <div class="jumbotron">
+            <h1>Welcome to rmd.io!</h1>
+            <p>Content here...</p>
+            <p><a class="browserid-login btn btn-primary btn-lg" role="button">Login</a></p>
+        </div>
     {% elif mails %}
         <form role="form" method="post">
             <div class="form-group pull-right">

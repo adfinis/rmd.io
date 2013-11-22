@@ -38,17 +38,17 @@ function refresh() {
 
             $('.delete-button').click(function(evt){
                 evt.preventDefault();
-                var popup = $('#popup');
-                if(popup.length == 0) {
-                    $('body').append('<div id="popup" class="modal fade" role="dialog"/>');
-                    popup = $('#popup');
+                var delete_popup = $('#delete_popup');
+                if(delete_popup.length == 0) {
+                    $('body').append('<div id="delete_popup" class="modal fade" role="dialog"/>');
+                    delete_popup = $('#delete_popup');
                 }
                 $.get(
                     this.href,
                     {},
                     function(resp, status, xhr) {
-                        popup.html(resp);
-                        popup.modal();
+                        delete_popup.html(resp);
+                        delete_popup.modal();
                     }
                 );
             });
