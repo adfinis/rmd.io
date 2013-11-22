@@ -33,7 +33,7 @@ def download_vcard(request):
         for entry
         in settings.MAILBOXES
     ]
-    response = render(request, 'mails/rmd.io.vcf', { 'mail_addresses' : mail_addresses }, content_type='text/x-vcard')
+    response = render(request, 'mails/maildelay.vcf', { 'mail_addresses' : mail_addresses }, content_type='text/x-vcard')
     response['Content-disposition'] = 'attachment;filename=rmd.io.vcf'
     return response
 
