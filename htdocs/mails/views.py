@@ -14,7 +14,7 @@ class MailView(generic.ListView):
     def get_queryset(self):
         if self.request.user.is_authenticated():
             mails = Mail.objects.filter(sent_from=self.request.user.email)
-            return mails.order_by("sent")
+            return mails.order_by('due')
 
 def delete_confirmation(request, mail_id):
     mail = get_object_or_404(Mail, pk=mail_id)
@@ -24,15 +24,18 @@ def delete(request):
     mail_id = request.POST['id']
     Mail.objects.get(id=mail_id).delete()
     tools.delete_imap_mail(mail_id)
-    return HttpResponseRedirect("/")
+    return HttpResponseRedirect('/')
 
 class UpdateMailView(generic.UpdateView):
     model = Mail
     fields = ['due']
-    success_url = "/"
+    success_url = '/'
 
 class ErrorView(generic.TemplateView):
     template_name = 'mails/error.html'
+
+class TermsView(generic.TemplateView):
+    template_name = 'mails/terms.html'
 
 def download_vcard(request):
     mail_addresses = [
@@ -42,6 +45,6 @@ def download_vcard(request):
     ]
     response = render(request, 'mails/maildelay.vcf', { 'mail_addresses' : mail_addresses }, content_type='text/x-vcard')
 
-    response['Content-disposition'] = "attachment;filename=MailDelay.vcf"
+    response['Content-disposition'] = 'attachment;filename=MailDelay.vcf'
 
     return response

@@ -53,6 +53,23 @@ function refresh() {
                 );
             });
 
+            $('#terms').click(function(evt){
+                evt.preventDefault();
+                var terms_popup = $('#terms_popup');
+                if(terms_popup.length == 0) {
+                    $('body').append('<div id="terms_popup" class="modal fade" role="dialog"/>');
+                    terms_popup = $('#terms_popup');
+                }
+                $.get(
+                    this.href,
+                    {},
+                    function(resp, status, xhr) {
+                        terms_popup.html(resp);
+                        terms_popup.modal();
+                    }
+                );
+            });
+
             $(function() {
                 $('.date-form').change(function() {
                     var delta = $(this).closest('td').find('.timedelta')

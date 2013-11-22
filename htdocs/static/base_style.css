@@ -1,6 +1,70 @@
-.glyphicon-off {
-    color:red;
+html, body {
+    height: 100%;
 }
+
+body {
+    padding-top: 70px;
+}
+
+hr {
+    margin-top:30px;
+}
+
+#wrap {
+    height: auto;
+    margin: 0 auto -50px;
+    min-height: 100%;
+    padding: 0 0 60px;
+}
+
+#footer {
+    background-color: #F5F5F5;
+    height: 50px;
+    padding: 10px 0px;
+}
+
+    #footer .container {
+        margin-top:0px;
+        margin-bottom:0px;
+        vertical-align:middle;
+    }
+
+#searchMails {
+    width:250px;
+}
+
+#adsylogo {
+    height:30px;
+}
+
+#provider {
+    display:inline;
+    float:right;
+}
+
+#logo {
+    height:50px;
+    margin:0px;
+}
+
+#terms {
+    display:inline;
+    line-height:30px
+}
+
+.footer-text {
+    color:#999999;
+}
+
+    .footer-text:hover {
+        color:#999999;
+        text-decoration:none;
+    }
+
+    .footer-text:visited {
+        color:#999999;
+        text-decoration:none;
+    }
 
 .glyphicon-user {
     margin-right:10px;
@@ -10,31 +74,8 @@
     width: 300px;
     margin-bottom:-21px;
 }
-
-#searchMails {
-    width:250px;
-}
-
-#adsylogo {
-    height:30px;
-    float:right;
-}
-
-hr {
-    margin-top:30px;
-}
-
-#logo {
-    height:50px;
-    margin:0px;
-}
-
 .navbar-brand {
     padding:0px 5px 0px 15px;
-}
-
-body {
-    padding-top: 70px;
 }
 
 .sent-date {

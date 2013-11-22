@@ -26,7 +26,7 @@
                 <form class="form-group duedate" action="/update/{{ mail.id }}/">
                     <div class="input-group date form-datetime">
                         <span class="timedelta"></span>
-                        <span class="input-group-addon date-button" style="display:inline">
+                        <span class="input-group-addon date-button">
                             <span class="glyphicon glyphicon-pencil"></span>
                         </span>
                         <input name="due{{ mail.id }}" class="date-form" type="hidden" value="{{ mail.due | date:"Y-m-d H:i" }}">
