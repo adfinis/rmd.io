@@ -48,7 +48,6 @@ def parsedate(datestr):
 
 def count_days(mail_to_send):
     days = (mail_to_send.due - mail_to_send.sent).days
-    print days
     return days
 
 def mails_with_id(mail_id, imap):
