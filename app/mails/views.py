@@ -48,11 +48,16 @@ def download_vcard(request):
 @login_required(login_url="/")
 def delete_confirmation(request, mail_id):
     mail = get_object_or_404(Mail, pk=mail_id)
-    return render(request, 'mails/delete_confirmation.html', {'mail' : mail})
+    if request.user.email == mail.sent_from:
+        return render(request, 'mails/delete_confirmation.html', {'mail' : mail})
+    else:
+        return HttpResponseRedirect("/")
 
 @login_required(login_url="/")
 def delete(request):
     mail_id = request.POST['id']
-    Mail.objects.get(id=mail_id).delete()
-    tools.delete_imap_mail(mail_id)
-    return HttpResponseRedirect('/')
+    mail = Mail.objects.get(id=mail_id)
+    if request.user.email == mail.sent_from:
+        mail.delete()
+        tools.delete_imap_mail(mail_id)
+    return HttpResponseRedirect("/")
