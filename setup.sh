@@ -1,7 +1,7 @@
 #!/bin/bash
  
 if [ ! -f bin/activate ]; then
-    virtualenv -p python2.7 .
+    virtualenv --system-site-packages -p python2.7 .
 fi
  
 source bin/activate
