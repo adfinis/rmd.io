@@ -28,7 +28,7 @@ class ErrorView(generic.TemplateView):
 class TermsView(generic.TemplateView):
     template_name = 'mails/terms.html'
 
-@login_required
+@login_required(login_url="/")
 def download_vcard(request):
     mail_addresses = [
         ('{2}'.format(*entry), '{0}@rmd.io'.format(*entry))
@@ -39,12 +39,12 @@ def download_vcard(request):
     response['Content-disposition'] = 'attachment;filename=maildelay.vcf'
     return response
 
-@login_required
+@login_required(login_url="/")
 def delete_confirmation(request, mail_id):
     mail = get_object_or_404(Mail, pk=mail_id)
     return render(request, 'mails/delete_confirmation.html', {'mail' : mail})
 
-@login_required
+@login_required(login_url="/")
 def delete(request):
     mail_id = request.POST['id']
     Mail.objects.get(id=mail_id).delete()
