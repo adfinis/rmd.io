@@ -26,23 +26,25 @@
                                 </li>
                             {% endif %}
                         </ul>
-                        <ul class="nav navbar-nav navbar-right">
-                            {% if user.is_authenticated %}
-                                <li id="dropdown" class="dropdown">
-                                    <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="glyphicon glyphicon-user"></i>{{ user.email }}  <i class="caret"></i></a>
-                                    <ul class="dropdown-menu pull-right" role="menu">
-                                        <li><a href="/browserid/logout"><i class="glyphicon glyphicon-off"></i>  Logout</a></li>
-                                    </ul>
-                                </li>
-                            {% else %}
-                                <button type="button" class="browserid-login btn btn-primary navbar-btn">Login</button>
-                            {% endif %}
-                        </ul>
-                        <ul class="nav navbar-nav navbar-right">
-                            {% if user.is_authenticated %}
-                            <a role="button" href="/maildelay.vcf" class="btn btn-primary btn-xs navbar-btn"><i class="glyphicon glyphicon-save"></i> Download Addresses</a>
-                            {% endif %}
-                        </ul>
+                        <div class="pull-right">
+                            <ul class="nav navbar-nav">
+                                {% if user.is_authenticated %}
+                                    <li id="dropdown" class="dropdown">
+                                        <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="glyphicon glyphicon-user"></i>{{ user.email }}  <i class="caret"></i></a>
+                                        <ul class="dropdown-menu pull-right" role="menu">
+                                            <li><a href="/browserid/logout"><i class="glyphicon glyphicon-off"></i>  Logout</a></li>
+                                        </ul>
+                                    </li>
+                                {% else %}
+                                    <button type="button" class="browserid-login btn btn-primary navbar-btn">Login</button>
+                                {% endif %}
+                            </ul>
+                            <ul class="nav navbar-nav">
+                                {% if user.is_authenticated %}
+                                <a role="button" href="/maildelay.vcf" class="btn btn-primary btn-xs navbar-btn"><i class="glyphicon glyphicon-save"></i> Download Addresses</a>
+                                {% endif %}
+                            </ul>
+                        </div>
                     </div> <!-- navbar-collapse -->
                 </div> <!-- container -->
             </div> <!-- navbar -->
