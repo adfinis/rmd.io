@@ -28,10 +28,6 @@ class UpdateMailView(LoginRequiredMixin, generic.UpdateView, pk):
     fields = ['due']
     success_url = '/'
 
-    def get_object(self, pk):
-        obj = Mail.my_mails(self.request).filter(id=pk)
-        return obj
-
 class ErrorView(LoginRequiredMixin, generic.TemplateView):
     template_name = 'mails/error.html'
 
