@@ -20,13 +20,17 @@ class MailView(generic.ListView):
 
     def get_queryset(self):
         if self.request.user.is_authenticated():
-            mails = Mail.objects.filter(sent_from=self.request.user.email)
+            mails = Mail.my_mails(self.request)
             return mails.order_by('due')
 
 class UpdateMailView(LoginRequiredMixin, generic.UpdateView):
     model = Mail
     fields = ['due']
     success_url = '/'
+
+    def get_object(self):
+        obj = Mail.my_mails(self.request).filter(id=pk)
+        return obj
 
 class ErrorView(LoginRequiredMixin, generic.TemplateView):
     template_name = 'mails/error.html'
@@ -48,16 +52,12 @@ def download_vcard(request):
 @login_required(login_url="/")
 def delete_confirmation(request, mail_id):
     mail = get_object_or_404(Mail, pk=mail_id)
-    if request.user.email == mail.sent_from:
-        return render(request, 'mails/delete_confirmation.html', {'mail' : mail})
-    else:
-        return HttpResponseRedirect("/")
+    return render(request, 'mails/delete_confirmation.html', {'mail' : mail})
 
 @login_required(login_url="/")
 def delete(request):
     mail_id = request.POST['id']
-    mail = Mail.objects.get(id=mail_id)
-    if request.user.email == mail.sent_from:
-        mail.delete()
-        tools.delete_imap_mail(mail_id)
+    mail = Mail.my_mails(self.request).filter(id=mail_id)
+    mail.delete()
+    tools.delete_imap_mail(mail_id)
     return HttpResponseRedirect("/")
