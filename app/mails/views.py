@@ -23,7 +23,7 @@ class MailView(generic.ListView):
             mails = Mail.my_mails(self.request)
             return mails.order_by('due')
 
-class UpdateMailView(LoginRequiredMixin, generic.UpdateView, pk):
+class UpdateMailView(LoginRequiredMixin, generic.UpdateView):
     model = Mail
     fields = ['due']
     success_url = '/'
