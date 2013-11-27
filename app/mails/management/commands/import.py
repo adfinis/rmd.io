@@ -42,7 +42,7 @@ class Command(BaseCommand):
                 print "%s: User not registered! Mail deleted." % sent_from
                 continue
             else:
-                m = Mail(subject=subject, sent=sent, due=due, sent_from=sent_from, days=days)
+                m = Mail(subject=subject, sent=sent, due=due, sent_from=sent_from)
                 m.save()
                 imap.store(mail, '+FLAGS', "MAILDELAY-%d" % m.id)
                 imap.store(mail, '+FLAGS', '\\Flagged')
