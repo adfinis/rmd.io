@@ -4,6 +4,7 @@ from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from mails.models import Mail
 from mails import tools
+import datetime
 from django.core.management.base import BaseCommand, CommandError
 from django.conf import settings
 
@@ -32,7 +33,7 @@ class Command(BaseCommand):
                     msg = MIMEText(msg.get_payload())
 
                 try:
-                    msg['Subject'] = "Reminder from %s: %s" % (mail_to_send.sent, mail_to_send.subject)
+                    msg['Subject'] = "Reminder from %s: %s" % (mail_to_send.sent.strftime('%b %d %H:%M'), mail_to_send.subject)
                     msg['From'] = settings.EMAIL_ADDRESS
                     msg['To'] = mail_to_send.sent_from
                 except:
@@ -41,6 +42,7 @@ class Command(BaseCommand):
 
                 smtp.sendmail(settings.EMAIL_ADDRESS, mail_to_send.sent_from, msg.as_string())
                 tools.delete_imap_mail(mail_in_imap)
-                mail_to_send.delete()
+
+            mail_to_send.delete()
 
         smtp.quit()
