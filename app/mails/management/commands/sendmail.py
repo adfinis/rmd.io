@@ -32,7 +32,7 @@ class Command(BaseCommand):
                     msg = MIMEText(msg.get_payload())
 
                 try:
-                    msg['Subject'] = "Reminder from %s: %s" % (mail_to_send, mail_to_send.subject)
+                    msg['Subject'] = "Reminder from %s: %s" % (mail_to_send.sent, mail_to_send.subject)
                     msg['From'] = settings.EMAIL_ADDRESS
                     msg['To'] = mail_to_send.sent_from
                 except:
