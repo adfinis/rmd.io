@@ -62,7 +62,7 @@ def delete_confirmation(request, mail_id):
 @login_required(login_url="/")
 def delete(request):
     mail_id = request.POST['id']
-    mail = Mail.my_mails(self.request).filter(id=mail_id)
+    mail = Mail.my_mails(request).filter(id=mail_id)
     mail.delete()
     tools.delete_imap_mail(mail_id)
     return HttpResponseRedirect("/")
