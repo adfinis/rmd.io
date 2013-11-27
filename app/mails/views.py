@@ -26,7 +26,16 @@ class MailView(generic.ListView):
 class UpdateMailView(LoginRequiredMixin, generic.UpdateView):
     model = Mail
     fields = ['due']
-    success_url = '/'
+    success_url = "/"
+
+    def get_object(self, queryset=None):
+        if queryset is None:
+            queryset = self.get_queryset()
+        pk = self.kwargs.get(self.pk_url_kwarg, None)
+        if pk is not None:
+            queryset = queryset.filter(pk=pk, sent_from=self.request.user.email)
+        obj = queryset.get()
+        return obj
 
 class ErrorView(LoginRequiredMixin, generic.TemplateView):
     template_name = 'mails/error.html'
