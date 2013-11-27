@@ -21,6 +21,10 @@ $.ajaxSetup({
 });
 
 function refresh() {
+    // Do not poll when datepicker is visible. This breaks it horribly
+    if ($('.datetimepicker').is(':visible')) {
+        return;
+    }
     $.ajax({
         url: '/table/',
         success: function(data) {
