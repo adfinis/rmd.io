@@ -24,10 +24,10 @@ def smtp_login():
         smtp = smtplib.SMTP(settings.EMAIL_SERVER)
         smtp.starttls()
         smtp.login(settings.EMAIL_ADDRESS, settings.EMAIL_PASSWORD)
+        return smtp
     except Exception, e:
         print "Connection to SMTP-Server failed: %s" % repr(e)
 
-    return smtp
 
 def imap_login():
 
@@ -35,10 +35,10 @@ def imap_login():
         imap = imaplib.IMAP4_SSL(settings.EMAIL_SERVER)
         imap.login(settings.EMAIL_ADDRESS, settings.EMAIL_PASSWORD)
         imap.select(settings.FOLDER)
+        return imap
     except Exception, e:
         print "Connection to IMAP4-Server failed: %s" % repr(e)
 
-    return imap
 
 def parsedate(datestr):
     dt_tuple = email.utils.parsedate(datestr)
@@ -61,7 +61,6 @@ def fix_pair(headerpair):
     return headerpair[0]
 
 def delay_days_from_message(msg):
-
 
     for key in recipient_headers:
         if key not in msg:
