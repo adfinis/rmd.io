@@ -72,11 +72,12 @@ hr {
     line-height:30px;
     margin-left:15px;
 }
-.navbar .nav {
-    -webkit-transform:translate3d(0px, 0px , 0px);
+
+.nav .browserid-login {
+    margin-top:8px;
 }
 
-.navbar-btn {
+.nav .btn-xs {
     margin-top:14px;
 }
 
