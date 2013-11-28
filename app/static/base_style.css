@@ -100,7 +100,7 @@ hr {
 }
 
 .form-datetime {
-    width: 300px;
+    width:100%;
     margin-bottom:-21px;
 }
 .navbar-brand {
@@ -108,11 +108,15 @@ hr {
 }
 
 .sent-date {
-    width:250px;
+    margin-right:50px;
+}
+
+.duedate {
+    max-width:250px;
 }
 
 .due-date {
-    width:30px
+    width:250px;
 }
 
 .delete {

@@ -16,10 +16,10 @@
     <tbody>
     {% for mail in mails %}
         <tr class="mailTableRow">
-            <td class="subject">
+            <td>
                 {{ mail.subject }}
             </td>
-            <td class="sent-date">
+            <td>
                 {{ mail.sent | date:"Y-m-d H:i"}}
             </td>
             <td class="due-date">
