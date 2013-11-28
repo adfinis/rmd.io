@@ -7,10 +7,25 @@
 {% block content %}
     {{ mail.subject }}
     {% if user.is_anonymous %}
-        <div class="jumbotron">
-            <h1>Welcome to rmd.io!</h1>
-            <p>Content here...</p>
-            <p><a class="browserid-login btn btn-primary btn-lg" role="button">Login</a></p>
+        <div class="page-header">
+            <h1>rmd.io<small> your friendly mail reminder</small></h1>
+        </div>
+        <div class="row">
+            <div class="col-md-8">
+                <img src="{% static 'images/example.png' %}" style="width:750px">
+            </div>
+            <div class="col-md-4">
+                <p>
+                    <br>
+                    1. Register<br>
+                    2. Download addresses<br>
+                    3. Send your mail<br>
+                    4. Manage your mails here<br>
+                    5. Get reminded<br>
+                    <br>
+                    <a class="browserid-login btn btn-primary btn-sm" role="button">Join us now!</a>
+                    </p>
+            </div>
         </div>
     {% elif mails %}
         <form role="form" method="post">
