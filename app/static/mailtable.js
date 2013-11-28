@@ -36,7 +36,7 @@ function refresh() {
                 startDate: new Date(),
                 autoclose: 1,
                 todayHighlight: 1,
-                pickerPosition: "bottom-right",
+                pickerPosition: "bottom-left",
                 minuteStep: 15,
             });
 
