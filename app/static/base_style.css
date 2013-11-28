@@ -64,9 +64,14 @@ hr {
 
 #terms {
     display:inline;
-    line-height:30px
+    line-height:30px;
 }
 
+#usermanual {
+    display:inline;
+    line-height:30px;
+    margin-left:15px;
+}
 .navbar .nav {
     -webkit-transform:translate3d(0px, 0px , 0px);
 }

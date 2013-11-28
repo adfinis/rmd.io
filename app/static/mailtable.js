@@ -74,6 +74,23 @@ function refresh() {
                 );
             });
 
+            $('#usermanual').click(function(evt){
+                evt.preventDefault();
+                var usermanual_popup = $('#usermanual_popup');
+                if(usermanual_popup.length == 0) {
+                    $('body').append('<div id="usermanual_popup" class="modal fade" role="dialog"/>');
+                    usermanual_popup = $('#usermanual_popup');
+                }
+                $.get(
+                    this.href,
+                    {},
+                    function(resp, status, xhr) {
+                        usermanual_popup.html(resp);
+                        usermanual_popup.modal();
+                    }
+                );
+            });
+
             $(function() {
                 $('.date-form').change(function() {
                     var delta = $(this).closest('td').find('.timedelta')

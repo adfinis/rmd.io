@@ -43,6 +43,9 @@ class ErrorView(LoginRequiredMixin, generic.TemplateView):
 class TermsView(generic.TemplateView):
     template_name = 'mails/terms.html'
 
+class UserManualView(generic.TemplateView):
+    template_name = 'mails/usermanual.html'
+
 @login_required(login_url="/")
 def download_vcard(request):
     mail_addresses = [
