@@ -2,7 +2,7 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render, get_object_or_404
 from django.core.urlresolvers import reverse
 from django.views import generic
-from mails.models import Mail
+from mails.models import Mail, UserKey
 from mails import tools
 import imaplib
 from django.conf import settings
@@ -48,12 +48,26 @@ class HelpView(generic.TemplateView):
 
 @login_required(login_url="/")
 def download_vcard(request):
+    user_key = UserKey.get_user_key(request.user)
+    host = settings.EMAIL_ADDRESS.split('@')[1]
     mail_addresses = [
-        ('{2}'.format(*entry), '{0}@rmd.io'.format(*entry))
+        (
+            '{2}'.format(*entry),
+            '{0}.{1}@{2}'.format(entry[0], user_key.key, host),
+        )
         for entry
         in settings.MAILBOXES
     ]
-    response = render(request, 'mails/maildelay.vcf', { 'mail_addresses' : mail_addresses }, content_type='text/x-vcard')
+
+    response = render(
+        request,
+        'mails/maildelay.vcf',
+        { 
+            'mail_addresses' : mail_addresses 
+        },
+        content_type='text/x-vcard'
+    )
+
     response['Content-disposition'] = 'attachment;filename=maildelay.vcf'
     return response
 
