@@ -10,5 +10,5 @@ urlpatterns = patterns('',
     url(r'^update/(?P<pk>\d+)/$', views.UpdateMailView.as_view(), name='update'),
     url(r'^maildelay.vcf/$', views.download_vcard, name='download'),
     url(r'^terms/$', views.TermsView.as_view(), name='terms'),
-    url(r'^usermanual/$', views.UserManualView.as_view(), name='usermanual'),
+    url(r'^help/$', views.HelpView.as_view(), name='help'),
 )

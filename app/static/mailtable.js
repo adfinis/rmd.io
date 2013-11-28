@@ -74,19 +74,19 @@ function refresh() {
                 );
             });
 
-            $('#usermanual').click(function(evt){
+            $('#help').click(function(evt){
                 evt.preventDefault();
-                var usermanual_popup = $('#usermanual_popup');
-                if(usermanual_popup.length == 0) {
-                    $('body').append('<div id="usermanual_popup" class="modal fade" role="dialog"/>');
-                    usermanual_popup = $('#usermanual_popup');
+                var help_popup = $('#help_popup');
+                if(help_popup.length == 0) {
+                    $('body').append('<div id="help_popup" class="modal fade" role="dialog"/>');
+                    help_popup = $('#help_popup');
                 }
                 $.get(
                     this.href,
                     {},
                     function(resp, status, xhr) {
-                        usermanual_popup.html(resp);
-                        usermanual_popup.modal();
+                        help_popup.html(resp);
+                        help_popup.modal();
                     }
                 );
             });
