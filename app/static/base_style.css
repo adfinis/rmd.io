@@ -10,6 +10,15 @@ hr {
     margin-top:30px;
 }
 
+#howto-list {
+    margin-top:50px;
+}
+
+#join-us {
+    margin-top:40px;
+    text-align:center;
+}
+
 #wrap {
     height: auto;
     margin: 0 auto -50px;

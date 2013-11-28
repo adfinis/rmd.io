@@ -15,16 +15,18 @@
                 <img src="{% static 'images/example.png' %}" style="width:750px">
             </div>
             <div class="col-md-4">
-                <p>
-                    <br>
-                    1. Register<br>
-                    2. Download addresses<br>
-                    3. Send your mail<br>
-                    4. Manage your mails here<br>
-                    5. Get reminded<br>
-                    <br>
-                    <a class="browserid-login btn btn-primary btn-sm" role="button">Join us now!</a>
-                    </p>
+                <ol id=howto-list>
+                    <li>Register</li>
+                    <li>Download addresses</li>
+                    <li>Send your mail</li>
+                    <li>Manage your mails at rmd.io</li>
+                    <li>Get reminded</li>
+                </ol>
+            </div>
+        </div>
+        <div class="row" id="join-us">
+            <div class="col-md-12">
+                <a class="browserid-login btn btn-primary btn-lg" role="button">Join us now!</a>
             </div>
         </div>
     {% elif mails %}
