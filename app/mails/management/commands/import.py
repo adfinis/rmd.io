@@ -2,7 +2,7 @@ import re
 import email
 from django.contrib.auth.models import User
 from django.utils import timezone
-from mails.models import Mail
+from mails.models import Mail, UserKey
 from mails import tools
 import datetime
 from django.core.management.base import BaseCommand, CommandError
@@ -35,16 +35,25 @@ class Command(BaseCommand):
                 # TODO: log error, delete mail
                 continue
 
-            user_count = User.objects.filter(email=sent_from).count()
+            try:
+                user = User.objects.get(email=sent_from)
+                user_key = UserKey.get_user_key(user)
+                mail_key = tools.key_from_message(msg)
 
-            if user_count != 1:
+                if mail_key == user_key.key:
+                    m = Mail(subject=subject, sent=sent, due=due, sent_from=sent_from)
+                    m.save()
+                    imap.store(mail, '+FLAGS', "MAILDELAY-%d" % m.id)
+                    imap.store(mail, '+FLAGS', '\\Flagged')
+
+                else:
+                    imap.store(mail, '+FLAGS', '\\Deleted')
+                    print "Mail from %s deleted: wrong recipient" % sent_from
+                    continue
+
+            except:
                 imap.store(mail, '+FLAGS', '\\Deleted')
                 print "%s: User not registered! Mail deleted." % sent_from
                 continue
-            else:
-                m = Mail(subject=subject, sent=sent, due=due, sent_from=sent_from)
-                m.save()
-                imap.store(mail, '+FLAGS', "MAILDELAY-%d" % m.id)
-                imap.store(mail, '+FLAGS', '\\Flagged')
 
         imap.expunge()

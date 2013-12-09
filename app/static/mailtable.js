@@ -25,6 +25,10 @@ function refresh() {
     if ($('.datetimepicker').is(':visible')) {
         return;
     }
+    // Do not poll when search is active. This breaks it
+    if ($('#searchMails').val()) {
+        return;
+    }
     $.ajax({
         url: '/table/',
         success: function(data) {

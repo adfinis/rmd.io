@@ -12,6 +12,12 @@ recipient_headers = [
     'To'
 ]
 
+multiplicate_number_with = {
+    'd' : 1,
+    'w' : 7,
+    'm' : 30,
+}
+
 mailbox_to_days = {
     entry[0]: entry[1]
     for entry
@@ -64,18 +70,33 @@ def delay_days_from_message(msg):
         else:
             mailaddress = msg[key]
             if "@" in mailaddress:
-                address = re.findall("([\da-z]+)@", mailaddress)
-                if len(address) == 0:
+                if len(mailaddress) == 0:
                     continue
-                mailbox_key = address[0]
-                if mailbox_key not in mailbox_to_days:
+                try:
+                    match = re.findall("^(\d+)([dmw])", mailaddress)[0]
+                    multiplicator = multiplicate_number_with[match[1]]
+                    days = int(match[0])*int(multiplicator)
+                    return days
+                except:
+                    print "wrong address"
+
+def key_from_message(msg):
+
+    for key in recipient_headers:
+        if key not in msg:
+            continue
+        else:
+            mailaddress = msg[key]
+            if "@" in mailaddress:
+                if len(mailaddress) == 0:
                     continue
-                return mailbox_to_days[mailbox_key]
+            key = re.findall("^\d+[dmw]\.([0-9a-z]{10})@", mailaddress)[0]
+            return key
+
 
 def subject_from_message(msg):
     subject = msg['subject']
     subj_headers = email.header.decode_header(subject)
-
 
     header_texts = [
         fix_pair(hdr)
