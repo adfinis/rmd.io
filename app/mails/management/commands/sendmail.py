@@ -14,6 +14,10 @@ class Command(BaseCommand):
 
         imap = tools.imap_login()
         smtp = tools.smtp_login()
+        if smtp is None:
+            print "Failed to login to SMTP server, aborting"
+            return
+
         parser = email.Parser.Parser()
         mails_to_send = Mail.objects.filter(due__lte=timezone.now())
 
