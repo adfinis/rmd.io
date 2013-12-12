@@ -5,6 +5,9 @@
                 Subject
             </th>
             <th>
+                Recipient
+            </th>
+            <th>
                 Sent
             </th>
             <th>
@@ -18,6 +21,9 @@
         <tr class="mailTableRow">
             <td class="subject">
                 {{ mail.subject }}
+            </td>
+            <td class="recipient">
+                {{ mail.sent_to }}
             </td>
             <td>
                 {{ mail.sent | date:"Y-m-d H:i"}}
