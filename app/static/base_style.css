@@ -108,11 +108,19 @@ hr {
 }
 
 .duedate {
-    max-width:250px;
+    max-width:100%;
 }
 
 .due-date {
-    width:250px;
+    width:20%;
+}
+
+.subject {
+    width: 30%;
+}
+
+.recipient {
+    width: 20%;
 }
 
 .delete {

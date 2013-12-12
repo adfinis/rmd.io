@@ -9,6 +9,7 @@ class Mail(models.Model):
     sent = models.DateTimeField('date sent')
     due = models.DateTimeField('date due')
     sent_from = models.CharField(max_length=200)
+    sent_to = models.CharField(max_length=200)
 
     @classmethod
     def my_mails(cls, request):
