@@ -3,6 +3,7 @@ BEGIN:VCARD
 VERSION:3.0
 N:Delay;Mail
 FN:{{ fullname }}
-EMAIL;PREF;INTERNET:{{ address }}
+EMAIL;INTERNET:{{ address }}
+PROFILE:VCARD
 END:VCARD
 {% endfor %}

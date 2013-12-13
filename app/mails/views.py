@@ -47,6 +47,7 @@ class TermsView(generic.TemplateView):
 class HelpView(generic.TemplateView):
     template_name = 'mails/help.html'
 
+@login_required(login_url="/")
 def settings_view(request):
     template_name = 'mails/settings.html'
     row = Settings.objects.get(user=request.user)
@@ -100,7 +101,7 @@ def download_vcard(request):
         content_type='text/x-vcard'
     )
 
-    response['Content-disposition'] = 'attachment;filename=maildelay.vcf'
+    response['Content-disposition'] = 'attachment;filename=Maildelay.vcf'
     return response
 
 @login_required(login_url="/")
