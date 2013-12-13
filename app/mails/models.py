@@ -1,6 +1,8 @@
 from django.db import models
 from django.utils import timezone
 from django.contrib.auth.models import User
+from django_browserid.signals import user_created
+from django.dispatch import receiver
 import base64
 import os
 
@@ -17,15 +19,15 @@ class Mail(models.Model):
 
 class UserKey(models.Model):
     key = models.CharField(max_length=10)
-    user = models.ForeignKey(User)
+    user = models.OneToOneField(User, related_name="userkey")
 
-    @classmethod
-    def get_user_key(cls, user):
-        try:
-            return cls.objects.get(user=user.id)
-        except:
-            key = cls()
-            key.user = user
-            key.key = base64.b32encode(os.urandom(7))[:10].lower()
-            key.save()
-            return key
+class Settings(models.Model):
+    anti_spam = models.BooleanField(default=False)
+    user = models.OneToOneField(User, related_name="settings")
+
+@receiver(user_created)
+def generate_key(user, **kwargs):
+    key = UserKey(key=base64.b32encode(os.urandom(7))[:10].lower(), user = user)
+    anti_spam = Settings(user=user)
+    key.save()
+    anti_spam.save()

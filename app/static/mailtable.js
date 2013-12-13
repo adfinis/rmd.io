@@ -95,6 +95,23 @@ function refresh() {
                 );
             });
 
+            $('#settings').click(function(evt){
+                evt.preventDefault();
+                var settings_popup = $('#settings_popup');
+                if(settings_popup.length == 0) {
+                    $('body').append('<div id="settings_popup" class="modal fade" role="dialog"/>');
+                    settings_popup = $('#settings_popup');
+                }
+                $.get(
+                    this.href,
+                    {},
+                    function(resp, status, xhr) {
+                        settings_popup.html(resp);
+                        settings_popup.modal();
+                    }
+                );
+            });
+
             $(function() {
                 $('.date-form').change(function() {
                     var delta = $(this).closest('td').find('.timedelta')

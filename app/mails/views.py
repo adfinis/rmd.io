@@ -1,8 +1,9 @@
 from django.http import HttpResponse, HttpResponseRedirect
+from mails.forms import SettingsForm
 from django.shortcuts import render, get_object_or_404
 from django.core.urlresolvers import reverse
 from django.views import generic
-from mails.models import Mail, UserKey
+from mails.models import Mail, UserKey, Settings
 from mails import tools
 import imaplib
 from django.conf import settings
@@ -46,14 +47,45 @@ class TermsView(generic.TemplateView):
 class HelpView(generic.TemplateView):
     template_name = 'mails/help.html'
 
+def settings_view(request):
+    template_name = 'mails/settings.html'
+    row = Settings.objects.get(user=request.user)
+    form = SettingsForm(request.POST or None, instance=row)
+    if request.method == 'POST':
+        if form.is_valid():
+            form.save()
+        else:
+            form.anti_spam = False
+            form.save()
+        return HttpResponseRedirect('/')
+
+    response = render(
+        request,
+        template_name,
+        {
+            'form' : form
+        }
+    )
+
+    return response
+
 @login_required(login_url="/")
 def download_vcard(request):
-    user_key = UserKey.get_user_key(request.user)
     host = settings.EMAIL_ADDRESS.split('@')[1]
+    if request.user.settings.anti_spam:
+        mail_template = '{delay}.{key}@{host}'
+    else:
+        mail_template = '{delay}@{host}'
+
+    values = {
+        'key' : request.user.userkey.key,
+        'host' : host,
+    }
+
     mail_addresses = [
         (
             '{2}'.format(*entry),
-            '{0}.{1}@{2}'.format(entry[0], user_key.key, host),
+            mail_template.format(delay=entry[0], **values)
         )
         for entry
         in settings.MAILBOXES
@@ -62,8 +94,8 @@ def download_vcard(request):
     response = render(
         request,
         'mails/maildelay.vcf',
-        { 
-            'mail_addresses' : mail_addresses 
+        {
+            'mail_addresses' : mail_addresses
         },
         content_type='text/x-vcard'
     )
