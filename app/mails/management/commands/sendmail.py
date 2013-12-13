@@ -1,12 +1,11 @@
 import email
 from django.utils import timezone
-from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from mails.models import Mail
 from mails import tools
-import datetime
-from django.core.management.base import BaseCommand, CommandError
+from django.core.management.base import BaseCommand
 from django.conf import settings
+
 
 class Command(BaseCommand):
 
@@ -37,14 +36,21 @@ class Command(BaseCommand):
                     msg = MIMEText(msg.get_payload())
 
                 try:
-                    msg['Subject'] = "Reminder from %s: %s" % (mail_to_send.sent.strftime('%b %d %H:%M'), mail_to_send.subject)
+                    msg['Subject'] = "Reminder from %s: %s" % (
+                        mail_to_send.sent.strftime('%b %d %H:%M'),
+                        mail_to_send.subject
+                    )
                     msg['From'] = settings.EMAIL_ADDRESS
                     msg['To'] = mail_to_send.sent_from
                 except:
                     print "failed to write new header"
                     break
 
-                smtp.sendmail(settings.EMAIL_ADDRESS, mail_to_send.sent_from, msg.as_string())
+                smtp.sendmail(
+                    settings.EMAIL_ADDRESS,
+                    mail_to_send.sent_from,
+                    msg.as_string()
+                )
                 tools.delete_imap_mail(mail_in_imap)
 
             mail_to_send.delete()

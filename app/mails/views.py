@@ -1,19 +1,22 @@
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponseRedirect
 from mails.forms import SettingsForm
 from django.shortcuts import render, get_object_or_404
-from django.core.urlresolvers import reverse
 from django.views import generic
-from mails.models import Mail, UserKey, Settings
+from mails.models import Mail, Settings
 from mails import tools
-import imaplib
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 
+
 class LoginRequiredMixin(object):
     @method_decorator(login_required)
     def dispatch(self, request, *args, **kwargs):
-        return super(LoginRequiredMixin, self).dispatch(request, *args, **kwargs)
+        return super(
+            LoginRequiredMixin,
+            self
+        ).dispatch(request, *args, **kwargs)
+
 
 class MailView(generic.ListView):
     template_name = 'mails/index.html'
@@ -23,6 +26,7 @@ class MailView(generic.ListView):
         if self.request.user.is_authenticated():
             mails = Mail.my_mails(self.request)
             return mails.order_by('due')
+
 
 class UpdateMailView(LoginRequiredMixin, generic.UpdateView):
     model = Mail
@@ -34,18 +38,25 @@ class UpdateMailView(LoginRequiredMixin, generic.UpdateView):
             queryset = self.get_queryset()
         pk = self.kwargs.get(self.pk_url_kwarg, None)
         if pk is not None:
-            queryset = queryset.filter(pk=pk, sent_from=self.request.user.email)
+            queryset = queryset.filter(
+                pk=pk,
+                sent_from=self.request.user.email
+            )
         obj = queryset.get()
         return obj
+
 
 class ErrorView(LoginRequiredMixin, generic.TemplateView):
     template_name = 'mails/error.html'
 
+
 class TermsView(generic.TemplateView):
     template_name = 'mails/terms.html'
 
+
 class HelpView(generic.TemplateView):
     template_name = 'mails/help.html'
+
 
 @login_required(login_url="/")
 def settings_view(request):
@@ -69,6 +80,7 @@ def settings_view(request):
     )
 
     return response
+
 
 @login_required(login_url="/")
 def download_vcard(request):
@@ -104,10 +116,12 @@ def download_vcard(request):
     response['Content-disposition'] = 'attachment;filename=Maildelay.vcf'
     return response
 
+
 @login_required(login_url="/")
 def delete_confirmation(request, mail_id):
     mail = get_object_or_404(Mail, pk=mail_id)
     return render(request, 'mails/delete_confirmation.html', {'mail' : mail})
+
 
 @login_required(login_url="/")
 def delete(request):

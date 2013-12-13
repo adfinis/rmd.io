@@ -24,6 +24,7 @@ mailbox_to_days = {
     in settings.MAILBOXES
 }
 
+
 def smtp_login():
 
     try:
@@ -52,15 +53,18 @@ def parsedate(datestr):
     dt = datetime.datetime.fromtimestamp(timestamp)
     return dt
 
+
 def mails_with_id(mail_id, imap):
     results, data = imap.search(None, '(KEYWORD "MAILDELAY-%d")' % mail_id)
     ids = data[0]
     return ids.split()
 
+
 def fix_pair(headerpair):
     if headerpair[1] is not None:
         return headerpair[0].decode(headerpair[1])
     return headerpair[0]
+
 
 def delay_days_from_message(msg):
 
@@ -75,10 +79,11 @@ def delay_days_from_message(msg):
                 try:
                     match = re.findall("^(\d+)([dmw])", mailaddress)[0]
                     multiplicator = multiplicate_number_with[match[1]]
-                    days = int(match[0])*int(multiplicator)
+                    days = int(match[0]) * int(multiplicator)
                     return days
                 except:
                     print "wrong address"
+
 
 def key_from_message(msg):
 
@@ -108,6 +113,7 @@ def subject_from_message(msg):
     subject = re.sub(r'[\r\n]+[\t]*', '', subject)
 
     return subject
+
 
 def delete_imap_mail(mail_id):
     imap = imap_login()

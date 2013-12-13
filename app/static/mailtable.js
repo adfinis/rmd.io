@@ -1,10 +1,11 @@
 (function (){
+    "use strict";
 
     $.ajaxSetup({
          beforeSend: function(xhr, settings) {
              function getCookie(name) {
                  var cookieValue = null
-                 if (document.cookie && document.cookie != '') {
+                 if (document.cookie && document.cookie !== '') {
                      var cookies = document.cookie.split(';')
                      for (var i = 0; i < cookies.length; i++) {
                          var cookie = jQuery.trim(cookies[i])
@@ -31,7 +32,7 @@
         return function(evt) {
             evt.preventDefault();
             var popup = $('#'+name+'_popup')
-            if(popup.length == 0) {
+            if(popup.length === 0) {
                 $('body').append('<div id="'+name+'_popup" class="modal fade" role="dialog"/>')
                 popup = $('#'+name+'_popup')
             }
@@ -46,11 +47,11 @@
         }
     }
 
-    function newTime() {
-        var duetext = $(this).closest('td').find('.due-text')
+    function newTime(evt) {
+        var duetext = $(evt.target).closest('td').find('.due-text')
         $.post(
-            $(this).closest('form').attr('action'),
-            {due: this.value}
+            $(evt.target).closest('form').attr('action'),
+            {due: evt.target.value}
         )
         .done( function() {
             updateDue()
