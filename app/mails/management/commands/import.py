@@ -2,7 +2,7 @@ import re
 import email
 from django.contrib.auth.models import User
 from django.utils import timezone
-from mails.models import Mail, UserKey, UserSettings
+from mails.models import Mail, UserKey, Settings
 from mails import tools
 import datetime
 from django.core.management.base import BaseCommand, CommandError
