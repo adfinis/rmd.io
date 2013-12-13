@@ -39,8 +39,23 @@
     {% else %}
         <div class="alert alert-info">There aren't any mails!</div>
     {% endif %}
+    <div class="modal fade" id="error_popup" style="display:none" role="dialog">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title">Error</h4>
+                </div>
+                <div class="modal-body">
+                    <p>Something went wrong. Please try again.</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btnprimaryy" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
 {% endblock %}
-
 {%block bottomscripts%}
     <script src="{% static 'bootstrap-datetimepicker/js/bootstrap-datetimepicker.js' %}"></script>
     <script src="{% static 'jQuery/jquery-ui-1.10.3.custom.js' %}"></script>
