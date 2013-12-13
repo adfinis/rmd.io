@@ -114,14 +114,14 @@ function refresh() {
 
             $(function() {
                 $('.date-form').change(function() {
-                    var delta = $(this).closest('td').find('.timedelta')
+                    var duetext = $(this).closest('td').find('.due-text')
                     $.post(
                         $(this).closest('form').attr('action'),
                         {due: this.value}
                     )
                     .done( function() {
                         updateDelta()
-                        $(delta).effect("highlight", {color: '#58FA58'}, 2000)
+                        $(duetext).effect("highlight", {color: '#58FA58'}, 2000)
                     })
                     .fail( function() {
                         var error_popup = $('#error_popup');
@@ -139,21 +139,13 @@ function refresh() {
                         );
                     });
                 });
-
                 function updateDelta() {
                     $('.duedate').each(function(i, form) {
                         var due = $(form).find('.date-form').val()
-                        var delta = $(form).find('.timedelta')
-                        delta.text(moment(due, "YYYY-MM-DD HH:mm").fromNow())
-                        delta.attr("data-original-title", due)
-                        delta.tooltip({placement: 'left'})
+                        var duetext = $(form).find('.due-text')
+                        duetext.text(due)
                     })
                 }
-                function scheduleUpdateDelta() {
-                    updateDelta();
-                    setTimeout(scheduleUpdateDelta, 10000);
-                }
-                scheduleUpdateDelta()
             });
 
             $(function() {
