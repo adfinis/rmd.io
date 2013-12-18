@@ -33,7 +33,7 @@ def smtp_login():
         smtp.login(settings.EMAIL_ADDRESS, settings.EMAIL_PASSWORD)
         return smtp
     except:
-        print "Connection to SMTP-Server failed"
+        print "Failed to login to SMTP server, aborting"
 
 
 def imap_login():
@@ -44,7 +44,7 @@ def imap_login():
         imap.select(settings.FOLDER)
         return imap
     except:
-        print "Connection to IMAP4-Server failed"
+        print "Failed to login to IMAP server, aborting"
 
 
 def parsedate(datestr):
