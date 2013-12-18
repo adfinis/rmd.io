@@ -2,11 +2,13 @@ from django.http import HttpResponseRedirect
 from mails.forms import SettingsForm
 from django.shortcuts import render, get_object_or_404
 from django.views import generic
-from mails.models import Mail, Settings
+from mails.models import Mail, Settings, UserKey
 from mails import tools
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
+import base64
+import os
 
 
 class LoginRequiredMixin(object):
@@ -85,6 +87,14 @@ def settings_view(request):
 @login_required(login_url="/")
 def download_vcard(request):
     host = settings.EMAIL_ADDRESS.split('@')[1]
+    try:
+        request.user.userkey
+    except:
+        key = UserKey(key=base64.b32encode(
+            os.urandom(7))[:10].lower(),
+            user=request.user
+        )
+        key.save()
     if request.user.settings.anti_spam:
         mail_template = '{delay}.{key}@{host}'
     else:
