@@ -6,6 +6,9 @@ import time
 import re
 import datetime
 from django.conf import settings
+from mails.models import AddressLog
+from email.mime.text import MIMEText
+from django.utils import timezone
 
 recipient_headers = [
     'X-Original-To',
@@ -122,3 +125,34 @@ def delete_imap_mail(mail_id):
     for mailid in imap_mail_id:
         imap.store(mailid, '+FLAGS', '\\Deleted')
     imap.expunge()
+
+
+def send_error_mail(subject, sender):
+    if AddressLog.objects.all().filter(address=sender):
+        entry = AddressLog.objects.get(address=sender)
+        entry_due = entry.sent + datetime.timedelta(1)
+        if entry_due < timezone.now():
+            entry.delete()
+            send_error_mail(subject=subject, sender=sender)
+    else:
+        smtp = smtp_login()
+        content = """
+Hello %s
+
+Your mail %s was delete because you aren't registered at rmd.io.
+Please register and try again.
+
+Greetings
+Your friendly mail reminder
+        """ % (sender, subject)
+
+        text_subtype = 'plain'
+        msg = MIMEText(content, text_subtype)
+        msg['Subject'] = 'Register at rmd.io!'
+        msg['From'] = settings.EMAIL_ADDRESS
+
+        smtp.sendmail(settings.EMAIL_ADDRESS, sender, msg.as_string())
+        smtp.quit()
+
+        entry = AddressLog(address=sender, sent=timezone.now())
+        entry.save()

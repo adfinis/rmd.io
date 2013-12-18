@@ -36,7 +36,6 @@ class Command(BaseCommand):
                 user_key = user.userkey.key
                 try:
                     mail_key = tools.key_from_message(msg)
-
                 except:
                     print "Mail from %s deleted: wrong recipient" % sent_from
                     return
@@ -71,6 +70,10 @@ class Command(BaseCommand):
         except:
             imap.store(mail, '+FLAGS', '\\Deleted')
             print "%s: User not registered! Mail deleted." % sent_from
+            tools.send_error_mail(
+                subject = subject,
+                sender = sent_from
+            )
             return
 
     def handle(self, *args, **kwargs):
