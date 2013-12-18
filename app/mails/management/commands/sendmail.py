@@ -1,4 +1,5 @@
 import email
+import datetime
 from django.utils import timezone
 from email.mime.text import MIMEText
 from mails.models import Mail
@@ -13,9 +14,6 @@ class Command(BaseCommand):
 
         imap = tools.imap_login()
         smtp = tools.smtp_login()
-        if smtp is None:
-            print "Failed to login to SMTP server, aborting"
-            return
 
         parser = email.Parser.Parser()
         mails_to_send = Mail.objects.filter(due__lte=timezone.now())
@@ -42,8 +40,9 @@ class Command(BaseCommand):
                     )
                     msg['From'] = settings.EMAIL_ADDRESS
                     msg['To'] = mail_to_send.sent_from
+                    msg['Date'] = email.utils.formatdate(localtime=True)
                 except:
-                    print "failed to write new header"
+                    print "Failed to write new header"
                     break
 
                 smtp.sendmail(
@@ -53,6 +52,6 @@ class Command(BaseCommand):
                 )
                 tools.delete_imap_mail(mail_in_imap)
 
-            mail_to_send.delete()
+            # mail_to_send.delete()
 
         smtp.quit()
