@@ -66,7 +66,7 @@ class Command(BaseCommand):
                 imap.store(mail, '+FLAGS', '\\Flagged')
 
         except:
-            # imap.store(mail, '+FLAGS', '\\Deleted')
+            imap.store(mail, '+FLAGS', '\\Deleted')
             print "%s: User not registered! Mail deleted." % sent_from
             return
 
