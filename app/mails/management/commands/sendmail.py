@@ -52,6 +52,6 @@ class Command(BaseCommand):
                 )
                 tools.delete_imap_mail(mail_in_imap)
 
-            # mail_to_send.delete()
+            mail_to_send.delete()
 
         smtp.quit()

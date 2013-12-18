@@ -34,7 +34,12 @@ class Command(BaseCommand):
 
             if user.settings.anti_spam:
                 user_key = user.userkey.key
-                mail_key = tools.key_from_message(msg)
+                try:
+                    mail_key = tools.key_from_message(msg)
+
+                except:
+                    print "Mail from %s deleted: wrong recipient" % sent_from
+                    return
 
                 if mail_key == user_key.key:
                     m = Mail(
@@ -50,8 +55,6 @@ class Command(BaseCommand):
 
                 else:
                     imap.store(mail, '+FLAGS', '\\Deleted')
-                    print "Mail from %s deleted: wrong recipient" % sent_from
-                    return
 
             else:
                 m = Mail(
