@@ -28,6 +28,11 @@ class Settings(models.Model):
     user = models.OneToOneField(User, related_name="settings")
 
 
+class AddressLog(models.Model):
+    address = models.CharField(max_length=200)
+    sent = models.DateTimeField('date sent')
+
+
 @receiver(user_created)
 def generate_key(user, **kwargs):
     key = UserKey(key=base64.b32encode(os.urandom(7))[:10].lower(), user=user)
