@@ -9,24 +9,9 @@
         <div class="page-header">
             <h1>rmd.io<small> your friendly mail reminder</small></h1>
         </div>
-        <div class="row">
-            <div class="col-md-8">
-                <img src="{% static 'images/example.png' %}" class="img-responsive">
-            </div>
-            <div class="col-md-4">
-                <ol id="howto-list">
-                    <li>Register</li>
-                    <li>Download addresses</li>
-                    <li>Send your mail</li>
-                    <li>Manage your mails at rmd.io</li>
-                    <li>Get reminded</li>
-                </ol>
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-md-8" id="join-us">
-                <button class="browserid-login btn btn-primary btn-lg pull-right" type="button">Join us now!</button>
-            </div>
+        <img src="{% static 'images/example.png' %}" class="img-responsive" id="example">
+        <div id="join-us">
+            <button class="browserid-login btn btn-primary btn-lg" type="button">Join us now!</button>
         </div>
     {% elif mails %}
         <input type="text" class="form-control" id="searchMails" placeholder="Search">

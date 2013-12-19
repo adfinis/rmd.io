@@ -11,7 +11,13 @@ body {
 }
 
 #join-us {
-    padding-top: 40px;
+    width: 100%;
+    text-align: center;
+    padding-bottom: 10px;
+}
+
+#example {
+    margin: 0 auto;
 }
 
 .navbar-brand {
@@ -87,18 +93,6 @@ body {
 
 .duedate {
     max-width:100%;
-}
-
-.due-date {
-    width:20%;
-}
-
-.sent {
-    width: 20%;
-}
-
-.recipient {
-    width: 20%;
 }
 
 .delete {

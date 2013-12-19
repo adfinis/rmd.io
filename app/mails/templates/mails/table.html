@@ -4,10 +4,10 @@
             <th>
                 Subject
             </th>
-            <th>
+            <th class="hidden-xs">
                 Recipient
             </th>
-            <th>
+            <th class="hidden-sm hidden-xs">
                 Sent
             </th>
             <th>
@@ -22,10 +22,10 @@
             <td class="subject">
                 {{ mail.subject }}
             </td>
-            <td class="recipient">
+            <td class="recipient hidden-xs">
                 {{ mail.sent_to }}
             </td>
-            <td class="sent">
+            <td class="hidden-sm hidden-xs">
                 {{ mail.sent | date:"Y-m-d H:i"}}
             </td>
             <td class="due-date">
