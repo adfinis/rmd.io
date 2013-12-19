@@ -48,10 +48,6 @@ class UpdateMailView(LoginRequiredMixin, generic.UpdateView):
         return obj
 
 
-class ErrorView(LoginRequiredMixin, generic.TemplateView):
-    template_name = 'mails/error.html'
-
-
 class TermsView(generic.TemplateView):
     template_name = 'mails/terms.html'
 
