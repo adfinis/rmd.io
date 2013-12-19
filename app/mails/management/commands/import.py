@@ -51,7 +51,6 @@ class Command(BaseCommand):
                     m.save()
                     imap.store(mail, '+FLAGS', "MAILDELAY-%d" % m.id)
                     imap.store(mail, '+FLAGS', '\\Flagged')
-
                 else:
                     imap.store(mail, '+FLAGS', '\\Deleted')
 
