@@ -5,7 +5,6 @@
 {% block title %}rmd.io - your friendly mail reminder{% endblock %}
 
 {% block content %}
-    {{ mail.subject }}
     {% if user.is_anonymous %}
         <div class="page-header">
             <h1>rmd.io<small> your friendly mail reminder</small></h1>
@@ -15,7 +14,7 @@
                 <img src="{% static 'images/example.png' %}" class="img-responsive">
             </div>
             <div class="col-md-4">
-                <ol class="center-block" id="howto-list">
+                <ol id="howto-list">
                     <li>Register</li>
                     <li>Download addresses</li>
                     <li>Send your mail</li>
@@ -24,22 +23,18 @@
                 </ol>
             </div>
         </div>
-        <div class="row" id="join-us">
-            <div class="col-md-12">
-                <a class="browserid-login btn btn-primary btn-lg" role="button">Join us now!</a>
+        <div class="row">
+            <div class="col-md-8" id="join-us">
+                <button class="browserid-login btn btn-primary btn-lg pull-right" type="button">Join us now!</button>
             </div>
         </div>
     {% elif mails %}
-        <form role="form" method="post">
-            <div class="form-group pull-right">
-                <input type="text" class="form-control" id="searchMails" placeholder="Search">
-            </div>
-        </form>
+        <input type="text" class="form-control" id="searchMails" placeholder="Search">
         {% include "mails/table.html" %}
     {% else %}
         <div class="alert alert-info">There aren't any mails!</div>
     {% endif %}
-    <div class="modal fade" id="error_popup" style="display:none" role="dialog">
+    <div class="modal fade hidden" id="error_popup" role="dialog">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
@@ -50,7 +45,7 @@
                     <p>Something went wrong. Please try again.</p>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btnprimaryy" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
                 </div>
             </div>
         </div>

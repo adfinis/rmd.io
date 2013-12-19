@@ -8,63 +8,52 @@
         <link rel="stylesheet" media="screen" href="{% static 'base_style.css' %}" />
         <link rel="stylesheet" media="screen" href="{% static 'bootstrap-datetimepicker/css/bootstrap-datetimepicker.css' %}" />
         <link rel="shortcut icon" href="{% static 'images/titlebar.png' %}" type="image/png">
-        <title>{% block title %}rmd.io - your friendly mail reminder{% endblock %}</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <meta charset="UTF-8">
+        <title>rmd.io - your friendly mail reminder</title>
     </head>
     <body>
-        <div id="wrap">
+        <div class="wrapper">
             <div class="navbar navbar-default navbar-fixed-top" role="navigation">
                 <div class="container">
                     <div class="navbar-header">
                         <a class="navbar-brand" href="/"><img id="logo" alt="rmd.io" src="{% static 'images/logo.png' %}"></a>
-                    </div> <!-- navbar-header -->
+                    </div>
                     <div class="navbar-collapse collapse">
-                        <ul class="nav navbar-nav">
-                            {% if user.is_staff %}
-                                <li>
-                                    <a href="/admin">Admin</a>
+                        {% if user.is_authenticated %}
+                            <ul class="nav navbar-nav navbar-right">
+                                <li class="dropdown">
+                                    <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="glyphicon glyphicon-user"></i>{{ user.email }}<i class="caret"></i></a>
+                                    <ul class="dropdown-menu" role="menu">
+                                        <li><a href="/maildelay.vcf"><i class="glyphicon glyphicon-save"></i>Delay Addresses (vCard)</a></li>
+                                        <li><a id="settings" href="/settings"><i class="glyphicon glyphicon-wrench"></i>Settings</a></li>
+                                        <li><a href="/browserid/logout"><i class="glyphicon glyphicon-off"></i>Logout</a></li>
+                                    </ul>
                                 </li>
-                            {% endif %}
-                        </ul>
-                        <div class="pull-right">
-                            <ul class="nav navbar-nav">
-                                {% if user.is_authenticated %}
-                                <a role="button" href="/maildelay.vcf" class="btn btn-primary btn-xs navbar-btn"><i class="glyphicon glyphicon-save"></i> Delay Address (vCard)</a>
-                                {% endif %}
                             </ul>
-                            <ul class="nav navbar-nav">
-                                {% if user.is_authenticated %}
-                                    <li id="dropdown" class="dropdown">
-                                        <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="glyphicon glyphicon-user"></i>{{ user.email }}  <i class="caret"></i></a>
-                                        <ul class="dropdown-menu pull-right" role="menu">
-                                            <li><a id="settings" href="/settings"><i class="glyphicon glyphicon-wrench"></i>  Settings</a></li>
-                                            <li><a href="/browserid/logout"><i class="glyphicon glyphicon-off"></i>  Logout</a></li>
-                                        </ul>
-                                    </li>
-                                {% else %}
-                                    <button type="button" class="browserid-login btn btn-primary navbar-btn">Login</button>
-                                {% endif %}
-                            </ul>
-                        </div>
-                    </div> <!-- navbar-collapse -->
-                </div> <!-- container -->
-            </div> <!-- navbar -->
+                        {% else %}
+                            <button type="button" class="browserid-login btn btn-primary navbar-btn navbar-right">Login</button>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
             <div class="container">
                 {% block content %}{% endblock %}
-                {% block terms %}{% endblock %}
-            </div> <!-- container -->
-        </div> <!-- wrap -->
-        <div id="footer">
+            </div>
+        </div>
+        <div class="footer">
             <div class="container">
-                <a id="terms" class="footer-text" href="/terms">Terms & Conditions</a>
-                <a id="help" class="footer-text" href="/help">Help</a>
-                <div id="provider" class="footer-text" >Provided by: <a href="https://adfinis-sygroup.ch"><img src="{% static 'images/adsylogo.png' %}" id="adsylogo" alt="Adfinis SyGroup AG"></a></div>
-            </div> <!-- container -->
-        </div> <!-- footer -->
+                <a id="terms" class="footer-link" href="/terms">Terms & Conditions</a>
+                <a id="help" class="footer-link" href="/help">Help</a>
+                <div class="footer-text pull-right" >
+                    <p class="footer-text">Provided by:</p>
+                    <a href="https://adfinis-sygroup.ch"><img src="{% static 'images/adsylogo.png' %}" id="adsylogo" alt="Adfinis SyGroup AG"></a>
+                </div>
+            </div>
+        </div>
         <script src="{% static 'jQuery/jquery.min.js' %}"></script>
         <script src="{% static 'bootstrap/js/bootstrap.js' %}"></script>
-        {%block bottomscripts%}
-        {%endblock%}
+        {%block bottomscripts%}{%endblock%}
         {% browserid_info %}
         {% browserid_js %}
     </body>
