@@ -21,8 +21,9 @@ class Command(BaseCommand):
             sent_to = tools.recipients_from_message(msg)
             subject = tools.subject_from_message(msg)
             sent = tools.parsedate(msg['date'])
-            days = tools.delay_days_from_message(msg)
-            due = sent + datetime.timedelta(days)
+            due = sent + datetime.timedelta(
+                tools.delay_days_from_message(msg)
+            )
         except TypeError:
             # invalid email with no date header.
             # TODO: log error
@@ -36,7 +37,7 @@ class Command(BaseCommand):
                 try:
                     mail_key = tools.key_from_message(msg)
                 except:
-                    print "Mail from %s deleted: wrong recipient" % sent_from
+                    print('Mail from %s deleted: wrong recipient') % sent_from
                     return
 
                 if mail_key == user_key.key:
@@ -67,7 +68,7 @@ class Command(BaseCommand):
 
         except:
             imap.store(mail, '+FLAGS', '\\Deleted')
-            print "%s: User not registered! Mail deleted." % sent_from
+            print('%s: User not registered! Mail deleted.') % sent_from
             tools.send_error_mail(
                 subject = subject,
                 sender = sent_from
@@ -77,7 +78,6 @@ class Command(BaseCommand):
     def handle(self, *args, **kwargs):
 
         imap = tools.imap_login()
-
         results, data = imap.search(None, 'UNFLAGGED')
         ids = data[0]
         mails = ids.split()

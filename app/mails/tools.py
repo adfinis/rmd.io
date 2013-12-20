@@ -8,7 +8,6 @@ import datetime
 from django.conf import settings
 from mails.models import AddressLog
 from email.mime.text import MIMEText
-from django.utils import timezone
 
 recipient_headers = [
     'X-Original-To',
@@ -36,7 +35,7 @@ def smtp_login():
         smtp.login(settings.EMAIL_ADDRESS, settings.EMAIL_PASSWORD)
         return smtp
     except:
-        print "Failed to login to SMTP server, aborting"
+        print('Failed to login to SMTP server, aborting')
 
 
 def imap_login():
@@ -47,7 +46,7 @@ def imap_login():
         imap.select(settings.FOLDER)
         return imap
     except:
-        print "Failed to login to IMAP server, aborting"
+        print('Failed to login to IMAP server, aborting')
 
 
 def parsedate(datestr):
@@ -69,6 +68,15 @@ def fix_pair(headerpair):
     return headerpair[0]
 
 
+def fix_recipient(hdr, recipients_list):
+    if hdr[0][1] is not None:
+        recipient_decoded = hdr[0][0].decode(hdr[0][1])
+        recipients_list.append(recipient_decoded)
+    else:
+        recipients_list.append(hdr[0][0])
+    return recipients_list
+
+
 def delay_days_from_message(msg):
 
     for key in recipient_headers:
@@ -85,7 +93,7 @@ def delay_days_from_message(msg):
                     days = int(match[0]) * int(multiplicator)
                     return days
                 except:
-                    print "wrong address"
+                    print('wrong address')
 
 
 def key_from_message(msg):
@@ -100,15 +108,6 @@ def key_from_message(msg):
                     continue
             key = re.findall("^\d+[dmw]\.([0-9a-z]{10})@", mailaddress)[0]
             return key
-
-
-def fix_recipient(hdr, recipients_list):
-    if hdr[0][1] is not None:
-        recipient_decoded = hdr[0][0].decode(hdr[0][1])
-        recipients_list.append(recipient_decoded)
-    else:
-        recipients_list.append(hdr[0][0])
-    return recipients_list
 
 
 def subject_from_message(msg):
@@ -152,30 +151,22 @@ def delete_imap_mail(mail_id):
 
 def send_error_mail(subject, sender):
     if AddressLog.objects.all().filter(address=sender):
-        entry = AddressLog.objects.get(address=sender)
-        entry_due = entry.sent + datetime.timedelta(1)
-        if entry_due < timezone.now():
-            entry.delete()
-            send_error_mail(subject=subject, sender=sender)
+        return
     else:
         smtp = smtp_login()
-        content = """
-Hello %s
-
-Your mail %s was delete because you aren't registered at rmd.io.
-Please register and try again.
-
-Greetings
-Your friendly mail reminder
-        """ % (sender, subject)
-
+        host = settings.EMAIL_ADDRESS.split('@')[1]
+        content = settings.NOT_REGISTRED_TEXT % (sender, subject, host, host)
         text_subtype = 'plain'
-        msg = MIMEText(content, text_subtype)
-        msg['Subject'] = 'Register at rmd.io!'
+        charset = 'utf-8'
+        msg = MIMEText(content.encode(charset), text_subtype, charset)
+        msg['Subject'] = 'Register at %s!' % (host)
         msg['From'] = settings.EMAIL_ADDRESS
 
         smtp.sendmail(settings.EMAIL_ADDRESS, sender, msg.as_string())
         smtp.quit()
 
-        entry = AddressLog(address=sender, sent=timezone.now())
+        entry = AddressLog(address=sender)
         entry.save()
+
+        print('Mail was sent')
+        return

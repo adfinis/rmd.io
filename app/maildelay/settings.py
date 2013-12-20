@@ -1,7 +1,5 @@
 # Django settings for maildelay project.
-
 import os
-import sys
 
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
@@ -14,8 +12,8 @@ MANAGERS = ADMINS
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3', # Add 'postgresql_psycopg2', 'mysql', 'sqlite3' or 'oracle'.
-        'NAME': 'maildelay.db',                      #/etc/init.d/mysqld start Or path to database file if using sqlite3.
+        'ENGINE': 'django.db.backends.sqlite3',         # Add 'postgresql_psycopg2', 'mysql', 'sqlite3' or 'oracle'.
+        'NAME': 'maildelay.db',                         # /etc/init.d/mysqld start Or path to database file if using sqlite3.
         # The following settings are not used with sqlite3:
         'USER': '',
         'PASSWORD': '',
@@ -114,7 +112,7 @@ ROOT_URLCONF = 'maildelay.urls'
 WSGI_APPLICATION = 'maildelay.wsgi.application'
 
 TEMPLATE_DIRS = (
-    # Put strings here, like "/home/html/django_templates" or "C:/www/django/templates".
+    # Put strings here, like "/home/html/django_templates".
     # Always use forward slashes, even on Windows.
     # Don't forget to use absolute paths, not relative paths.
     os.path.join(os.getcwd(), 'templates'),
@@ -162,9 +160,9 @@ LOGOUT_REDIRECT_URL = '/'
 
 CACHES = {
     'default': {
-            'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
-            'LOCATION': 'unique-snowflake'
-        }
+        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+        'LOCATION': 'unique-snowflake'
+    }
 }
 
 # A sample logging configuration. The only tangible logging
@@ -211,3 +209,11 @@ MAILBOXES = [
     ('3w', 21, 'Mail Delay for 3 weeks'),
     ('4w', 28, 'Mail Delay for 4 weeks'),
 ]
+
+NOT_REGISTRED_TEXT = '''Hello %s
+
+Your mail "%s" was deleted because you aren't registered at %s.
+Please register and try again.
+
+Greetings
+%s - your friendly mail reminder'''

@@ -1,5 +1,4 @@
 import email
-import datetime
 from django.utils import timezone
 from email.mime.text import MIMEText
 from mails.models import Mail
@@ -42,7 +41,7 @@ class Command(BaseCommand):
                     msg['To'] = mail_to_send.sent_from
                     msg['Date'] = email.utils.formatdate(localtime=True)
                 except:
-                    print "Failed to write new header"
+                    print('Failed to write new header')
                     break
 
                 smtp.sendmail(
