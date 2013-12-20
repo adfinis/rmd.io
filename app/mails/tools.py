@@ -102,6 +102,15 @@ def key_from_message(msg):
             return key
 
 
+def fix_recipient(hdr, recipients_list):
+    if hdr[0][1] is not None:
+        recipient_decoded = hdr[0][0].decode(hdr[0][1])
+        recipients_list.append(recipient_decoded)
+    else:
+        recipients_list.append(hdr[0][0])
+    return recipients_list
+
+
 def subject_from_message(msg):
     subject = msg['subject']
     subj_headers = email.header.decode_header(subject)
@@ -116,6 +125,20 @@ def subject_from_message(msg):
     subject = re.sub(r'[\r\n]+[\t]*', '', subject)
 
     return subject
+
+
+def recipients_from_message(msg):
+    raw = msg['to']
+    raw = re.sub(r'( <.*>)', '', raw)
+    raw = re.sub(r'[\r\n]+[\t]*', '', raw)
+    raw = raw.split(', ')
+    recipients_list = []
+    for recipient in raw:
+        hdr = email.header.decode_header(recipient)
+        fix_recipient(hdr, recipients_list)
+
+    recipients = ', '.join(recipients_list)
+    return recipients
 
 
 def delete_imap_mail(mail_id):

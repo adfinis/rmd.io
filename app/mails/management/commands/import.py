@@ -18,8 +18,7 @@ class Command(BaseCommand):
         try:
             sent_from = msg['return-path']
             sent_from = re.sub(r'([<>])', '', sent_from)
-            sent_to = msg['to']
-            sent_to = re.sub(r'<(.*)>', '', sent_to)
+            sent_to = tools.recipients_from_message(msg)
             subject = tools.subject_from_message(msg)
             sent = tools.parsedate(msg['date'])
             days = tools.delay_days_from_message(msg)
