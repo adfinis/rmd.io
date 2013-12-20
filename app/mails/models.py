@@ -30,12 +30,14 @@ class Settings(models.Model):
 
 class AddressLog(models.Model):
     address = models.CharField(max_length=200)
-    sent = models.DateTimeField('date sent')
 
 
 @receiver(user_created)
 def generate_key(user, **kwargs):
     key = UserKey(key=base64.b32encode(os.urandom(7))[:10].lower(), user=user)
+    address_log = AddressLog.objects.filter(address=user.email)
     anti_spam = Settings(user=user)
+    if address_log:
+        address_log.delete()
     key.save()
     anti_spam.save()
