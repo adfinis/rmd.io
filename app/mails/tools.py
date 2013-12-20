@@ -160,7 +160,6 @@ def send_error_mail(subject, sender):
         content = get_template('mails/not_registred_mail.txt')
         parameters = Context(
             {
-                'subject'   : subject,
                 'sender'    : sender,
                 'host'      : host
             }

@@ -1,6 +1,6 @@
 Hello {{ sender }}
 
-Your mail "{{ subject }}" was deleted because you aren't registered at {{ host }}.
+Your mail was deleted because you aren't registered at {{ host }}.
 Please register and try again.
 
 If you didn't send a mail to us, nothing will happen. You won't get any more mails.
