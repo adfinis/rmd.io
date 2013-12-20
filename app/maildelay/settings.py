@@ -209,11 +209,3 @@ MAILBOXES = [
     ('3w', 21, 'Mail Delay for 3 weeks'),
     ('4w', 28, 'Mail Delay for 4 weeks'),
 ]
-
-NOT_REGISTRED_TEXT = '''Hello %s
-
-Your mail "%s" was deleted because you aren't registered at %s.
-Please register and try again.
-
-Greetings
-%s - your friendly mail reminder'''

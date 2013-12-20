@@ -8,6 +8,8 @@ import datetime
 from django.conf import settings
 from mails.models import AddressLog
 from email.mime.text import MIMEText
+from django.template.loader import get_template
+from django.template import Context
 
 recipient_headers = [
     'X-Original-To',
@@ -155,7 +157,15 @@ def send_error_mail(subject, sender):
     else:
         smtp = smtp_login()
         host = settings.EMAIL_ADDRESS.split('@')[1]
-        content = settings.NOT_REGISTRED_TEXT % (sender, subject, host, host)
+        content = get_template('mails/not_registred_mail.txt')
+        parameters = Context(
+            {
+                'subject'   : subject,
+                'sender'    : sender,
+                'host'      : host
+            }
+        )
+        content = content.render(parameters)
         text_subtype = 'plain'
         charset = 'utf-8'
         msg = MIMEText(content.encode(charset), text_subtype, charset)
