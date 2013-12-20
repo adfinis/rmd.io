@@ -177,5 +177,5 @@ def send_error_mail(subject, sender):
         entry = AddressLog(address=sender)
         entry.save()
 
-        print('Mail was sent')
+        print('Sent mail to %s') % sender
         return
