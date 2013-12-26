@@ -27,6 +27,7 @@ class Command(BaseCommand):
         except TypeError:
             # invalid email with no date header.
             # TODO: log error
+            imap.store(mail, '+FLAGS', '\\Deleted')
             return
 
         try:
