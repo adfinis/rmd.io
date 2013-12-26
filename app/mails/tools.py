@@ -96,6 +96,7 @@ def delay_days_from_message(msg):
                     return days
                 except:
                     print('wrong address')
+                    return
 
 
 def key_from_message(msg):
