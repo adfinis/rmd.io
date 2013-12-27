@@ -94,10 +94,6 @@ def delay_days_from_message(msg):
                     delay = int(match[0]) * int(multiplicator)
                     return delay
                 except:
-<<<<<<< Updated upstream
-                    print('wrong address')
-=======
->>>>>>> Stashed changes
                     return
 
 
@@ -218,11 +214,11 @@ def send_activation_mail(key, address, host):
 
 def get_all_addresses(user):
     # Gets all addresses of an user
-    from mails.models import AdditionalAddresses
+    from mails.models import AdditionalAddress
 
     addresses = []
     main_address = user.email
-    additional_addresses = AdditionalAddresses.objects.filter(
+    additional_addresses = AdditionalAddress.objects.filter(
         user = user,
         is_activated = True
     )

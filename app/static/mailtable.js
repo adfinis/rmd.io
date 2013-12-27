@@ -42,8 +42,10 @@
                 function(resp, status, xhr) {
                     popup.html(resp)
                     popup.modal()
-                    $('#settings_popup').on('click', '.delete-address', deleteAddress)
-                    $('#settings_popup').on('click', '#submit', saveSettings)
+                    if (name === 'settings') {
+                        $('#settings_popup').on('click', '.delete-address', deleteAddress)
+                        $('#settings_popup').on('click', '#submit', saveSettings)
+                    }
                 }, 'html'
             )
         }

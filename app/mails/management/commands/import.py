@@ -1,7 +1,7 @@
 import re
 import email
 from django.contrib.auth.models import User
-from mails.models import Mail, AdditionalAddresses
+from mails.models import Mail, AdditionalAddress
 from mails import tools
 import datetime
 from django.core.management.base import BaseCommand
@@ -25,23 +25,19 @@ class Command(BaseCommand):
         except TypeError:
             # invalid email with wrong header.
             # TODO: log error
-<<<<<<< Updated upstream
-            imap.store(mail, '+FLAGS', '\\Deleted')
-=======
             reason = 'Wrong header'
             tools.delete_mail_with_error(
                 mail,
                 reason,
                 sent_from
             )
->>>>>>> Stashed changes
             return
         try:
             user = User.objects.get(email=sent_from)
         except:
             try:
                 # If mail sent from an additional address
-                user = AdditionalAddresses.objects.get(
+                user = AdditionalAddress.objects.get(
                     address = sent_from,
                     is_activated = True
                 ).user

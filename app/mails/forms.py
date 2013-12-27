@@ -1,14 +1,14 @@
 from django import forms
-from mails.models import Settings, AdditionalAddresses
+from mails.models import Setting, AdditionalAddress
 
 
-class SettingsForm(forms.ModelForm):
+class SettingForm(forms.ModelForm):
     class Meta:
-        model = Settings
+        model = Setting
         fields = ['anti_spam']
 
 
-class AddressesForm(forms.ModelForm):
+class AddressForm(forms.ModelForm):
     class Meta:
-        model = AdditionalAddresses
+        model = AdditionalAddress
         fields = ['address']

@@ -4,11 +4,11 @@ from mails import tools
 from django.views import generic
 from django.conf import settings
 from django.http import HttpResponseRedirect
-from mails.forms import SettingsForm, AddressesForm
+from mails.forms import SettingForm, AddressForm
 from django.utils.decorators import method_decorator
 from django.shortcuts import render, get_object_or_404
 from django.contrib.auth.decorators import login_required
-from mails.models import Mail, Settings, UserKey, AdditionalAddresses
+from mails.models import Mail, Setting, UserKey, AdditionalAddress
 
 
 class LoginRequiredMixin(object):
@@ -76,20 +76,20 @@ class AlreadyExists(generic.TemplateView):
 def settings_view(request):
     template_name = 'mails/settings.html'
 
-    user = Settings.objects.get(user=request.user)
-    anti_spam = SettingsForm(request.POST or None, instance=user)
+    user = Setting.objects.get(user=request.user)
+    anti_spam = SettingForm(request.POST or None, instance=user)
 
-    additional_addresses = AdditionalAddresses.objects.filter(
+    additional_addresses = AdditionalAddress.objects.filter(
         user=request.user,
         is_activated=True
     )
-    addresses_form = AddressesForm(request.POST or None, instance=request.user)
+    addresses_form = AddressForm(request.POST or None, instance=request.user)
 
     alerts = []
 
     if request.method == 'POST':
         try:
-            a = AdditionalAddresses.objects.get(
+            a = AdditionalAddress.objects.get(
                 id = request.POST['address_id']
             )
             a.delete()
@@ -98,8 +98,10 @@ def settings_view(request):
             anti_spam.save()
             if request.POST['address'] != '':
                 address = request.POST['address']
-                if AdditionalAddresses.objects.filter(address=address) is None:
-                    address = AdditionalAddresses(
+                if AdditionalAddress.objects.filter(address=address).exists():
+                    alerts.append('mails/address_already_exists.html')
+                else:
+                    address = AdditionalAddress(
                         user = request.user,
                         activation_key = base64.b64encode(
                             os.urandom(7)
@@ -111,8 +113,6 @@ def settings_view(request):
                     host = request.get_host()
                     tools.send_activation_mail(key, address.address, host)
                     alerts.append('mails/additional_address_success.html')
-                else:
-                    alerts.append('mails/address_already_exists.html')
             alerts.append('mails/settings_saved_alert.html')
 
     response = render(
@@ -190,7 +190,7 @@ def delete(request):
 @login_required(login_url="/")
 def activate(request, key):
     try:
-        address = AdditionalAddresses.objects.get(activation_key=key)
+        address = AdditionalAddress.objects.get(activation_key=key)
         address.is_activated = True
         address.save()
         return HttpResponseRedirect('/successfully_activated/')

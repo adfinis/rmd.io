@@ -26,12 +26,12 @@ class UserKey(models.Model):
     user = models.OneToOneField(User, related_name="userkey")
 
 
-class Settings(models.Model):
+class Setting(models.Model):
     anti_spam = models.BooleanField(default=False)
     user = models.OneToOneField(User, related_name="settings")
 
 
-class AdditionalAddresses(models.Model):
+class AdditionalAddress(models.Model):
     address = models.CharField(max_length=200)
     user = models.ForeignKey(User)
     is_activated = models.BooleanField(default=False)
@@ -46,7 +46,7 @@ class AddressLog(models.Model):
 def generate_key(user, **kwargs):
     key = UserKey(key=base64.b32encode(os.urandom(7))[:10].lower(), user=user)
     address_log = AddressLog.objects.filter(address=user.email)
-    anti_spam = Settings(user=user)
+    anti_spam = Setting(user=user)
     if address_log:
         address_log.delete()
     key.save()
