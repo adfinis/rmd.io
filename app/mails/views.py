@@ -56,20 +56,12 @@ class HelpView(generic.TemplateView):
     template_name = 'mails/help.html'
 
 
-class ActivationFailed(generic.TemplateView):
-    template_name = 'mails/activation_failed.html'
+class ActivationFail(generic.TemplateView):
+    template_name = 'mails/address_activation_failed.html'
 
 
-class SuccessfullyActivated(generic.TemplateView):
-    template_name = 'mails/successfully_activated.html'
-
-
-class AddedSuccessfully(generic.TemplateView):
-    template_name = 'mails/added_successfully.html'
-
-
-class AlreadyExists(generic.TemplateView):
-    template_name = 'mails/already_exists.html'
+class ActivationSuccess(generic.TemplateView):
+    template_name = 'mails/address_activated.html'
 
 
 @login_required(login_url="/")
@@ -112,8 +104,8 @@ def settings_view(request):
                     key = address.activation_key
                     host = request.get_host()
                     tools.send_activation_mail(key, address.address, host)
-                    alerts.append('mails/additional_address_success.html')
-            alerts.append('mails/settings_saved_alert.html')
+                    alerts.append('mails/address_added.html')
+            alerts.append('mails/settings_saved.html')
 
     response = render(
         request,
@@ -168,7 +160,7 @@ def download_vcard(request):
         content_type='text/x-vcard'
     )
 
-    response['Content-disposition'] = 'attachment;filename=Maildelay.vcf'
+    response['Content-disposition'] = 'attachment;filename=maildelay.vcf'
     return response
 
 
@@ -193,6 +185,6 @@ def activate(request, key):
         address = AdditionalAddress.objects.get(activation_key=key)
         address.is_activated = True
         address.save()
-        return HttpResponseRedirect('/successfully_activated/')
+        return HttpResponseRedirect('/activation_success/')
     except:
         return HttpResponseRedirect('/activation_failed/')

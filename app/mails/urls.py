@@ -13,8 +13,6 @@ urlpatterns = patterns(
     url(r'^settings/$', views.settings_view),
     url(r'^help/$', views.HelpView.as_view()),
     url(r'^activate/(?P<key>\w+)/$', views.activate),
-    url(r'^successfully_activated/$', views.SuccessfullyActivated.as_view()),
-    url(r'^activation_failed/$', views.ActivationFailed.as_view()),
-    url(r'^already_exists/$', views.AlreadyExists.as_view()),
-    url(r'^added_successfully/$', views.AddedSuccessfully.as_view()),
+    url(r'^activation_success/$', views.ActivationSuccess.as_view()),
+    url(r'^activation_fail/$', views.ActivationFail.as_view()),
 )
