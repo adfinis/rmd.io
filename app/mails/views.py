@@ -1,14 +1,14 @@
-from django.http import HttpResponseRedirect
-from mails.forms import SettingsForm
-from django.shortcuts import render, get_object_or_404
-from django.views import generic
-from mails.models import Mail, Settings, UserKey
-from mails import tools
-from django.conf import settings
-from django.contrib.auth.decorators import login_required
-from django.utils.decorators import method_decorator
-import base64
 import os
+import base64
+from mails import tools
+from django.views import generic
+from django.conf import settings
+from django.http import HttpResponseRedirect
+from mails.forms import SettingsForm, AddressesForm
+from django.utils.decorators import method_decorator
+from django.shortcuts import render, get_object_or_404
+from django.contrib.auth.decorators import login_required
+from mails.models import Mail, Settings, UserKey, AdditionalAddresses
 
 
 class LoginRequiredMixin(object):
@@ -42,7 +42,7 @@ class UpdateMailView(LoginRequiredMixin, generic.UpdateView):
         if pk is not None:
             queryset = queryset.filter(
                 pk=pk,
-                sent_from=self.request.user.email
+                sent_from__in=tools.get_all_addresses(self.request.user)
             )
         obj = queryset.get()
         return obj
@@ -56,24 +56,73 @@ class HelpView(generic.TemplateView):
     template_name = 'mails/help.html'
 
 
+class ActivationFailed(generic.TemplateView):
+    template_name = 'mails/activation_failed.html'
+
+
+class SuccessfullyActivated(generic.TemplateView):
+    template_name = 'mails/successfully_activated.html'
+
+
+class AddedSuccessfully(generic.TemplateView):
+    template_name = 'mails/added_successfully.html'
+
+
+class AlreadyExists(generic.TemplateView):
+    template_name = 'mails/already_exists.html'
+
+
 @login_required(login_url="/")
 def settings_view(request):
     template_name = 'mails/settings.html'
-    row = Settings.objects.get(user=request.user)
-    form = SettingsForm(request.POST or None, instance=row)
+
+    user = Settings.objects.get(user=request.user)
+    anti_spam = SettingsForm(request.POST or None, instance=user)
+
+    additional_addresses = AdditionalAddresses.objects.filter(
+        user=request.user,
+        is_activated=True
+    )
+    addresses_form = AddressesForm(request.POST or None, instance=request.user)
+
+    alerts = []
+
     if request.method == 'POST':
-        if form.is_valid():
-            form.save()
-        else:
-            form.anti_spam = False
-            form.save()
-        return HttpResponseRedirect('/')
+        try:
+            a = AdditionalAddresses.objects.get(
+                id = request.POST['address_id']
+            )
+            a.delete()
+        except:
+            anti_spam.anti_spam = request.POST['anti_spam']
+            anti_spam.save()
+            if request.POST['address'] != '':
+                address = request.POST['address']
+                if AdditionalAddresses.objects.filter(address=address) is None:
+                    address = AdditionalAddresses(
+                        user = request.user,
+                        activation_key = base64.b64encode(
+                            os.urandom(7)
+                        )[:10],
+                        address = address
+                    )
+                    address.save()
+                    key = address.activation_key
+                    host = request.get_host()
+                    tools.send_activation_mail(key, address.address, host)
+                    alerts.append('mails/additional_address_success.html')
+                else:
+                    alerts.append('mails/address_already_exists.html')
+            alerts.append('mails/settings_saved_alert.html')
 
     response = render(
         request,
         template_name,
         {
-            'form' : form
+            'anti_spam' : anti_spam,
+            'additional_addresses' : additional_addresses,
+            'addresses_form' : addresses_form,
+            'alerts' : alerts,
         }
     )
 
@@ -136,3 +185,14 @@ def delete(request):
     mail.delete()
     tools.delete_imap_mail(mail_id)
     return HttpResponseRedirect("/")
+
+
+@login_required(login_url="/")
+def activate(request, key):
+    try:
+        address = AdditionalAddresses.objects.get(activation_key=key)
+        address.is_activated = True
+        address.save()
+        return HttpResponseRedirect('/successfully_activated/')
+    except:
+        return HttpResponseRedirect('/activation_failed/')

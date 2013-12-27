@@ -43,6 +43,10 @@ body {
     margin: 0 0 10px;
 }
 
+#settings-alerts .alert {
+    margin: 15px 0 0;
+}
+
 #adsylogo {
     height: 30px;
 }
@@ -112,6 +116,7 @@ body {
     float: right;
 }
 
+.delete-address,
 .delete-button {
     color: #000000;
     text-decoration: none;
@@ -119,6 +124,10 @@ body {
     padding: 2px 2px;
 }
 
+    .delete-address:hover,
+    .delete-address:link,
+    .delete-address:active,
+    .delete-address:visited,
     .delete-button:hover,
     .delete-button:link,
     .delete-button:active,

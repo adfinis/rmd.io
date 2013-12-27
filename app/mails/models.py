@@ -1,3 +1,4 @@
+from mails.tools import get_all_addresses
 from django.db import models
 from django.contrib.auth.models import User
 from django_browserid.signals import user_created
@@ -15,7 +16,9 @@ class Mail(models.Model):
 
     @classmethod
     def my_mails(cls, request):
-        return cls.objects.filter(sent_from=request.user.email)
+        addresses = get_all_addresses(request.user)
+
+        return cls.objects.filter(sent_from__in=addresses)
 
 
 class UserKey(models.Model):
@@ -26,6 +29,13 @@ class UserKey(models.Model):
 class Settings(models.Model):
     anti_spam = models.BooleanField(default=False)
     user = models.OneToOneField(User, related_name="settings")
+
+
+class AdditionalAddresses(models.Model):
+    address = models.CharField(max_length=200)
+    user = models.ForeignKey(User)
+    is_activated = models.BooleanField(default=False)
+    activation_key = models.CharField(max_length=10)
 
 
 class AddressLog(models.Model):

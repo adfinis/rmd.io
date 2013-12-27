@@ -30,7 +30,7 @@
 
     function ajaxPopup(name) {
         return function(evt) {
-            evt.preventDefault();
+            evt.preventDefault()
             var popup = $('#'+name+'_popup')
             if(popup.length === 0) {
                 $('body').append('<div id="'+name+'_popup" class="modal fade" role="dialog"/>')
@@ -42,6 +42,8 @@
                 function(resp, status, xhr) {
                     popup.html(resp)
                     popup.modal()
+                    $('#settings_popup').on('click', '.delete-address', deleteAddress)
+                    $('#settings_popup').on('click', '#submit', saveSettings)
                 }, 'html'
             )
         }
@@ -64,6 +66,38 @@
                 duetext.text(due)
             })
         }
+    }
+
+    function saveSettings() {
+        var address = $('#address').val()
+        var anti_spam = $('#id_anti_spam').prop('checked')
+        $.post(
+            '/settings/',
+            {
+                address : address,
+                anti_spam : anti_spam
+            },
+            function(data) {
+                $('#settings_popup').html(data)
+            }
+        )
+        .done (
+            $('#address').val('')
+        )
+    }
+
+    function deleteAddress(evt) {
+        var row = $(evt.target).closest('tr')
+        var id = $(evt.target).attr('id')
+        row.hide('slow')
+        .done(
+            $.post(
+                '/settings/',
+                {
+                    address_id : id
+                }
+            )
+        )
     }
 
     $('#datatable_mails').on('click', '.delete-button', ajaxPopup('delete'))
