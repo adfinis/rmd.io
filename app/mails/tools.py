@@ -182,10 +182,6 @@ def send_error_mail(subject, sender):
         entry = AddressLog(address=sender)
         entry.save()
 
-        print('Sent registration mail to %s') % sender
-
-    return
-
 
 def send_activation_mail(key, address, host):
     # Sends an activation mail for additional addresses
@@ -209,8 +205,6 @@ def send_activation_mail(key, address, host):
 
     print('Sent activation mail to %s') % address
 
-    return
-
 
 def get_all_addresses(user):
     # Gets all addresses of an user
@@ -231,10 +225,7 @@ def get_all_addresses(user):
     return addresses
 
 
-def delete_mail_with_error(mail, reason, sent_from):
+def delete_mail_with_error(mail, reason, sent_from, imap):
     # Deletes a mail (in IMAP) and prints out an error message
-    imap = imap_login()
     imap.store(mail, '+FLAGS', '\\Deleted')
     print('Mail from %s deleted: %s') % (sent_from, reason)
-
-    return

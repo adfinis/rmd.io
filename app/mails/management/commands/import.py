@@ -29,7 +29,8 @@ class Command(BaseCommand):
             tools.delete_mail_with_error(
                 mail,
                 reason,
-                sent_from
+                sent_from,
+                imap
             )
             return
         try:
@@ -47,7 +48,8 @@ class Command(BaseCommand):
                 tools.delete_mail_with_error(
                     mail,
                     reason,
-                    sent_from
+                    sent_from,
+                    imap
                 )
                 tools.send_error_mail(
                     subject = subject,
@@ -60,7 +62,7 @@ class Command(BaseCommand):
             user_key = user.userkey.key
             try:
                 mail_key = tools.key_from_message(msg)
-                if mail_key == user_key.key:
+                if mail_key == user_key:
                     m = Mail(
                         subject=subject,
                         sent=sent,
@@ -77,18 +79,18 @@ class Command(BaseCommand):
                     tools.delete_mail_with_error(
                         mail,
                         reason,
-                        sent_from
+                        sent_from,
+                        imap
                     )
-                    return
             except:
                 # Anti-Spam activated but wrong recipient
                 reason = 'Wrong recipient'
                 tools.delete_mail_with_error(
                     mail,
                     reason,
-                    sent_from
+                    sent_from,
+                    imap
                 )
-                return
 
         else:
             # If anti-spam isn't activated
@@ -114,3 +116,4 @@ class Command(BaseCommand):
             self.import_mail(mail, imap)
 
         imap.expunge()
+        imap.logout()
