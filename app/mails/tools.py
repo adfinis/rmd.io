@@ -159,7 +159,7 @@ def send_error_mail(subject, sender):
     # Sends an error mail to not registred users
     from mails.models import AddressLog
 
-    if AddressLog.objects.all().filter(address=sender) == []:
+    if not AddressLog.objects.filter(address=sender).exists():
         smtp = smtp_login()
         host = settings.EMAIL_ADDRESS.split('@')[1]
         content = get_template('mails/not_registred_mail.txt')
@@ -181,6 +181,8 @@ def send_error_mail(subject, sender):
 
         entry = AddressLog(address=sender)
         entry.save()
+
+        print('Sent registration mail to %s') % sender
 
 
 def send_activation_mail(key, address, host):
