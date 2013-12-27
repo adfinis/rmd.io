@@ -159,7 +159,7 @@ def send_error_mail(subject, sender):
     # Sends an error mail to not registred users
     from mails.models import AddressLog
 
-    if AddressLog.objects.all().filter(address=sender) is None:
+    if AddressLog.objects.all().filter(address=sender) == []:
         smtp = smtp_login()
         host = settings.EMAIL_ADDRESS.split('@')[1]
         content = get_template('mails/not_registred_mail.txt')
