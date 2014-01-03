@@ -1,5 +1,6 @@
 import os
 import base64
+from hashlib import md5
 from mails import tools
 from django.views import generic
 from django.conf import settings
@@ -95,9 +96,9 @@ def settings_view(request):
                 else:
                     address = AdditionalAddress(
                         user = request.user,
-                        activation_key = base64.b64encode(
+                        activation_key = md5(
                             os.urandom(7)
-                        )[:10],
+                        ).hexdigest(),
                         address = address
                     )
                     address.save()
@@ -187,4 +188,4 @@ def activate(request, key):
         address.save()
         return HttpResponseRedirect('/activation_success/')
     except:
-        return HttpResponseRedirect('/activation_failed/')
+        return HttpResponseRedirect('/activation_fail/')

@@ -35,7 +35,7 @@ class AdditionalAddress(models.Model):
     address = models.CharField(max_length=200)
     user = models.ForeignKey(User)
     is_activated = models.BooleanField(default=False)
-    activation_key = models.CharField(max_length=10)
+    activation_key = models.CharField(max_length=32)
 
 
 class AddressLog(models.Model):
