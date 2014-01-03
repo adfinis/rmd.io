@@ -88,6 +88,11 @@ def settings_view(request):
         except:
             anti_spam.anti_spam = request.POST['anti_spam']
             anti_spam.save()
+            anti_spam_setting = request.user.settings.anti_spam
+            if anti_spam_setting is True:
+                alerts.append('mails/anti_spam_on.html')
+            else:
+                alerts.append('mails/anti_spam_off.html')
             if request.POST['address'] != '':
                 address = request.POST['address']
                 if AdditionalAddress.objects.filter(address=address).exists():
