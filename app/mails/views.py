@@ -73,8 +73,7 @@ def settings_view(request):
     anti_spam = SettingForm(request.POST or None, instance=user)
 
     additional_addresses = AdditionalAddress.objects.filter(
-        user=request.user,
-        is_activated=True
+        user=request.user
     )
     addresses_form = AddressForm(request.POST or None, instance=request.user)
 

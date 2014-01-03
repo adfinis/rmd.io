@@ -17,7 +17,7 @@
             <table class="table table-striped" id="additional_addresses">
             {% for address in additional_addresses %}
                 <tr>
-                    <td>{{ address.address }}</td>
+                    <td>{{ address.address }}{% if address.is_activated == False %} <small>(needs activation)</small>{% endif %}</td>
                     <td><a href="#" class="delete-address glyphicon glyphicon-remove" id="{{ address.id }}" title="Delete Address"></a></td>
                 </tr>
             {% endfor %}
