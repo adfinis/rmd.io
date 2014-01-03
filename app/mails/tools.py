@@ -169,6 +169,7 @@ def send_registration_mail(subject, sender):
         msg = MIMEText(content.encode(charset), text_subtype, charset)
         msg['Subject'] = 'Register at %s!' % (host)
         msg['From'] = settings.EMAIL_ADDRESS
+        msg['Date'] = email.utils.formatdate(localtime=True)
 
         smtp.sendmail(settings.EMAIL_ADDRESS, sender, msg.as_string())
         smtp.quit()
@@ -199,6 +200,7 @@ def send_error_mail(subject, sender):
         msg = MIMEText(content.encode(charset), text_subtype, charset)
         msg['Subject'] = 'Your mail on %s was deleted!' % (host)
         msg['From'] = settings.EMAIL_ADDRESS
+        msg['Date'] = email.utils.formatdate(localtime=True)
 
         smtp.sendmail(settings.EMAIL_ADDRESS, sender, msg.as_string())
         smtp.quit()
@@ -222,6 +224,7 @@ def send_activation_mail(key, address, host):
     msg = MIMEText(content.encode(charset), text_subtype, charset)
     msg['Subject'] = 'Activate your address on %s' % (host)
     msg['From'] = settings.EMAIL_ADDRESS
+    msg['Date'] = email.utils.formatdate(localtime=True)
 
     smtp.sendmail(settings.EMAIL_ADDRESS, address, msg.as_string())
     smtp.quit()
