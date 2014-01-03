@@ -1,6 +1,6 @@
 Hello {{ address }}
 
-Please activate your address with this link:
+Please activate your address with the following link:
 
 http://{{ host }}/activate/{{ key }}
 
