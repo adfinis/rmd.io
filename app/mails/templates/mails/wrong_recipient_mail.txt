@@ -1,0 +1,7 @@
+Hello {{ sender }}
+
+Your mail was deleted because you sent it to a wrong recipient.
+Probably you've activated the anti-spam measure and forgot to include your key.
+
+Greetings
+{{ host }} - your friendly mail reminder

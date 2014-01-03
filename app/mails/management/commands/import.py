@@ -51,9 +51,9 @@ class Command(BaseCommand):
                     sent_from,
                     imap
                 )
-                tools.send_error_mail(
+                tools.send_registration_mail(
                     subject = subject,
-                    sender = sent_from
+                    sender = sent_from,
                 )
                 return
 
@@ -90,6 +90,10 @@ class Command(BaseCommand):
                     reason,
                     sent_from,
                     imap
+                )
+                tools.send_error_mail(
+                    subject = subject,
+                    sender = sent_from,
                 )
 
         else:

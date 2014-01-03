@@ -88,13 +88,10 @@ def delay_days_from_message(msg):
         if key in msg:
             mailaddress = msg[key]
             if "@" in mailaddress:
-                try:
-                    match = re.findall('^(\d+)([dmw])', mailaddress)[0]
-                    multiplicator = multiplicate_number_with[match[1]]
-                    delay = int(match[0]) * int(multiplicator)
-                    return delay
-                except:
-                    return
+                match = re.findall('^(\d+)([dmw])', mailaddress)[0]
+                multiplicator = multiplicate_number_with[match[1]]
+                delay = int(match[0]) * int(multiplicator)
+                return delay
 
 
 def key_from_message(msg):
@@ -103,14 +100,11 @@ def key_from_message(msg):
         if key in msg:
             mailaddress = msg[key]
             if "@" in mailaddress:
-                try:
-                    key = re.findall(
-                        '^\d+[dmw]\.([0-9a-z]{10})@',
-                        mailaddress
-                    )[0]
-                    return key
-                except:
-                    return
+                key = re.findall(
+                    '^\d+[dmw]\.([0-9a-z]{10})@',
+                    mailaddress
+                )[0]
+                return key
 
 
 def subject_from_message(msg):
@@ -155,7 +149,7 @@ def delete_imap_mail(mail_id):
     imap.expunge()
 
 
-def send_error_mail(subject, sender):
+def send_registration_mail(subject, sender):
     # Sends an error mail to not registred users
     from mails.models import AddressLog
 
@@ -183,6 +177,33 @@ def send_error_mail(subject, sender):
         entry.save()
 
         print('Sent registration mail to %s') % sender
+
+
+def send_error_mail(subject, sender):
+    # Sends an error mail to not registred users
+    from mails.models import AddressLog
+
+    if not AddressLog.objects.filter(address=sender).exists():
+        smtp = smtp_login()
+        host = settings.EMAIL_ADDRESS.split('@')[1]
+        content = get_template('mails/wrong_recipient_mail.txt')
+        parameters = Context(
+            {
+                'sender'    : sender,
+                'host'      : host
+            }
+        )
+        content = content.render(parameters)
+        text_subtype = 'plain'
+        charset = 'utf-8'
+        msg = MIMEText(content.encode(charset), text_subtype, charset)
+        msg['Subject'] = 'Your mail on %s was deleted!' % (host)
+        msg['From'] = settings.EMAIL_ADDRESS
+
+        smtp.sendmail(settings.EMAIL_ADDRESS, sender, msg.as_string())
+        smtp.quit()
+
+        print('Sent error mail to %s') % sender
 
 
 def send_activation_mail(key, address, host):
