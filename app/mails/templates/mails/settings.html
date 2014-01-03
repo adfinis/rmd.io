@@ -2,24 +2,27 @@
     <div class="modal-content">
         <div class="modal-header">
             <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-            <h4 class="modal-title">Settings</h4>
+            <h3 class="modal-title">Settings</h3>
         </div>
         <div class="modal-body" id="settings">
-            <h4>Settings</h4>
+            <h3>Anti-Spam</h3>
             <label>
                 {{ anti_spam.anti_spam }}
-                Enable anti-spam-measures
+                Enable anti-spam measure
             </label>
-            <h4>Additonal Addresses</h4>
-            <table class="table table-hover" id="additional_addresses">
+            {% if user.settings.anti_spam %}
+            <p>Your key: <strong>{{ user.userkey.key }}</strong></p>
+            {% endif %}
+            <h3>Additonal Addresses</h3>
+            <table class="table table-striped" id="additional_addresses">
             {% for address in additional_addresses %}
                 <tr>
                     <td>{{ address.address }}</td>
-                    <td><a href="#" class="delete-address glyphicon glyphicon-remove" id="{{ address.id }}"></a></td>
+                    <td><a href="#" class="delete-address glyphicon glyphicon-remove" id="{{ address.id }}" title="Delete Address"></a></td>
                 </tr>
             {% endfor %}
             </table>
-            <input class="form-control" type="text" id="address" name="address" maxlength="200">
+            <input class="form-control" type="text" id="address" name="address" maxlength="200" placeholder="example@example.com">
             <div id="settings-alerts">
                 {% for alert in alerts %}
                     {% include alert %}
@@ -28,7 +31,7 @@
         </div>
         <div class="modal-footer">
             <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-            <button type="button" class="btn btn-primary" id="submit">Save</button>
+            <button type="button" class="btn btn-primary" id="submit">Save changes</button>
         </div>
     </div>
 </div>
