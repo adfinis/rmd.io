@@ -144,7 +144,7 @@ def download_vcard(request):
 
     mail_addresses = [
         (
-            '{2}'.format(*entry),
+            '{1}'.format(*entry),
             mail_template.format(delay=entry[0], **values)
         )
         for entry

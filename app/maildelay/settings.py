@@ -12,13 +12,12 @@ MANAGERS = ADMINS
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',         # Add 'postgresql_psycopg2', 'mysql', 'sqlite3' or 'oracle'.
-        'NAME': 'maildelay.db',                         # /etc/init.d/mysqld start Or path to database file if using sqlite3.
-        # The following settings are not used with sqlite3:
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': 'maildelay.db',
         'USER': '',
         'PASSWORD': '',
-        'HOST': '',                      # Empty for localhost through domain sockets or '127.0.0.1' for localhost through TCP.
-        'PORT': '',                      # Set to empty string for default.
+        'HOST': '',
+        'PORT': '',
     }
 }
 
@@ -198,14 +197,37 @@ EMAIL_SERVER = 'maildelay.tk'
 FOLDER = 'INBOX'
 
 MAILBOXES = [
-    ('1d', 1, 'Mail Delay for 1 day'),
-    ('2d', 2, 'Mail Delay for 2 days'),
-    ('3d', 3, 'Mail Delay for 3 days'),
-    ('4d', 4, 'Mail Delay for 4 days'),
-    ('5d', 5, 'Mail Delay for 5 days'),
-    ('6d', 6, 'Mail Delay for 6 days'),
-    ('1w', 7, 'Mail Delay for 1 week'),
-    ('2w', 14, 'Mail Delay for 2 weeks'),
-    ('3w', 21, 'Mail Delay for 3 weeks'),
-    ('4w', 28, 'Mail Delay for 4 weeks'),
+    ('1d', 'Mail Delay for 1 day'),
+    ('2d', 'Mail Delay for 2 days'),
+    ('3d', 'Mail Delay for 3 days'),
+    ('4d', 'Mail Delay for 4 days'),
+    ('5d', 'Mail Delay for 5 days'),
+    ('6d', 'Mail Delay for 6 days'),
+    ('7d', 'Mail Delay for 7 days'),
+    ('8d', 'Mail Delay for 8 days'),
+    ('9d', 'Mail Delay for 9 days'),
+    ('10d', 'Mail Delay for 10 days'),
+    ('11d', 'Mail Delay for 11 days'),
+    ('1w', 'Mail Delay for 1 week'),
+    ('2w', 'Mail Delay for 2 weeks'),
+    ('3w', 'Mail Delay for 3 weeks'),
+    ('4w', 'Mail Delay for 4 weeks'),
+    ('5w', 'Mail Delay for 5 weeks'),
+    ('6w', 'Mail Delay for 6 weeks'),
+    ('7w', 'Mail Delay for 7 weeks'),
+    ('8w', 'Mail Delay for 8 weeks'),
+    ('9w', 'Mail Delay for 9 weeks'),
+    ('10w', 'Mail Delay for 10 weeks'),
+    ('11w', 'Mail Delay for 11 weeks'),
+    ('1m', 'Mail Delay for 1 month'),
+    ('2m', 'Mail Delay for 2 months'),
+    ('3m', 'Mail Delay for 3 months'),
+    ('4m', 'Mail Delay for 4 months'),
+    ('5m', 'Mail Delay for 5 months'),
+    ('6m', 'Mail Delay for 6 months'),
+    ('7m', 'Mail Delay for 7 months'),
+    ('8m', 'Mail Delay for 8 months'),
+    ('9m', 'Mail Delay for 9 months'),
+    ('10m', 'Mail Delay for 10 months'),
+    ('11m', 'Mail Delay for 11 months'),
 ]
