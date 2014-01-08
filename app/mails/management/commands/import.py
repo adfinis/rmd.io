@@ -1,7 +1,7 @@
 import re
 import email
 from django.contrib.auth.models import User
-from mails.models import Mail, AdditionalAddress
+from mails.models import Mail, AdditionalAddress, UserKey
 from mails import tools
 import datetime
 from django.core.management.base import BaseCommand
@@ -59,7 +59,7 @@ class Command(BaseCommand):
 
         if user.settings.anti_spam:
             # If anti-spam is activated
-            user_key = user.userkey.key
+            user_key = UserKey.get_userkey(user)
             try:
                 mail_key = tools.key_from_message(msg)
                 if mail_key == user_key:

@@ -25,6 +25,18 @@ class UserKey(models.Model):
     key = models.CharField(max_length=10)
     user = models.OneToOneField(User, related_name="userkey")
 
+    @classmethod
+    def get_userkey(cls, user):
+        try:
+            key = user.userkey
+        except:
+            key = UserKey(
+                key = base64.b32encode(os.urandom(7))[:10].lower(),
+                user = user
+            )
+            key.save()
+        return key.key
+
 
 class Setting(models.Model):
     anti_spam = models.BooleanField(default=False)

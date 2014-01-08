@@ -11,7 +11,7 @@
                 Enable anti-spam measure
             </label>
             {% if user.settings.anti_spam %}
-            <p>Your key: <strong>{{ user.userkey.key }}</strong></p>
+            <p>Your key: <strong>{{ user_key }}</strong></p>
             {% endif %}
             <h3>Additonal Addresses</h3>
             <table class="table table-striped" id="additional_addresses">

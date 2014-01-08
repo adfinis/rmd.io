@@ -120,6 +120,7 @@ def settings_view(request):
             'additional_addresses' : additional_addresses,
             'addresses_form' : addresses_form,
             'alerts' : alerts,
+            'user_key' : UserKey.get_userkey(request.user),
         }
     )
 
@@ -130,7 +131,7 @@ def settings_view(request):
 def download_vcard(request):
     host = settings.EMAIL_ADDRESS.split('@')[1]
     try:
-        request.user.userkey
+        user_key = UserKey.get_userkey(request.user)
     except:
         key = UserKey(key=base64.b32encode(
             os.urandom(7))[:10].lower(),
@@ -143,7 +144,7 @@ def download_vcard(request):
         mail_template = '{delay}@{host}'
 
     values = {
-        'key' : request.user.userkey.key,
+        'key' : user_key or None,
         'host' : host,
     }
 
