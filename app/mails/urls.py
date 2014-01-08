@@ -3,7 +3,7 @@ from mails import views
 
 urlpatterns = patterns(
     '',
-    url(r'^$', views.MailView.as_view()),
+    url(r'^$', views.MailView.as_view(template_name='mails/index.html')),
     url(r'^table/$', views.MailView.as_view(template_name="mails/table.html")),
     url(r'^delete_confirmation/(?P<mail_id>\d+)/$', views.delete_confirmation),
     url(r'^delete/$', views.delete),

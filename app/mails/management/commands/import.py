@@ -1,9 +1,11 @@
 import re
 import email
 from django.contrib.auth.models import User
-from mails.models import Mail, AdditionalAddress, UserKey
+from mails.models import Mail, AdditionalAddress, UserKey, LastImport
 from mails import tools
+from django.utils import timezone
 import datetime
+from lockfile import FileLock
 from django.core.management.base import BaseCommand
 
 
@@ -111,13 +113,36 @@ class Command(BaseCommand):
 
     def handle(self, *args, **kwargs):
 
+        lock = FileLock('/tmp/lockfile.tmp')
+        if lock.is_locked():
+            print('is locked')
+            return
+        else:
+            lock.acquire()
+
         imap = tools.imap_login()
         results, data = imap.search(None, 'UNFLAGGED')
         ids = data[0]
         mails = ids.split()
+
+        try:
+            last_import = LastImport.objects.get(id=1)
+        except:
+            f = LastImport(date=timezone.now())
+            f.save()
+            return
+
+        import_diff = timezone.now() - last_import.date
+
+        if import_diff > datetime.timedelta(seconds=10):
+            last_import.date = datetime.datetime.now()
+            last_import.save()
+        else:
+            return
 
         for mail in mails:
             self.import_mail(mail, imap)
 
         imap.expunge()
         imap.logout()
+        lock.release()

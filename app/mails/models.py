@@ -54,6 +54,10 @@ class AddressLog(models.Model):
     address = models.CharField(max_length=200)
 
 
+class LastImport(models.Model):
+    date = models.DateTimeField('date')
+
+
 @receiver(user_created)
 def generate_key(user, **kwargs):
     key = UserKey(key=base64.b32encode(os.urandom(7))[:10].lower(), user=user)

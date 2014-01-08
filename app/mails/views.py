@@ -4,12 +4,15 @@ from hashlib import md5
 from mails import tools
 from django.views import generic
 from django.conf import settings
+from django.core import management
 from django.http import HttpResponseRedirect
 from mails.forms import SettingForm, AddressForm
 from django.utils.decorators import method_decorator
 from django.shortcuts import render, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from mails.models import Mail, Setting, UserKey, AdditionalAddress
+from django.core.signals import request_started
+from django.dispatch import receiver
 
 
 class LoginRequiredMixin(object):
@@ -22,8 +25,11 @@ class LoginRequiredMixin(object):
 
 
 class MailView(generic.ListView):
-    template_name = 'mails/index.html'
     context_object_name = 'mails'
+
+    @receiver(request_started)
+    def import_mail(**kwargs):
+        management.call_command('import', verbosity=1)
 
     def get_queryset(self):
         if self.request.user.is_authenticated():
