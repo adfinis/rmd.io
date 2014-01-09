@@ -20,7 +20,7 @@
     {% for mail in mails %}
         <tr class="mailTableRow">
             <td class="subject">
-                {{ mail.subject }}
+                <span title="Sent from {{ mail.sent_from }}">{{ mail.subject }}</span>
             </td>
             <td class="recipient hidden-xs">
                 {{ mail.sent_to }}
