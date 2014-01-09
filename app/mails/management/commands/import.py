@@ -1,7 +1,7 @@
 import re
 import email
 from django.contrib.auth.models import User
-from mails.models import Mail, AdditionalAddress, UserKey, LastImport
+from mails.models import Mail, UserKey, LastImport
 from mails import tools
 from django.utils import timezone
 import datetime
@@ -35,29 +35,26 @@ class Command(BaseCommand):
                 imap
             )
             return
+
         try:
-            user = User.objects.get(email=sent_from)
+            user = User.objects.get(
+                email=sent_from,
+                is_active=True
+            )
         except:
-            try:
-                # If mail sent from an additional address
-                user = AdditionalAddress.objects.get(
-                    address = sent_from,
-                    is_activated = True
-                ).user
-            except:
-                # No user with this email address found - deleting
-                reason = 'User not registred'
-                tools.delete_mail_with_error(
-                    mail,
-                    reason,
-                    sent_from,
-                    imap
-                )
-                tools.send_registration_mail(
-                    subject = subject,
-                    sender = sent_from,
-                )
-                return
+            # No user with this email address found - deleting
+            reason = 'User not registred'
+            tools.delete_mail_with_error(
+                mail,
+                reason,
+                sent_from,
+                imap
+            )
+            tools.send_registration_mail(
+                subject = subject,
+                sender = sent_from,
+            )
+            return
 
         if user.settings.anti_spam:
             # If anti-spam is activated

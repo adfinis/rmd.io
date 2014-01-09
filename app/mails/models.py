@@ -5,18 +5,19 @@ from django_browserid.signals import user_created
 from django.dispatch import receiver
 import base64
 import os
+from hashlib import md5
 
 
 class Mail(models.Model):
     subject = models.CharField(max_length=200)
-    sent = models.DateTimeField('date sent')
-    due = models.DateTimeField('date due')
-    sent_from = models.CharField(max_length=200)
-    sent_to = models.CharField(max_length=200)
+    sent = models.DateTimeField('Date sent')
+    due = models.DateTimeField('Date due')
+    sent_from = models.EmailField(max_length=75)
+    sent_to = models.EmailField(max_length=75)
 
     @classmethod
     def my_mails(cls, request):
-        addresses = get_all_addresses(request.user)
+        addresses = get_all_addresses(request, 'only_actives')
 
         return cls.objects.filter(sent_from__in=addresses)
 
@@ -40,30 +41,36 @@ class UserKey(models.Model):
 
 class Setting(models.Model):
     anti_spam = models.BooleanField(default=False)
-    user = models.OneToOneField(User, related_name="settings")
+    user = models.OneToOneField(User, related_name="settings", unique=True)
 
 
-class AdditionalAddress(models.Model):
-    address = models.CharField(max_length=200)
+class Identity(models.Model):
     user = models.ForeignKey(User)
-    is_activated = models.BooleanField(default=False)
-    activation_key = models.CharField(max_length=32)
+    identity = models.CharField(max_length=32)
 
 
 class AddressLog(models.Model):
-    address = models.CharField(max_length=200)
+    address = models.EmailField(max_length=200)
 
 
 class LastImport(models.Model):
-    date = models.DateTimeField('date')
+    date = models.DateTimeField('Date of last import')
 
 
 @receiver(user_created)
-def generate_key(user, **kwargs):
-    key = UserKey(key=base64.b32encode(os.urandom(7))[:10].lower(), user=user)
-    address_log = AddressLog.objects.filter(address=user.email)
-    anti_spam = Setting(user=user)
-    if address_log:
-        address_log.delete()
-    key.save()
-    anti_spam.save()
+def generate_user(user, **kwargs):
+    user_identity = Identity(
+        identity=md5(os.urandom(10)).hexdigest(),
+        user=user
+    )
+    user_key = UserKey(
+        key=base64.b32encode(os.urandom(7))[:10].lower(),
+        user=user
+    )
+    user_setting = Setting(user=user)
+    user_log_entry = AddressLog.objects.filter(address=user.email)
+    if user_log_entry.exists():
+        user_log_entry.delete()
+    user_identity.save()
+    user_key.save()
+    user_setting.save()

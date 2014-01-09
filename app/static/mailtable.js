@@ -96,7 +96,7 @@
             $.post(
                 '/settings/',
                 {
-                    address_id : id
+                    user_id : id
                 }
             )
         )

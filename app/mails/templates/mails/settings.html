@@ -15,14 +15,20 @@
             {% endif %}
             <h3>Additonal Addresses</h3>
             <table class="table table-striped" id="additional_addresses">
-            {% for address in additional_addresses %}
+            {% for additional_user in additional_users %}
                 <tr>
-                    <td>{{ address.address }}{% if address.is_activated == False %} <small>(needs activation)</small>{% endif %}</td>
-                    <td><a href="#" class="delete-address glyphicon glyphicon-remove" id="{{ address.id }}" title="Delete Address"></a></td>
+                    <td>{{ additional_user.email }}
+                        {% if additional_user.is_active == False %}
+                            <small> (needs activation)</small>
+                        {% endif %}
+                    </td>
+                    <td>
+                        <a href="#" class="delete-address glyphicon glyphicon-remove" id="{{ additional_user.id }}" title="Delete Additional Address"></a>
+                    </td>
                 </tr>
             {% endfor %}
             </table>
-            <input class="form-control" type="text" id="address" name="address" maxlength="200" placeholder="example@example.com">
+            <input class="form-control" type="text" id="address" name="email" placeholder="example@example.com">
             <div id="settings-alerts">
                 {% for alert in alerts %}
                     {% include alert %}

@@ -1,18 +1,18 @@
 import os
 import base64
-from hashlib import md5
 from mails import tools
 from django.views import generic
 from django.conf import settings
 from django.core import management
 from django.http import HttpResponseRedirect
-from mails.forms import SettingForm, AddressForm
+from mails.forms import SettingForm
 from django.utils.decorators import method_decorator
 from django.shortcuts import render, get_object_or_404
 from django.contrib.auth.decorators import login_required
-from mails.models import Mail, Setting, UserKey, AdditionalAddress
+from mails.models import Mail, Setting, UserKey, Identity
 from django.core.signals import request_started
 from django.dispatch import receiver
+from django.contrib.auth.models import User
 
 
 class LoginRequiredMixin(object):
@@ -67,6 +67,10 @@ class ActivationFail(generic.TemplateView):
     template_name = 'mails/address_activation_failed.html'
 
 
+class LoginFailed(generic.TemplateView):
+    template_name = 'mails/login_failed.html'
+
+
 class ActivationSuccess(generic.TemplateView):
     template_name = 'mails/address_activated.html'
 
@@ -75,20 +79,19 @@ class ActivationSuccess(generic.TemplateView):
 def settings_view(request):
     template_name = 'mails/settings.html'
 
-    user = Setting.objects.get(user=request.user)
-    anti_spam = SettingForm(request.POST or None, instance=user)
+    row = Setting.objects.get(user=request.user)
+    anti_spam = SettingForm(request.POST or None, instance=row)
 
-    additional_addresses = AdditionalAddress.objects.filter(
-        user=request.user
-    )
-    addresses_form = AddressForm(request.POST or None, instance=request.user)
+    identity_name = Identity.objects.get(user=request.user).identity
+    additional_users = tools.get_all_users(identity_name)
+    additional_users.remove(request.user)
 
     alerts = []
 
     if request.method == 'POST':
         try:
-            a = AdditionalAddress.objects.get(
-                id = request.POST['address_id']
+            a = User.objects.get(
+                id = request.POST['user_id']
             )
             a.delete()
         except:
@@ -101,20 +104,13 @@ def settings_view(request):
                 alerts.append('mails/anti_spam_off.html')
             if request.POST['address'] != '':
                 address = request.POST['address']
-                if AdditionalAddress.objects.filter(address=address).exists():
+                if User.objects.filter(email=address).exists():
                     alerts.append('mails/address_already_exists.html')
                 else:
-                    address = AdditionalAddress(
-                        user = request.user,
-                        activation_key = md5(
-                            os.urandom(7)
-                        ).hexdigest(),
-                        address = address
+                    tools.create_additional_user(
+                        email=address,
+                        request=request
                     )
-                    address.save()
-                    key = address.activation_key
-                    host = request.get_host()
-                    tools.send_activation_mail(key, address.address, host)
                     alerts.append('mails/address_added.html')
             alerts.append('mails/settings_saved.html')
 
@@ -123,8 +119,7 @@ def settings_view(request):
         template_name,
         {
             'anti_spam' : anti_spam,
-            'additional_addresses' : additional_addresses,
-            'addresses_form' : addresses_form,
+            'additional_users' : additional_users,
             'alerts' : alerts,
             'user_key' : UserKey.get_userkey(request.user),
         }
@@ -194,9 +189,9 @@ def delete(request):
 @login_required(login_url="/")
 def activate(request, key):
     try:
-        address = AdditionalAddress.objects.get(activation_key=key)
-        address.is_activated = True
-        address.save()
+        user = User.objects.get(username=base64.b16decode(key))
+        user.is_active = True
+        user.save()
         return HttpResponseRedirect('/activation_success/')
     except:
         return HttpResponseRedirect('/activation_fail/')

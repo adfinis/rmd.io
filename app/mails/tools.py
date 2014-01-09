@@ -4,11 +4,16 @@ import imaplib
 import smtplib
 import time
 import re
+import base64
 import datetime
 from django.conf import settings
 from email.mime.text import MIMEText
 from django.template.loader import get_template
 from django.template import Context
+from django.utils import timezone
+from hashlib import sha1
+from django.contrib.auth.models import User
+from django.utils.encoding import smart_bytes
 
 recipient_headers = [
     'X-Original-To',
@@ -232,26 +237,75 @@ def send_activation_mail(key, address, host):
     print('Sent activation mail to %s') % address
 
 
-def get_all_addresses(user):
-    # Gets all addresses of an user
-    from mails.models import AdditionalAddress
+def get_all_addresses(request, *args):
+    # Gets all addresses of the users identity
+    from mails.models import Identity
 
-    addresses = []
-    main_address = user.email
-    additional_addresses = AdditionalAddress.objects.filter(
-        user = user,
-        is_activated = True
-    )
-
-    for additional_address in additional_addresses:
-        addresses.append(additional_address.address)
-
-    addresses.append(main_address)
+    identity = Identity.objects.get(user=request.user)
+    users = get_all_users(identity.identity, *args)
+    addresses = [user.email for user in users]
 
     return addresses
+
+
+def get_all_users(identity_name, *args):
+    # Gets all users of an identity
+    from mails.models import Identity
+
+    instances = Identity.objects.filter(identity=identity_name)
+    if 'only_actives' in args:
+        users = [
+            instance.user
+            for instance
+            in instances
+            if instance.user.is_active
+        ]
+    else:
+        users = [instance.user for instance in instances]
+
+    return users
 
 
 def delete_mail_with_error(mail, reason, sent_from, imap):
     # Deletes a mail (in IMAP) and prints out an error message
     imap.store(mail, '+FLAGS', '\\Deleted')
     print('Mail from %s deleted: %s') % (sent_from, reason)
+
+
+def create_additional_user(email, request):
+    # Creates an additional user with the same password and identity
+    from mails.models import Identity, UserKey, Setting, AddressLog
+
+    new_user = User(
+        email = email,
+        username = base64.urlsafe_b64encode(
+            sha1(smart_bytes(email)).digest()
+        ).rstrip(b'='),
+        date_joined = timezone.now(),
+        password = request.user.password,
+        is_active = False
+    )
+    user_identity = Identity(
+        identity=Identity.objects.get(user=request.user).identity,
+        user=new_user
+    )
+    user_key = UserKey(
+        key=request.user.userkey.key,
+        user=new_user
+    )
+    user_setting = Setting(user=new_user)
+    user_log_entry = AddressLog.objects.filter(address=email)
+
+    if user_log_entry.exists():
+        user_log_entry.delete()
+
+    send_activation_mail(
+        address=email,
+        key=base64.b16encode(new_user.username),
+        host=request.get_host()
+    )
+
+    new_user.save()
+    user_identity.save()
+    user_key.save()
+    user_setting.save()

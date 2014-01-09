@@ -12,6 +12,7 @@ urlpatterns = patterns(
     url(r'^terms/$', views.TermsView.as_view()),
     url(r'^settings/$', views.settings_view),
     url(r'^help/$', views.HelpView.as_view()),
+    url(r'^login_failed/$', views.LoginFailed.as_view()),
     url(r'^activate/(?P<key>\w+)/$', views.activate),
     url(r'^activation_success/$', views.ActivationSuccess.as_view()),
     url(r'^activation_fail/$', views.ActivationFail.as_view()),
