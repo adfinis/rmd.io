@@ -25,12 +25,12 @@ class Command(BaseCommand):
 
                 results, data = imap.fetch(mail_in_imap, 'RFC822')
                 raw_email = data[0][1]
-                msg = parser.parsestr(raw_email)
+                original_msg = parser.parsestr(raw_email)
 
-                if msg.is_multipart():
-                    msg = msg.get_payload(0)
+                if original_msg.is_multipart():
+                    msg = original_msg.get_payload(0)
                 else:
-                    msg = MIMEText(msg.get_payload())
+                    msg = MIMEText(original_msg.get_payload())
 
                 try:
                     msg['Subject'] = "Reminder from %s: %s" % (
@@ -40,6 +40,7 @@ class Command(BaseCommand):
                     msg['From'] = settings.EMAIL_ADDRESS
                     msg['To'] = mail_to_send.sent_from
                     msg['Date'] = email.utils.formatdate(localtime=True)
+                    msg['References'] = original_msg['Message-ID']
                 except:
                     print('Failed to write new header')
                     break
