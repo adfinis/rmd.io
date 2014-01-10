@@ -1,7 +1,6 @@
 import email
 from django.utils import timezone
 from email.mime.text import MIMEText
-from email.mime.multipart import MIMEMultipart
 from mails.models import Mail
 from mails import tools
 from django.core.management.base import BaseCommand
@@ -14,7 +13,6 @@ class Command(BaseCommand):
         try:
             imap = tools.imap_login()
             smtp = tools.smtp_login()
-            parser = email.Parser.Parser()
             mails_to_send = Mail.objects.filter(due__lte=timezone.now())
         except:
             return
@@ -27,13 +25,16 @@ class Command(BaseCommand):
 
                 results, data = imap.fetch(mail_in_imap, 'RFC822')
                 raw_email = data[0][1]
-                original_msg = parser.parsestr(raw_email)
+                original_msg = email.message_from_string(raw_email)
 
                 if original_msg.is_multipart():
-                    msg = MIMEMultipart()
-                    msg = msg.attach(original_msg.get_payload())
+                    msg = original_msg.get_payload(0)
                 else:
-                    msg = MIMEText(original_msg.get_payload())
+                    msg = MIMEText(
+                        original_msg.get_payload(),
+                        'text/plain',
+                        'utf-8'
+                    )
 
                 try:
                     msg['Subject'] = "Reminder from %s: %s" % (
