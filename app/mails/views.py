@@ -49,7 +49,7 @@ class UpdateMailView(LoginRequiredMixin, generic.UpdateView):
         if pk is not None:
             queryset = queryset.filter(
                 pk=pk,
-                sent_from__in=tools.get_all_addresses(self.request.user)
+                sent_from__in=tools.get_all_addresses(self.request)
             )
         obj = queryset.get()
         return obj
@@ -90,29 +90,35 @@ def settings_view(request):
 
     if request.method == 'POST':
         try:
-            a = User.objects.get(
-                id = request.POST['user_id']
-            )
-            a.delete()
+            user_id = User.objects.get(id=request.POST['user_id'])
+            user_id.delete()
         except:
-            anti_spam.anti_spam = request.POST['anti_spam']
-            anti_spam.save()
-            anti_spam_setting = request.user.settings.anti_spam
-            if anti_spam_setting is True:
-                alerts.append('mails/anti_spam_on.html')
-            else:
-                alerts.append('mails/anti_spam_off.html')
-            if request.POST['address'] != '':
-                address = request.POST['address']
-                if User.objects.filter(email=address).exists():
-                    alerts.append('mails/address_already_exists.html')
+            try:
+                user_email = User.objects.get(email=request.POST['user_email'])
+                tools.send_activation_mail(
+                    address=user_email.email,
+                    key=base64.b16encode(user_email.username),
+                    host=request.get_host()
+                )
+            except:
+                anti_spam.anti_spam = request.POST['anti_spam']
+                anti_spam.save()
+                anti_spam_setting = request.user.settings.anti_spam
+                if anti_spam_setting is True:
+                    alerts.append('mails/anti_spam_on.html')
                 else:
-                    tools.create_additional_user(
-                        email=address,
-                        request=request
-                    )
-                    alerts.append('mails/address_added.html')
-            alerts.append('mails/settings_saved.html')
+                    alerts.append('mails/anti_spam_off.html')
+                if request.POST['address'] != '':
+                    address = request.POST['address']
+                    if User.objects.filter(email=address).exists():
+                        alerts.append('mails/address_already_exists.html')
+                    else:
+                        tools.create_additional_user(
+                            email=address,
+                            request=request
+                        )
+                        alerts.append('mails/address_added.html')
+                alerts.append('mails/settings_saved.html')
 
     response = render(
         request,

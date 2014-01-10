@@ -45,6 +45,7 @@
                     if (name === 'settings') {
                         $('#settings_popup').on('click', '.delete-address', deleteAddress)
                         $('#settings_popup').on('click', '#submit', saveSettings)
+                        $('#settings_popup').on('click', '#send_email', sendEmail)
                     }
                 }, 'html'
             )
@@ -102,10 +103,18 @@
         )
     }
 
+    function sendEmail(evt) {
+        var user_email = $(evt.target).next('input').val()
+        $.post(
+            '/settings/',
+            {
+                user_email : user_email
+            }
+        )
+    }
+
     $('#datatable_mails').on('click', '.delete-button', ajaxPopup('delete'))
     $('#settings').click(ajaxPopup('settings'))
-    $('#terms').click(ajaxPopup('terms'))
-    $('#help').click(ajaxPopup('help'))
 
     function refresh() {
         // Do not poll when datepicker is visible. This breaks it horribly

@@ -112,18 +112,19 @@ class Command(BaseCommand):
 
         lock = FileLock('/tmp/lockfile.tmp')
         with lock:
-
-            imap = tools.imap_login()
-            results, data = imap.search(None, 'UNFLAGGED')
-            ids = data[0]
-            mails = ids.split()
+            try:
+                imap = tools.imap_login()
+                results, data = imap.search(None, 'UNFLAGGED')
+                ids = data[0]
+                mails = ids.split()
+            except:
+                return
 
             try:
                 last_import = LastImport.objects.get(id=1)
             except:
-                f = LastImport(date=timezone.now())
-                f.save()
-                return
+                last_import = LastImport(date=timezone.now())
+                last_import.save()
 
             import_diff = timezone.now() - last_import.date
 

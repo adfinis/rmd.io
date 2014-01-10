@@ -1,6 +1,7 @@
 import email
 from django.utils import timezone
 from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
 from mails.models import Mail
 from mails import tools
 from django.core.management.base import BaseCommand
@@ -10,12 +11,13 @@ from django.conf import settings
 class Command(BaseCommand):
 
     def handle(self, *args, **kwargs):
-
-        imap = tools.imap_login()
-        smtp = tools.smtp_login()
-
-        parser = email.Parser.Parser()
-        mails_to_send = Mail.objects.filter(due__lte=timezone.now())
+        try:
+            imap = tools.imap_login()
+            smtp = tools.smtp_login()
+            parser = email.Parser.Parser()
+            mails_to_send = Mail.objects.filter(due__lte=timezone.now())
+        except:
+            return
 
         for mail_to_send in mails_to_send:
 
@@ -28,7 +30,8 @@ class Command(BaseCommand):
                 original_msg = parser.parsestr(raw_email)
 
                 if original_msg.is_multipart():
-                    msg = original_msg.get_payload(0)
+                    msg = MIMEMultipart()
+                    msg = msg.attach(original_msg.get_payload())
                 else:
                     msg = MIMEText(original_msg.get_payload())
 
@@ -42,6 +45,7 @@ class Command(BaseCommand):
                     msg['Date'] = email.utils.formatdate(localtime=True)
                     msg['References'] = original_msg['Message-ID']
                 except:
+                    tools.delete_imap_mail(mail_in_imap)
                     print('Failed to write new header')
                     break
 

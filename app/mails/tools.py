@@ -41,7 +41,7 @@ def smtp_login():
         smtp.login(settings.EMAIL_ADDRESS, settings.EMAIL_PASSWORD)
         return smtp
     except:
-        print('Failed to login to SMTP server, aborting')
+        print('Failed to login to SMTP server, aborting.')
 
 
 def imap_login():
@@ -52,7 +52,7 @@ def imap_login():
         imap.select(settings.FOLDER)
         return imap
     except:
-        print('Failed to login to IMAP server, aborting')
+        print('Failed to login to IMAP server, aborting.')
 
 
 def parsedate(datestr):
@@ -158,7 +158,7 @@ def send_registration_mail(subject, sender):
     # Sends an error mail to not registred users
     from mails.models import AddressLog
 
-    if not AddressLog.objects.filter(address=sender).exists():
+    if not AddressLog.objects.filter(email=sender, reason=1).exists():
         smtp = smtp_login()
         host = settings.EMAIL_ADDRESS.split('@')[1]
         content = get_template('mails/not_registred_mail.txt')
@@ -172,17 +172,22 @@ def send_registration_mail(subject, sender):
         text_subtype = 'plain'
         charset = 'utf-8'
         msg = MIMEText(content.encode(charset), text_subtype, charset)
-        msg['Subject'] = 'Register at %s!' % (host)
+        msg['Subject'] = 'Register at %s!' % host
         msg['From'] = settings.EMAIL_ADDRESS
         msg['Date'] = email.utils.formatdate(localtime=True)
 
         smtp.sendmail(settings.EMAIL_ADDRESS, sender, msg.as_string())
         smtp.quit()
 
-        entry = AddressLog(address=sender)
-        entry.save()
+        log_entry = AddressLog(
+            email=sender,
+            reason=1,
+            attempt=1,
+            date=timezone.now()
+        )
+        log_entry.save()
 
-        print('Sent registration mail to %s') % sender
+        print('Sent registration mail to %s' % sender)
 
 
 def send_error_mail(subject, sender):
@@ -203,7 +208,7 @@ def send_error_mail(subject, sender):
         text_subtype = 'plain'
         charset = 'utf-8'
         msg = MIMEText(content.encode(charset), text_subtype, charset)
-        msg['Subject'] = 'Your mail on %s was deleted!' % (host)
+        msg['Subject'] = 'Your mail on %s was deleted!' % host
         msg['From'] = settings.EMAIL_ADDRESS
         msg['Date'] = email.utils.formatdate(localtime=True)
 
@@ -215,6 +220,14 @@ def send_error_mail(subject, sender):
 
 def send_activation_mail(key, address, host):
     # Sends an activation mail for additional addresses
+    from mails.models import AddressLog
+
+    delay1 = timezone.now() + datetime.timedelta(minutes=10)
+    delay2 = timezone.now() + datetime.timedelta(hours=1)
+    delay3 = timezone.now() + datetime.timedelta(1)
+    delay4 = timezone.now() + datetime.timedelta(3)
+    delay5 = timezone.now() + datetime.timedelta(7)
+
     smtp = smtp_login()
     content = get_template('mails/activation_mail.txt')
     parameters = Context(
@@ -227,14 +240,62 @@ def send_activation_mail(key, address, host):
     text_subtype = 'plain'
     charset = 'utf-8'
     msg = MIMEText(content.encode(charset), text_subtype, charset)
-    msg['Subject'] = 'Activate your address on %s' % (host)
+    msg['Subject'] = 'Activate your address on %s' % host
     msg['From'] = settings.EMAIL_ADDRESS
     msg['Date'] = email.utils.formatdate(localtime=True)
 
-    smtp.sendmail(settings.EMAIL_ADDRESS, address, msg.as_string())
+    try:
+        log_entry = AddressLog.objects.get(
+            email=address,
+            reason=2
+        )
+
+        if log_entry.date < timezone.now() or log_entry.attempt > 5:
+            print('Blocked address, no mail sent to %s' % address)
+            smtp.quit()
+            return
+
+        elif log_entry.attempt == 1:
+            log_entry.attempt = 2
+            log_entry.date = delay1
+            log_entry.save()
+
+        elif log_entry.attempt == 2:
+            log_entry.attempt = 3
+            log_entry.date = delay2
+            log_entry.save()
+
+        elif log_entry.attempt == 3:
+            log_entry.attempt = 4
+            log_entry.date = delay3
+            log_entry.save()
+
+        elif log_entry.attempt == 4:
+            log_entry.attempt = 5
+            log_entry.date = delay4
+            log_entry.save()
+
+        elif log_entry.attempt == 5:
+            log_entry.attempt = 6
+            log_entry.date = delay5
+            log_entry.save()
+
+        smtp.sendmail(settings.EMAIL_ADDRESS, address, msg.as_string())
+
+    except:
+        smtp.sendmail(settings.EMAIL_ADDRESS, address, msg.as_string())
+
+        log_entry = AddressLog(
+            email=address,
+            reason=2,
+            attempt=1,
+            date=timezone.now()
+        )
+        log_entry.save()
+
     smtp.quit()
 
-    print('Sent activation mail to %s') % address
+    print('Sent activation mail to %s' % address)
 
 
 def get_all_addresses(request, *args):
@@ -269,7 +330,7 @@ def get_all_users(identity_name, *args):
 def delete_mail_with_error(mail, reason, sent_from, imap):
     # Deletes a mail (in IMAP) and prints out an error message
     imap.store(mail, '+FLAGS', '\\Deleted')
-    print('Mail from %s deleted: %s') % (sent_from, reason)
+    print('Mail from %s deleted: %s' % (sent_from, reason))
 
 
 def create_additional_user(email, request):
@@ -285,6 +346,7 @@ def create_additional_user(email, request):
         password = request.user.password,
         is_active = False
     )
+    new_user.save()
     user_identity = Identity(
         identity=Identity.objects.get(user=request.user).identity,
         user=new_user
@@ -294,10 +356,15 @@ def create_additional_user(email, request):
         user=new_user
     )
     user_setting = Setting(user=new_user)
-    user_log_entry = AddressLog.objects.filter(address=email)
 
-    if user_log_entry.exists():
+    try:
+        user_log_entry = AddressLog.objects.filter(
+            email=request.user.email,
+            reason=1
+        )
         user_log_entry.delete()
+    except:
+        pass
 
     send_activation_mail(
         address=email,
@@ -305,7 +372,6 @@ def create_additional_user(email, request):
         host=request.get_host()
     )
 
-    new_user.save()
     user_identity.save()
     user_key.save()
     user_setting.save()

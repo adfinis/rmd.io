@@ -50,7 +50,10 @@ class Identity(models.Model):
 
 
 class AddressLog(models.Model):
-    address = models.EmailField(max_length=200)
+    email = models.EmailField(max_length=75)
+    reason = models.IntegerField()
+    attempt = models.IntegerField()
+    date = models.DateTimeField('Date of last attempt')
 
 
 class LastImport(models.Model):
@@ -68,7 +71,10 @@ def generate_user(user, **kwargs):
         user=user
     )
     user_setting = Setting(user=user)
-    user_log_entry = AddressLog.objects.filter(address=user.email)
+    user_log_entry = AddressLog.objects.filter(
+        email=user.email,
+        reason=1
+    )
     if user_log_entry.exists():
         user_log_entry.delete()
     user_identity.save()
