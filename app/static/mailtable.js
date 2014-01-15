@@ -46,6 +46,11 @@
                         $('#settings_popup').on('click', '.delete-address', deleteAddress)
                         $('#settings_popup').on('click', '#submit', saveSettings)
                         $('#settings_popup').on('click', '#send_email', sendEmail)
+                        $('input').keypress(function (e) {
+                          if (e.which == 13) {
+                              $('#submit').trigger('click')
+                          }
+                        })
                     }
                 }, 'html'
             )

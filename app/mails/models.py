@@ -5,7 +5,6 @@ from django_browserid.signals import user_created
 from django.dispatch import receiver
 import base64
 import os
-from hashlib import md5
 
 
 class Mail(models.Model):
@@ -17,36 +16,22 @@ class Mail(models.Model):
 
     @classmethod
     def my_mails(cls, request):
-        addresses = get_all_addresses(request, 'only_actives')
+        addresses = get_all_addresses(request)
 
         return cls.objects.filter(sent_from__in=addresses)
 
 
-class UserKey(models.Model):
-    key = models.CharField(max_length=10)
-    user = models.OneToOneField(User, related_name="userkey")
-
-    @classmethod
-    def get_userkey(cls, user):
-        try:
-            key = user.userkey
-        except:
-            key = UserKey(
-                key = base64.b32encode(os.urandom(7))[:10].lower(),
-                user = user
-            )
-            key.save()
-        return key.key
-
-
-class Setting(models.Model):
-    anti_spam = models.BooleanField(default=False)
-    user = models.OneToOneField(User, related_name="settings", unique=True)
-
-
 class Identity(models.Model):
+    key = models.CharField(max_length=10, unique=True)
+    anti_spam = models.BooleanField(default=False)
+
+
+class UserIdentity(models.Model):
     user = models.ForeignKey(User)
-    identity = models.CharField(max_length=32)
+    identity = models.ForeignKey(Identity)
+
+    class Meta:
+        unique_together = ('user', 'identity')
 
 
 class AddressLog(models.Model):
@@ -62,21 +47,12 @@ class LastImport(models.Model):
 
 @receiver(user_created)
 def generate_user(user, **kwargs):
-    user_identity = Identity(
-        identity=md5(os.urandom(10)).hexdigest(),
-        user=user
+    identity = Identity(
+        key = base64.b32encode(os.urandom(7))[:10].lower(),
     )
-    user_key = UserKey(
-        key=base64.b32encode(os.urandom(7))[:10].lower(),
-        user=user
+    identity.save()
+    user_identity = UserIdentity(
+        user=user,
+        identity=identity
     )
-    user_setting = Setting(user=user)
-    user_log_entry = AddressLog.objects.filter(
-        email=user.email,
-        reason=1
-    )
-    if user_log_entry.exists():
-        user_log_entry.delete()
     user_identity.save()
-    user_key.save()
-    user_setting.save()

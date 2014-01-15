@@ -60,3 +60,4 @@ class Command(BaseCommand):
             mail_to_send.delete()
 
         smtp.quit()
+        imap.logout()

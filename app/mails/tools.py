@@ -298,33 +298,26 @@ def send_activation_mail(key, address, host):
     print('Sent activation mail to %s' % address)
 
 
-def get_all_addresses(request, *args):
+def get_all_addresses(request):
     # Gets all addresses of the users identity
-    from mails.models import Identity
+    from mails.models import UserIdentity
 
-    identity = Identity.objects.get(user=request.user)
-    users = get_all_users(identity.identity, *args)
-    addresses = [user.email for user in users]
+    identity = UserIdentity.objects.get(user=request.user).identity
+    accounts = UserIdentity.objects.filter(identity=identity)
+    addresses = [account.user.email for account in accounts]
 
     return addresses
 
 
-def get_all_users(identity_name, *args):
-    # Gets all users of an identity
-    from mails.models import Identity
+def get_all_users(request):
+    # Gets all addresses of the users identity
+    from mails.models import UserIdentity
 
-    instances = Identity.objects.filter(identity=identity_name)
-    if 'only_actives' in args:
-        users = [
-            instance.user
-            for instance
-            in instances
-            if instance.user.is_active
-        ]
-    else:
-        users = [instance.user for instance in instances]
+    identity = UserIdentity.objects.get(user=request.user).identity
+    accounts = UserIdentity.objects.filter(identity=identity)
+    addresses = [account.user for account in accounts]
 
-    return users
+    return addresses
 
 
 def delete_mail_with_error(mail, reason, sent_from, imap):
@@ -335,7 +328,7 @@ def delete_mail_with_error(mail, reason, sent_from, imap):
 
 def create_additional_user(email, request):
     # Creates an additional user with the same password and identity
-    from mails.models import Identity, UserKey, Setting, AddressLog
+    from mails.models import UserIdentity, AddressLog
 
     new_user = User(
         email = email,
@@ -347,15 +340,12 @@ def create_additional_user(email, request):
         is_active = False
     )
     new_user.save()
-    user_identity = Identity(
-        identity=Identity.objects.get(user=request.user).identity,
-        user=new_user
+
+    identity = UserIdentity.objects.get(user=request.user).identity
+    user_identity = UserIdentity(
+        user=new_user,
+        identity=identity
     )
-    user_key = UserKey(
-        key=request.user.userkey.key,
-        user=new_user
-    )
-    user_setting = Setting(user=new_user)
 
     try:
         user_log_entry = AddressLog.objects.filter(
@@ -373,5 +363,3 @@ def create_additional_user(email, request):
     )
 
     user_identity.save()
-    user_key.save()
-    user_setting.save()

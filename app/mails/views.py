@@ -1,15 +1,14 @@
-import os
 import base64
 from mails import tools
 from django.views import generic
 from django.conf import settings
 from django.core import management
 from django.http import HttpResponseRedirect
-from mails.forms import SettingForm
+from mails.forms import SettingsForm
 from django.utils.decorators import method_decorator
 from django.shortcuts import render, get_object_or_404
 from django.contrib.auth.decorators import login_required
-from mails.models import Mail, Setting, UserKey, Identity
+from mails.models import Mail, UserIdentity
 from django.core.signals import request_started
 from django.dispatch import receiver
 from django.contrib.auth.models import User
@@ -79,12 +78,9 @@ class ActivationSuccess(generic.TemplateView):
 def settings_view(request):
     template_name = 'mails/settings.html'
 
-    row = Setting.objects.get(user=request.user)
-    anti_spam = SettingForm(request.POST or None, instance=row)
+    identity = UserIdentity.objects.get(user=request.user).identity
 
-    identity_name = Identity.objects.get(user=request.user).identity
-    additional_users = tools.get_all_users(identity_name)
-    additional_users.remove(request.user)
+    anti_spam = SettingsForm(request.POST or None, instance=identity)
 
     alerts = []
 
@@ -103,7 +99,7 @@ def settings_view(request):
             except:
                 anti_spam.anti_spam = request.POST['anti_spam']
                 anti_spam.save()
-                anti_spam_setting = request.user.settings.anti_spam
+                anti_spam_setting = identity.anti_spam
                 if anti_spam_setting is True:
                     alerts.append('mails/anti_spam_on.html')
                 else:
@@ -120,14 +116,17 @@ def settings_view(request):
                         alerts.append('mails/address_added.html')
                 alerts.append('mails/settings_saved.html')
 
+    additional_users = tools.get_all_users(request)
+    additional_users.remove(request.user)
+
     response = render(
         request,
         template_name,
         {
             'anti_spam' : anti_spam,
-            'additional_users' : additional_users,
             'alerts' : alerts,
-            'user_key' : UserKey.get_userkey(request.user),
+            'identity' : identity,
+            'additional_users' : additional_users,
         }
     )
 
@@ -137,21 +136,16 @@ def settings_view(request):
 @login_required(login_url="/")
 def download_vcard(request):
     host = settings.EMAIL_ADDRESS.split('@')[1]
-    try:
-        user_key = UserKey.get_userkey(request.user)
-    except:
-        key = UserKey(key=base64.b32encode(
-            os.urandom(7))[:10].lower(),
-            user=request.user
-        )
-        key.save()
-    if request.user.settings.anti_spam:
+    identity = UserIdentity.objects.get(user=request.user).identity
+    key = identity.key
+
+    if identity.anti_spam:
         mail_template = '{delay}.{key}@{host}'
     else:
         mail_template = '{delay}@{host}'
 
     values = {
-        'key' : user_key or None,
+        'key' : key or None,
         'host' : host,
     }
 

@@ -1,8 +1,8 @@
 from django import forms
-from mails.models import Setting
+from mails.models import Identity
 
 
-class SettingForm(forms.ModelForm):
+class SettingsForm(forms.ModelForm):
     class Meta:
-        model = Setting
+        model = Identity
         fields = ['anti_spam']

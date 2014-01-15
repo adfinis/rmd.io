@@ -1,7 +1,7 @@
 import re
 import email
 from django.contrib.auth.models import User
-from mails.models import Mail, UserKey, LastImport
+from mails.models import Mail, LastImport, UserIdentity
 from mails import tools
 from django.utils import timezone
 import datetime
@@ -41,6 +41,7 @@ class Command(BaseCommand):
                 email=sent_from,
                 is_active=True
             )
+            identity = UserIdentity.objects.get(user=user).identity
         except:
             # No user with this email address found - deleting
             reason = 'User not registred'
@@ -56,12 +57,11 @@ class Command(BaseCommand):
             )
             return
 
-        if user.settings.anti_spam:
+        if identity.anti_spam:
             # If anti-spam is activated
-            user_key = UserKey.get_userkey(user)
             try:
                 mail_key = tools.key_from_message(msg)
-                if mail_key == user_key:
+                if mail_key == identity.key:
                     m = Mail(
                         subject=subject,
                         sent=sent,
