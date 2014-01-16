@@ -41,6 +41,25 @@ class AddressLog(models.Model):
     date = models.DateTimeField('Date of last attempt')
 
 
+class SentStatisic(models.Model):
+    date = models.DateField('Date sent')
+
+
+class ReceivedStatisic(models.Model):
+    email = models.EmailField(max_length=75)
+    count = models.IntegerField(default=0)
+
+
+class UserStatisic(models.Model):
+    email = models.EmailField(max_length=75)
+    count = models.IntegerField(default=0)
+
+
+class ObliviousStatisic(models.Model):
+    email = models.EmailField(max_length=75)
+    count = models.IntegerField(default=0)
+
+
 class LastImport(models.Model):
     date = models.DateTimeField('Date of last import')
 

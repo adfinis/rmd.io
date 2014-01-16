@@ -1,7 +1,7 @@
 import re
 import email
 from django.contrib.auth.models import User
-from mails.models import Mail, LastImport, UserIdentity
+from mails.models import LastImport, UserIdentity
 from mails import tools
 from django.utils import timezone
 import datetime
@@ -24,6 +24,8 @@ class Command(BaseCommand):
             sent = tools.parsedate(msg['date'])
             delay = tools.delay_days_from_message(msg)
             due = sent + datetime.timedelta(delay)
+            delay_address = tools.get_delay_address(msg)
+            recipients = tools.recipients_email_from_message(msg)
         except TypeError:
             # invalid email with wrong header.
             # TODO: log error
@@ -62,16 +64,17 @@ class Command(BaseCommand):
             try:
                 mail_key = tools.key_from_message(msg)
                 if mail_key == identity.key:
-                    m = Mail(
-                        subject=subject,
-                        sent=sent,
-                        due=due,
-                        sent_from=sent_from,
-                        sent_to=sent_to
+                    tools.save_mail(
+                        subject,
+                        sent_to,
+                        sent_from,
+                        delay_address,
+                        due,
+                        sent,
+                        imap,
+                        mail,
+                        recipients
                     )
-                    m.save()
-                    imap.store(mail, '+FLAGS', "MAILDELAY-%d" % m.id)
-                    imap.store(mail, '+FLAGS', '\\Flagged')
                 else:
                     # User key not equivalent with mail key
                     reason = 'Wrong key'
@@ -97,16 +100,17 @@ class Command(BaseCommand):
 
         else:
             # If anti-spam isn't activated
-            m = Mail(
-                subject=subject,
-                sent=sent,
-                due=due,
-                sent_from=sent_from,
-                sent_to=sent_to
+            tools.save_mail(
+                subject,
+                sent_to,
+                sent_from,
+                delay_address,
+                due,
+                sent,
+                imap,
+                mail,
+                recipients
             )
-            m.save()
-            imap.store(mail, '+FLAGS', "MAILDELAY-%d" % m.id)
-            imap.store(mail, '+FLAGS', '\\Flagged')
 
     def handle(self, *args, **kwargs):
 

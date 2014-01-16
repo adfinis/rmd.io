@@ -11,6 +11,7 @@ urlpatterns = patterns(
     url(r'^maildelay.vcf', views.download_vcard),
     url(r'^terms/$', views.TermsView.as_view()),
     url(r'^settings/$', views.settings_view),
+    url(r'^statistics/$', views.statistics),
     url(r'^help/$', views.HelpView.as_view()),
     url(r'^login_failed/$', views.LoginFailed.as_view()),
     url(r'^activate/(?P<key>\w+)/$', views.activate),

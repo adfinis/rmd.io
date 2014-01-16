@@ -99,6 +99,17 @@ def delay_days_from_message(msg):
                 return delay
 
 
+def get_delay_address(msg):
+    # Gets the delay from the address
+    for key in recipient_headers:
+        if key in msg:
+            mailaddress = msg[key]
+            if "@" in mailaddress:
+                dropped = re.sub(r'\..*@', '@', mailaddress)
+
+                return dropped
+
+
 def key_from_message(msg):
     # Gets the key of a message
     for key in recipient_headers:
@@ -142,6 +153,17 @@ def recipients_from_message(msg):
 
     recipients = ', '.join(recipients_list)
     return recipients
+
+
+def recipients_email_from_message(msg):
+    # Gets all recipients email from a message
+    raw = msg.get_all('to', [])
+    recs = []
+    recipients = email.utils.getaddresses(raw)
+    for recipient in recipients:
+        recs.append(recipient[1])
+
+    return recs
 
 
 def delete_imap_mail(mail_id):
@@ -194,7 +216,7 @@ def send_error_mail(subject, sender):
     # Sends an error mail to not registred users
     from mails.models import AddressLog
 
-    if not AddressLog.objects.filter(address=sender).exists():
+    if not AddressLog.objects.filter(email=sender).exists():
         smtp = smtp_login()
         host = settings.EMAIL_ADDRESS.split('@')[1]
         content = get_template('mails/wrong_recipient_mail.txt')
@@ -216,6 +238,49 @@ def send_error_mail(subject, sender):
         smtp.quit()
 
         print('Sent error mail to %s') % sender
+
+
+def save_mail(
+    subject,
+    sent_to,
+    sent_from,
+    delay_address,
+    due,
+    sent,
+    imap,
+    mail,
+    recipients
+):
+    # Saves a mail in DB and logs stats
+    from mails.models import ReceivedStatisic, UserStatisic
+    from mails.models import Mail, ObliviousStatisic
+
+    m = Mail(
+        subject=subject,
+        sent=sent,
+        due=due,
+        sent_from=sent_from,
+        sent_to=sent_to
+    )
+    (l, c) = ReceivedStatisic.objects.get_or_create(
+        email=delay_address,
+    )
+    (u, f) = UserStatisic.objects.get_or_create(
+        email = sent_from
+    )
+    for recipient in recipients:
+        (o, c) = ObliviousStatisic.objects.get_or_create(
+            email=recipient
+        )
+        o.count += 1
+        o.save()
+    l.count += 1
+    u.count += 1
+    l.save()
+    u.save()
+    m.save()
+    imap.store(mail, '+FLAGS', "MAILDELAY-%d" % m.id)
+    imap.store(mail, '+FLAGS', '\\Flagged')
 
 
 def send_activation_mail(key, address, host):

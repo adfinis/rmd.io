@@ -116,6 +116,15 @@ body {
     float: right;
 }
 
+.centered-text {
+    text-align: center !important;
+}
+
+.statistic thead th:last-child,
+.statistic tbody tr td:last-child {
+    text-align: right;
+}
+
 .delete-address,
 .delete-button {
     color: #000000;
