@@ -14,8 +14,7 @@ from django.core.signals import request_started
 from django.dispatch import receiver
 from django.contrib.auth.models import User
 from django.db.models import Sum
-from django.utils import timezone
-import datetime
+from django.contrib.admin.views.decorators import staff_member_required
 
 
 class LoginRequiredMixin(object):
@@ -201,13 +200,9 @@ def activate(request, key):
         return HttpResponseRedirect('/activation_fail/')
 
 
-@login_required(login_url="/")
+@staff_member_required
 def statistics(request):
-    one_week_ago = timezone.now() - datetime.timedelta(7)
-    one_month_ago = timezone.now() - datetime.timedelta(30)
     sent = SentStatisic.objects.all()
-    sent_week = SentStatisic.objects.filter(date__gte=one_week_ago)
-    sent_month = SentStatisic.objects.filter(date__gte=one_month_ago)
     oblivious = ObliviousStatisic.objects.all()
     received = ReceivedStatisic.objects.all()
     users = UserStatisic.objects.all()
@@ -216,9 +211,7 @@ def statistics(request):
     top_10_users = users.order_by('count').reverse()[:10]
     top_10_addresses = received.order_by('count').reverse()[:10]
     received_mail_count = received.annotate(Sum('count'))[0]
-    sent_mail_count_alltime = len(sent)
-    sent_mail_count_week = len(sent_week)
-    sent_mail_count_month = len(sent_month)
+    sent_mail_count = len(sent)
 
     return render(
         request,
@@ -227,9 +220,7 @@ def statistics(request):
             'top_10_oblivious' : top_10_oblivious,
             'top_10_users' : top_10_users,
             'top_10_addresses' : top_10_addresses,
-            'sent_mail_count_alltime' : sent_mail_count_alltime,
-            'sent_mail_count_week' : sent_mail_count_week,
-            'sent_mail_count_month' : sent_mail_count_month,
+            'sent_mail_count' : sent_mail_count,
             'received_mail_count' : received_mail_count
         }
     )

@@ -26,7 +26,7 @@
                         <a class="navbar-brand" href="/"><img id="logo" alt="rmd.io" src="{% static 'images/logo.png' %}"></a>
                         {% if user.is_staff %}
                             <ul class="nav navbar-nav navbar-right">
-                                <li><a href="/">Mails</a></li>
+                                <li class="hidden-xs"><a href="/">Mails</a></li>
                                 <li><a href="/statistics/">Statistics</a></li>
                             </ul>
                         {% endif %}

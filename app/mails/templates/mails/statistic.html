@@ -1,0 +1,91 @@
+{% extends 'base_index.html' %}
+
+{% load staticfiles %}
+
+{% block content %}
+    <div class="row">
+        <div class="col-md-6">
+            <h1>Top 10 Users:</h1>
+            <table class="table table-striped statistic">
+                <thead>
+                    <th>#</th>
+                    <th>User</th>
+                    <th>Sent Mails</th>
+                </thead>
+                <tbody>
+                    {% for user in top_10_users %}
+                        <tr>
+                            <td>{{ forloop.counter }}</td>
+                            <td>{{ user.email }}</td>
+                            <td>{{ user.count }}</td>
+                        </tr>
+                    {% endfor %}
+                <tbody>
+            </table>
+        </div>
+        <div class="col-md-6">
+            <h1>Top 10 Addresses:</h1>
+            <table class="table table-striped statistic">
+                <thead>
+                    <th>#</th>
+                    <th>Address</th>
+                    <th style="text-align:right;">Received Mails</th>
+                </thead>
+                <tbody>
+                    {% for address in top_10_addresses %}
+                        <tr>
+                            <td>{{ forloop.counter }}</td>
+                            <td>{{ address.email }}</td>
+                            <td>{{ address.count }}</td>
+                        </tr>
+                    {% endfor %}
+                <tbody>
+            </table>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-6">
+            <h1>Top 10 Oblivious:</h1>
+            <table class="table table-striped statistic">
+                <thead>
+                    <th>#</th>
+                    <th>Address</th>
+                    <th>Reminded Mails</th>
+                </thead>
+                <tbody>
+                    {% for user in top_10_oblivious %}
+                        <tr>
+                            <td>{{ forloop.counter }}</td>
+                            <td>{{ user.email }}</td>
+                            <td>{{ user.count }}</td>
+                        </tr>
+                    {% endfor %}
+                <tbody>
+            </table>
+        </div>
+        <div class="col-md-6">
+            <h1>Mails:</h1>
+            <table class="table table-striped statistic">
+                <thead>
+                    <th colspan="2" class="centered-text">Received Mails Statistic</th>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Received Mails:</td>
+                        <td>{{ received_mail_count.count__sum }}</td>
+                    <tr>
+                    </tr>
+                        <td>Sent Mails:</td>
+                        <td>{{ sent_mail_count }}</td>
+                    </tr>
+                <tbody>
+            </table>
+        </div>
+    </div>
+{% endblock %}
+
+{% block bottomscripts %}
+    <script src="{% static 'jQuery/jquery-ui-1.10.3.custom.js' %}"></script>
+    <script src="{% static 'bootstrap-datetimepicker/js/bootstrap-datetimepicker.js' %}"></script>
+    <script src="{% static 'tabs.js' %}"></script>
+{% endblock %}

@@ -12,11 +12,11 @@ MANAGERS = ADMINS
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': 'maildelay.db',
-        'USER': '',
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': 'maildelay',
+        'USER': 'jonas',
         'PASSWORD': '',
-        'HOST': '',
+        'HOST': '127.0.0.1',
         'PORT': '',
     }
 }
