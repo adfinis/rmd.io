@@ -8,8 +8,8 @@ from mails.forms import SettingsForm
 from django.utils.decorators import method_decorator
 from django.shortcuts import render, get_object_or_404
 from django.contrib.auth.decorators import login_required
-from mails.models import Mail, UserIdentity, ObliviousStatisic
-from mails.models import SentStatisic, ReceivedStatisic, UserStatisic
+from mails.models import Mail, UserIdentity, ObliviousStatistic
+from mails.models import SentStatistic, ReceivedStatistic, UserStatistic
 from django.core.signals import request_started
 from django.dispatch import receiver
 from django.contrib.auth.models import User
@@ -202,10 +202,10 @@ def activate(request, key):
 
 @staff_member_required
 def statistics(request):
-    sent = SentStatisic.objects.all()
-    oblivious = ObliviousStatisic.objects.all()
-    received = ReceivedStatisic.objects.all()
-    users = UserStatisic.objects.all()
+    sent = SentStatistic.objects.all()
+    oblivious = ObliviousStatistic.objects.all()
+    received = ReceivedStatistic.objects.all()
+    users = UserStatistic.objects.all()
 
     top_10_oblivious = oblivious.order_by('count').reverse()[:10]
     top_10_users = users.order_by('count').reverse()[:10]

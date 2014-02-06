@@ -41,21 +41,21 @@ class AddressLog(models.Model):
     date = models.DateTimeField('Date of last attempt')
 
 
-class SentStatisic(models.Model):
+class SentStatistic(models.Model):
     date = models.DateField('Date sent')
 
 
-class ReceivedStatisic(models.Model):
+class ReceivedStatistic(models.Model):
     email = models.EmailField(max_length=75)
     count = models.IntegerField(default=0)
 
 
-class UserStatisic(models.Model):
+class UserStatistic(models.Model):
     email = models.EmailField(max_length=75)
     count = models.IntegerField(default=0)
 
 
-class ObliviousStatisic(models.Model):
+class ObliviousStatistic(models.Model):
     email = models.EmailField(max_length=75)
     count = models.IntegerField(default=0)
 

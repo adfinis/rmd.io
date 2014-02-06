@@ -2,3 +2,4 @@ Django
 django-browserid
 django_extensions
 pytz
+lockfile

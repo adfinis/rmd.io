@@ -252,8 +252,8 @@ def save_mail(
     recipients
 ):
     # Saves a mail in DB and logs stats
-    from mails.models import ReceivedStatisic, UserStatisic
-    from mails.models import Mail, ObliviousStatisic
+    from mails.models import ReceivedStatistic, UserStatistic
+    from mails.models import Mail, ObliviousStatistic
 
     m = Mail(
         subject=subject,
@@ -262,14 +262,14 @@ def save_mail(
         sent_from=sent_from,
         sent_to=sent_to
     )
-    (l, c) = ReceivedStatisic.objects.get_or_create(
+    (l, c) = ReceivedStatistic.objects.get_or_create(
         email=delay_address,
     )
-    (u, f) = UserStatisic.objects.get_or_create(
+    (u, f) = UserStatistic.objects.get_or_create(
         email = sent_from
     )
     for recipient in recipients:
-        (o, c) = ObliviousStatisic.objects.get_or_create(
+        (o, c) = ObliviousStatistic.objects.get_or_create(
             email=recipient
         )
         o.count += 1

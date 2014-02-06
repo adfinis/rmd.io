@@ -1,7 +1,7 @@
 import email
 from django.utils import timezone
 from email.mime.text import MIMEText
-from mails.models import Mail, SentStatisic
+from mails.models import Mail, SentStatistic
 from mails import tools
 from django.core.management.base import BaseCommand
 from django.conf import settings
@@ -55,7 +55,7 @@ class Command(BaseCommand):
                     mail_to_send.sent_from,
                     msg.as_string()
                 )
-                l = SentStatisic(
+                l = SentStatistic(
                     date=timezone.now()
                 )
                 l.save()
