@@ -93,9 +93,13 @@ def delay_days_from_message(msg):
         if key in msg:
             mailaddress = msg[key]
             if "@" in mailaddress:
-                match = re.findall('^(\d+)([dmw])', mailaddress)[0]
-                multiplicator = multiplicate_number_with[match[1]]
-                delay = int(match[0]) * int(multiplicator)
+                try:
+                    match = re.findall('^(\d+)([dmw])', mailaddress)[0]
+                    multiplicator = multiplicate_number_with[match[1]]
+                    delay = int(match[0]) * int(multiplicator)
+                except:
+                    delay = 0
+
                 return delay
 
 
