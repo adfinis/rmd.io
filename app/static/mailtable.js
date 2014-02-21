@@ -79,7 +79,7 @@
     function saveSettings() {
         var address = $('#address').val()
         var anti_spam = $('#id_anti_spam').prop('checked')
-        $.post(
+        return $.post(
             '/settings/',
             {
                 address : address,
@@ -97,7 +97,7 @@
     function deleteAddress(evt) {
         var row = $(evt.target).closest('tr')
         var id = $(evt.target).attr('id')
-        row.hide('slow')
+        return row.hide('slow')
         .done(
             $.post(
                 '/settings/',
@@ -110,7 +110,7 @@
 
     function sendEmail(evt) {
         var user_email = $(evt.target).next('input').val()
-        $.post(
+        return $.post(
             '/settings/',
             {
                 user_email : user_email
