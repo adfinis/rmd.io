@@ -145,3 +145,9 @@ body {
         color: #000000;
         text-decoration:none;
     }
+
+address {
+    margin: 40px auto 0px 40px;
+    font-size: 12px;
+    font-style: italic;
+}
