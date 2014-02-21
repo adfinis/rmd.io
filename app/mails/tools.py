@@ -266,21 +266,21 @@ def save_mail(
         sent_from=sent_from,
         sent_to=sent_to
     )
-    (l, c) = ReceivedStatistic.objects.get_or_create(
+    r = ReceivedStatistic(
         email=delay_address,
+        date=timezone.now()
     )
-    (u, f) = UserStatistic.objects.get_or_create(
-        email = sent_from
+    u = UserStatistic(
+        email=sent_from,
+        date=timezone.now()
     )
     for recipient in recipients:
-        (o, c) = ObliviousStatistic.objects.get_or_create(
-            email=recipient
+        o = ObliviousStatistic(
+            email=recipient,
+            date=timezone.now()
         )
-        o.count += 1
         o.save()
-    l.count += 1
-    u.count += 1
-    l.save()
+    r.save()
     u.save()
     m.save()
     imap.store(mail, '+FLAGS', "MAILDELAY-%d" % m.id)

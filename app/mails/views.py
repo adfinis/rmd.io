@@ -1,4 +1,5 @@
 import base64
+import datetime
 from mails import tools
 from django.views import generic
 from django.conf import settings
@@ -12,8 +13,8 @@ from mails.models import Mail, UserIdentity, ObliviousStatistic
 from mails.models import SentStatistic, ReceivedStatistic, UserStatistic
 from django.core.signals import request_started
 from django.dispatch import receiver
+from django.db.models import Count
 from django.contrib.auth.models import User
-from django.db.models import Sum
 from django.contrib.admin.views.decorators import staff_member_required
 
 
@@ -218,25 +219,37 @@ def activate(request, key):
 
 @staff_member_required
 def statistics(request):
-    sent = SentStatistic.objects.all()
-    oblivious = ObliviousStatistic.objects.all()
-    received = ReceivedStatistic.objects.all()
-    users = UserStatistic.objects.all()
+    now = datetime.datetime.now()
+    week = now - datetime.timedelta(7)
+    month = now - datetime.timedelta(30)
 
-    top_10_oblivious = oblivious.order_by('count').reverse()[:10]
-    top_10_users = users.order_by('count').reverse()[:10]
-    top_10_addresses = received.order_by('count').reverse()[:10]
-    received_mail_count = received.annotate(Sum('count'))[0]
-    sent_mail_count = len(sent)
+    sent = SentStatistic.objects.all()
+    received = ReceivedStatistic.objects.all()
+    users = UserStatistic.objects.values(
+        'email').annotate(Count('id')).order_by('-id__count')
+    oblivious = ObliviousStatistic.objects.values(
+        'email').annotate(Count('id')).order_by('-id__count')
+    addresses = ReceivedStatistic.objects.values(
+        'email').annotate(Count('id')).order_by('-id__count')
 
     return render(
         request,
         'mails/statistic.html',
         {
-            'top_10_oblivious' : top_10_oblivious,
-            'top_10_users' : top_10_users,
-            'top_10_addresses' : top_10_addresses,
-            'sent_mail_count' : sent_mail_count,
-            'received_mail_count' : received_mail_count
+            'oblivious_alltime' : oblivious[:10],
+            'oblivious_week' : oblivious.filter(date__gte=month)[:10],
+            'oblivious_month' : oblivious.filter(date__gte=week)[:10],
+            'addresses_alltime' : addresses[:10],
+            'addresses_month' : addresses.filter(date__gte=month)[:10],
+            'addresses_week' : addresses.filter(date__gte=week)[:10],
+            'received_alltime' : len(received[:10]),
+            'received_month' : len(received.filter(date__gte=month)[:10]),
+            'received_week' : len(received.filter(date__gte=week)[:10]),
+            'users_alltime' : users[:10],
+            'users_month' : users.filter(date__gte=month)[:10],
+            'users_week' : users.filter(date__gte=month)[:10],
+            'sent_alltime' : len(sent[:10]),
+            'sent_month' : len(sent.filter(date__gte=month)[:10]),
+            'sent_week' : len(sent.filter(date__gte=week)[:10])
         }
     )

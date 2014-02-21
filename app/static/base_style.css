@@ -151,3 +151,16 @@ address {
     font-size: 12px;
     font-style: italic;
 }
+
+#alltime table tr td:first-child,
+#month table tr td:first-child,
+#week table tr td:first-child,
+#alltime table tr td:last-child,
+#month table tr td:last-child,
+#week table tr td:last-child {
+    width: 50px;
+}
+
+#tabs {
+    margin-top: 25px;
+}

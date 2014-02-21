@@ -47,17 +47,17 @@ class SentStatistic(models.Model):
 
 class ReceivedStatistic(models.Model):
     email = models.EmailField(max_length=75)
-    count = models.IntegerField(default=0)
+    date = models.DateField('Date received')
 
 
 class UserStatistic(models.Model):
     email = models.EmailField(max_length=75)
-    count = models.IntegerField(default=0)
+    date = models.DateField('Date sent')
 
 
 class ObliviousStatistic(models.Model):
     email = models.EmailField(max_length=75)
-    count = models.IntegerField(default=0)
+    date = models.DateField('Date sent')
 
 
 class LastImport(models.Model):
