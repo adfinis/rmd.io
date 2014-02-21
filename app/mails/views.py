@@ -123,7 +123,7 @@ def settings_view(request):
                         alerts.append('mails/anti_spam_on.html')
                     else:
                         alerts.append('mails/anti_spam_off.html')
-                if request.POST['address'] != '':
+                elif request.POST['address'] != '':
                     address = request.POST['address']
                     if User.objects.filter(email=address).exists():
                         alerts.append('mails/address_already_exists.html')
