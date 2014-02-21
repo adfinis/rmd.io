@@ -35,6 +35,16 @@
             if(popup.length === 0) {
                 $('body').append('<div id="'+name+'_popup" class="modal fade" role="dialog"/>')
                 popup = $('#'+name+'_popup')
+                if (name === 'settings') {
+                    $('#settings_popup').on('click', '.delete-address', deleteAddress)
+                    $('#settings_popup').on('click', '#submit', saveSettings)
+                    $('#settings_popup').on('click', '#send_email', sendEmail)
+                    $('input').keypress(function (e) {
+                      if (e.which === 13) {
+                          $('#submit').trigger('click')
+                      }
+                    })
+                }
             }
             $.get(
                 this.href,
@@ -42,16 +52,6 @@
                 function(resp, status, xhr) {
                     popup.html(resp)
                     popup.modal()
-                    if (name === 'settings') {
-                        $('#settings_popup').on('click', '.delete-address', deleteAddress)
-                        $('#settings_popup').on('click', '#submit', saveSettings)
-                        $('#settings_popup').on('click', '#send_email', sendEmail)
-                        $('input').keypress(function (e) {
-                          if (e.which == 13) {
-                              $('#submit').trigger('click')
-                          }
-                        })
-                    }
                 }, 'html'
             )
         }
@@ -79,7 +79,7 @@
     function saveSettings() {
         var address = $('#address').val()
         var anti_spam = $('#id_anti_spam').prop('checked')
-        return $.post(
+        $.post(
             '/settings/',
             {
                 address : address,
