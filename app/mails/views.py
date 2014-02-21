@@ -64,6 +64,20 @@ class TermsView(generic.TemplateView):
 class HelpView(generic.TemplateView):
     template_name = 'mails/help.html'
 
+    def get_context_data(self, **kwargs):
+        context = super(HelpView, self).get_context_data(**kwargs)
+        if self.request.user.is_authenticated():
+            identity = UserIdentity.objects.get(
+                user=self.request.user
+            ).identity
+            if identity.anti_spam:
+                context['key'] = '.' + identity.key
+            else:
+                context['key'] = ''
+        else:
+            context['key'] = ''
+        return context
+
 
 class ActivationFail(generic.TemplateView):
     template_name = 'mails/address_activation_failed.html'
