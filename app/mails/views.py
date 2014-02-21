@@ -100,13 +100,15 @@ def settings_view(request):
                     host=request.get_host()
                 )
             except:
-                anti_spam.anti_spam = request.POST['anti_spam']
-                anti_spam.save()
-                anti_spam_setting = identity.anti_spam
-                if anti_spam_setting is True:
-                    alerts.append('mails/anti_spam_on.html')
-                else:
-                    alerts.append('mails/anti_spam_off.html')
+                anti_spam_new = request.POST['anti_spam']
+                anti_spam_old = str(identity.anti_spam).lower()
+                if anti_spam_old != anti_spam_new:
+                    anti_spam.anti_spam = anti_spam_new
+                    anti_spam.save()
+                    if identity.anti_spam is True:
+                        alerts.append('mails/anti_spam_on.html')
+                    else:
+                        alerts.append('mails/anti_spam_off.html')
                 if request.POST['address'] != '':
                     address = request.POST['address']
                     if User.objects.filter(email=address).exists():
