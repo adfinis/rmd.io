@@ -275,11 +275,14 @@ def save_mail(
         date=timezone.now()
     )
     for recipient in recipients:
-        o = ObliviousStatistic(
-            email=recipient,
-            date=timezone.now()
-        )
-        o.save()
+        if 'rmd.io' not in recipient:
+            o = ObliviousStatistic(
+                email=recipient,
+                date=timezone.now()
+            )
+            o.save()
+        else:
+            continue
     r.save()
     u.save()
     m.save()

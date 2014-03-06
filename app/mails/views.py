@@ -228,7 +228,8 @@ def statistics(request):
     users = UserStatistic.objects.values(
         'email').annotate(Count('id')).order_by('-id__count')
     oblivious = ObliviousStatistic.objects.values(
-        'email').annotate(Count('id')).order_by('-id__count')
+        'email').annotate(Count('id')).order_by('-id__count').exclude(
+        email__contains='rmd.io')
     addresses = ReceivedStatistic.objects.values(
         'email').annotate(Count('id')).order_by('-id__count')
 
