@@ -24,7 +24,8 @@ class Command(BaseCommand):
             for mail_in_imap in imap_mail_ids:
 
                 results, data = imap.fetch(mail_in_imap, 'RFC822')
-                raw_email = data[0][1]
+                raw_email = data[0][1] + '\n\nThis mail was sent to: %s' % (
+                    mail_to_send.sent_to)
                 original_msg = email.message_from_string(raw_email)
 
                 if original_msg.is_multipart():
@@ -45,6 +46,7 @@ class Command(BaseCommand):
                     msg['To'] = mail_to_send.sent_from
                     msg['Date'] = email.utils.formatdate(localtime=True)
                     msg['References'] = original_msg['Message-ID']
+                    msg
                 except:
                     tools.delete_imap_mail(mail_in_imap)
                     print('Failed to write new header')
