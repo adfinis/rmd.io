@@ -18,8 +18,8 @@ class Command(BaseCommand):
         raw_email = data[0][1]
         msg = parser.parsestr(raw_email)
         try:
-            sent_from = re.sub(r'([<>])', '', msg['return-path'])
-            sent_to = tools.recipients_from_message(msg)
+            sent_from = re.sub(r'([<>])', '', msg['return-path']).lower()
+            sent_to = tools.recipients_from_message(msg).lower()
             subject = tools.subject_from_message(msg)
             sent = tools.parsedate(msg['date'])
             delay = tools.delay_days_from_message(msg)
