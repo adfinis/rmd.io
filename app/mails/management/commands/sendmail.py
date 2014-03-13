@@ -24,8 +24,12 @@ class Command(BaseCommand):
             for mail_in_imap in imap_mail_ids:
 
                 results, data = imap.fetch(mail_in_imap, 'RFC822')
-                raw_email = data[0][1] + '\n\nThis mail was sent to: %s' % (
-                    mail_to_send.sent_to)
+                body = str(data[0][1])
+
+                raw_email = '%s\n\nThis mail was sent to: %s' % (
+                    body,
+                    mail_to_send.sent_to
+                )
                 original_msg = email.message_from_string(raw_email)
 
                 if original_msg.is_multipart():
