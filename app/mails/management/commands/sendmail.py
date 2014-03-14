@@ -1,6 +1,8 @@
+import re
 import email
 from django.utils import timezone
 from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
 from mails.models import Mail, SentStatistic
 from mails import tools
 from django.core.management.base import BaseCommand
@@ -25,22 +27,21 @@ class Command(BaseCommand):
 
                 results, data = imap.fetch(mail_in_imap, 'RFC822')
 
-                body_u8 = data[0][1].decode('utf-8'),
+                raw_email = data[0][1]
 
-                raw_email = u'%s\n\nThis mail was sent to: %s' % (
-                    body_u8,
-                    mail_to_send.sent_to
-                )
                 original_msg = email.message_from_string(raw_email)
 
+                charset = original_msg.get_content_charset()
+
+                text = '\n\nThis mail was sent to: %s' % mail_to_send.sent_to
+
                 if original_msg.is_multipart():
-                    msg = original_msg.get_payload(0)
+                     msg = original_msg.get_payload(0)
+                     add_text = MIMEText(text, 'plain', 'utf-8')
+                     msg.attach(add_text)
+                     msg
                 else:
-                    msg = MIMEText(
-                        original_msg.get_payload(),
-                        'text/plain',
-                        'utf-8'
-                    )
+                     msg = MIMEText(original_msg.get_payload(), 'plain', charset)
 
                 try:
                     msg['Subject'] = "Reminder from %s: %s" % (
@@ -51,16 +52,18 @@ class Command(BaseCommand):
                     msg['To'] = mail_to_send.sent_from
                     msg['Date'] = email.utils.formatdate(localtime=True)
                     msg['References'] = original_msg['Message-ID']
-                    msg
                 except:
                     tools.delete_imap_mail(mail_in_imap)
                     print('Failed to write new header')
                     break
 
+                if not msg.is_multipart():
+                    msg = str(msg) + str(text)
+
                 smtp.sendmail(
                     settings.EMAIL_ADDRESS,
                     mail_to_send.sent_from,
-                    msg.as_string()
+                    str(msg)
                 )
                 l = SentStatistic(
                     date=timezone.now()
