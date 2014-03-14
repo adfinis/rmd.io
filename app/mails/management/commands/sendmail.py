@@ -1,3 +1,7 @@
+#!/usr/bin/env python
+# -*- coding: UTF-8 -*-
+# vim: autoindent expandtab tabstop=4 sw=4 sts=4 filetype=python
+
 import re
 import email
 from django.utils import timezone
@@ -26,22 +30,27 @@ class Command(BaseCommand):
             for mail_in_imap in imap_mail_ids:
 
                 results, data = imap.fetch(mail_in_imap, 'RFC822')
-
                 raw_email = data[0][1]
 
                 original_msg = email.message_from_string(raw_email)
-
                 charset = original_msg.get_content_charset()
-
-                text = '\n\nThis mail was sent to: %s' % mail_to_send.sent_to
+                text = 'This mail was originally sent to: %s' % mail_to_send.sent_to
 
                 if original_msg.is_multipart():
-                     msg = original_msg.get_payload(0)
-                     add_text = MIMEText(text, 'plain', 'utf-8')
-                     msg.attach(add_text)
-                     msg
+                    add_text = MIMEText(text, 'plain', 'utf-8')
+                    if original_msg.get_content_maintype == 'multipart/signed':
+                        # If it's a signed message, only take first payload
+                        msg = MIMEMultipart()
+                        orig = original_msg.get_payload(0)
+                        msg.attach(orig)
+                        msg.attach(add_text)
+                    else:
+                        msg = MIMEMultipart()
+                        msg.attach(original_msg)
+                        msg.attach(add_text)
+
                 else:
-                     msg = MIMEText(original_msg.get_payload(), 'plain', charset)
+                    msg = MIMEText(original_msg.get_payload(), 'plain', charset)
 
                 try:
                     msg['Subject'] = "Reminder from %s: %s" % (
@@ -58,7 +67,8 @@ class Command(BaseCommand):
                     break
 
                 if not msg.is_multipart():
-                    msg = str(msg) + str(text)
+                    # Attachs text if isn't a multipart message
+                    msg = str(msg) + '\n\n' + str(text)
 
                 smtp.sendmail(
                     settings.EMAIL_ADDRESS,
@@ -69,8 +79,8 @@ class Command(BaseCommand):
                     date=timezone.now()
                 )
                 l.save()
-                tools.delete_imap_mail(mail_in_imap)
 
+            tools.delete_imap_mail(mail_to_send.id)
             mail_to_send.delete()
 
         smtp.quit()

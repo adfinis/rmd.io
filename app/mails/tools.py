@@ -173,10 +173,9 @@ def recipients_email_from_message(msg):
 def delete_imap_mail(mail_id):
     # Deletes a mail in IMAP
     imap = imap_login()
-    results, data = imap.search(None, '(KEYWORD "MAILDELAY-%s")' % mail_id)
-    imap_mail_id = data[0].split()
-    for mailid in imap_mail_id:
-        imap.store(mailid, '+FLAGS', '\\Deleted')
+    results, data = imap.search(None, '(KEYWORD "MAILDELAY-{0}")'.format(mail_id))
+    for imap_mail_id in data[0].split():
+        imap.store(imap_mail_id, '+FLAGS', '\\Deleted')
     imap.expunge()
 
 
