@@ -248,7 +248,7 @@ def statistics(request):
             'received_week' : len(received.filter(date__gte=week)[:10]),
             'users_alltime' : users[:10],
             'users_month' : users.filter(date__gte=month)[:10],
-            'users_week' : users.filter(date__gte=month)[:10],
+            'users_week' : users.filter(date__gte=week)[:10],
             'sent_alltime' : len(sent[:10]),
             'sent_month' : len(sent.filter(date__gte=month)[:10]),
             'sent_week' : len(sent.filter(date__gte=week)[:10])
