@@ -238,9 +238,9 @@ def statistics(request):
         'mails/statistic.html',
         {
             'oblivious_alltime' : oblivious[:10],
-            'oblivious_week' : oblivious.filter(date__gte=month)[:10],
-            'oblivious_month' : oblivious.filter(date__gte=week)[:10],
-            'addresses_alltime' : addresses,
+            'oblivious_month' : oblivious.filter(date__gte=month)[:10],
+            'oblivious_week' : oblivious.filter(date__gte=week)[:10],
+            'addresses_alltime' : addresses[:10],
             'addresses_month' : addresses.filter(date__gte=month)[:10],
             'addresses_week' : addresses.filter(date__gte=week)[:10],
             'received_alltime' : len(received),
