@@ -240,17 +240,17 @@ def statistics(request):
             'oblivious_alltime' : oblivious[:10],
             'oblivious_week' : oblivious.filter(date__gte=month)[:10],
             'oblivious_month' : oblivious.filter(date__gte=week)[:10],
-            'addresses_alltime' : addresses[:10],
+            'addresses_alltime' : addresses,
             'addresses_month' : addresses.filter(date__gte=month)[:10],
             'addresses_week' : addresses.filter(date__gte=week)[:10],
-            'received_alltime' : len(received[:10]),
-            'received_month' : len(received.filter(date__gte=month)[:10]),
-            'received_week' : len(received.filter(date__gte=week)[:10]),
+            'received_alltime' : len(received),
+            'received_month' : len(received.filter(date__gte=month)),
+            'received_week' : len(received.filter(date__gte=week)),
             'users_alltime' : users[:10],
             'users_month' : users.filter(date__gte=month)[:10],
             'users_week' : users.filter(date__gte=week)[:10],
-            'sent_alltime' : len(sent[:10]),
-            'sent_month' : len(sent.filter(date__gte=month)[:10]),
-            'sent_week' : len(sent.filter(date__gte=week)[:10])
+            'sent_alltime' : len(sent),
+            'sent_month' : len(sent.filter(date__gte=month)),
+            'sent_week' : len(sent.filter(date__gte=week))
         }
     )
