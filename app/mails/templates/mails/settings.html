@@ -15,6 +15,10 @@
             {% endif %}
             <h3>Additonal Addresses</h3>
             <table class="table table-striped" id="additional_addresses">
+                <tr>
+                    <td>{{ main_user.email }}<td>
+                    <td></td>
+                </tr>
             {% for additional_user in additional_users %}
                 <tr>
                     <td>{{ additional_user.email }}

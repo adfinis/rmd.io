@@ -147,6 +147,7 @@ def settings_view(request):
             'alerts' : alerts,
             'identity' : identity,
             'additional_users' : additional_users,
+            'main_user' : request.user
         }
     )
 
