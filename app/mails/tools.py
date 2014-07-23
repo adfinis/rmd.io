@@ -395,3 +395,15 @@ def create_additional_user(email, request):
     )
 
     user_identity.save()
+
+
+def delete_log_entries(email):
+    from mails.models import AddressLog
+
+    try:
+        user_log_entry = AddressLog.objects.filter(
+            email=email
+        )
+        user_log_entry.delete()
+    except:
+        pass
