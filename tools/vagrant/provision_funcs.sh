@@ -78,4 +78,8 @@ function configure_apache() {
     /etc/init.d/apache2 restart
 }
 
+function enable_cronjob() {
+    crontab /vagrant/tools/vagrant/cronjob
+}
+
 # vim:sw=4:ts=4:et:

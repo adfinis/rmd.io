@@ -12,6 +12,12 @@ vagrant-reset-user:
 	@vagrant ssh -c "sudo su - postgres -c psql < /vagrant/tools/vagrant/user.sql > /dev/null 2>&1"
 	@echo "Successfully resetted users"
 
+vagrant-import:
+	@vagrant ssh -c "python /vagrant/app/manage.py import"
+
+vagrant-sendmail:
+	@vagrant ssh -c "python /vagrant/app/manage.py sendmail"
+
 vagrant-clear-log:
 	@vagrant ssh -c "sudo su - postgres -c psql < /vagrant/tools/vagrant/clear-log.sql > /dev/null 2>&1"
 	@echo "Successfully cleared address log"

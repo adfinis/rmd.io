@@ -13,6 +13,7 @@ enable_services
 prepare_database
 prepare_django
 configure_apache
+enable_cronjob
 
 # Make sure the return code is zero, so vagrant doesn't break things
 exit 0
