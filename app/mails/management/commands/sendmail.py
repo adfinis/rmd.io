@@ -2,8 +2,8 @@
 # -*- coding: UTF-8 -*-
 # vim: autoindent expandtab tabstop=4 sw=4 sts=4 filetype=python
 
-import re
 import email
+import smtplib
 from django.utils import timezone
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
@@ -18,7 +18,9 @@ class Command(BaseCommand):
     def handle(self, *args, **kwargs):
         try:
             imap = tools.imap_login()
-            smtp = tools.smtp_login()
+            smtp = smtplib.SMTP(settings.EMAIL_HOST)
+            smtp.starttls()
+            smtp.login(settings.EMAIL_HOST_USER, settings.EMAIL_HOST_PASSWORD)
             mails_to_send = Mail.objects.filter(due__lte=timezone.now())
         except:
             return
@@ -34,7 +36,9 @@ class Command(BaseCommand):
 
                 original_msg = email.message_from_string(raw_email)
                 charset = original_msg.get_content_charset()
-                text = 'This mail was originally sent to: %s' % mail_to_send.sent_to
+                text = 'This mail was originally sent to: %s' % (
+                    mail_to_send.sent_to
+                )
 
                 if original_msg.is_multipart():
                     add_text = MIMEText(text, 'plain', 'utf-8')
@@ -50,14 +54,18 @@ class Command(BaseCommand):
                         msg.attach(add_text)
 
                 else:
-                    msg = MIMEText(original_msg.get_payload(), 'plain', charset)
+                    msg = MIMEText(
+                        original_msg.get_payload(),
+                        'plain',
+                        charset
+                    )
 
                 try:
                     msg['Subject'] = "Reminder from %s: %s" % (
                         mail_to_send.sent.strftime('%b %d %H:%M'),
                         mail_to_send.subject
                     )
-                    msg['From'] = settings.EMAIL_ADDRESS
+                    msg['From'] = settings.EMAIL_HOST_USER
                     msg['To'] = mail_to_send.sent_from
                     msg['Date'] = email.utils.formatdate(localtime=True)
                     msg['References'] = original_msg['Message-ID']
@@ -71,7 +79,7 @@ class Command(BaseCommand):
                     msg = str(msg) + '\n\n' + str(text)
 
                 smtp.sendmail(
-                    settings.EMAIL_ADDRESS,
+                    settings.EMAIL_HOST_USER,
                     mail_to_send.sent_from,
                     str(msg)
                 )

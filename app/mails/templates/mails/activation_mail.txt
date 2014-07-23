@@ -1,4 +1,4 @@
-Hello {{ address }}
+Hello {{ email }}
 
 Please activate your address with the following link:
 

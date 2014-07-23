@@ -110,9 +110,8 @@ def settings_view(request):
             try:
                 user_email = User.objects.get(email=request.POST['user_email'])
                 tools.send_activation_mail(
-                    address=user_email.email,
-                    key=base64.b16encode(user_email.username),
-                    host=request.get_host()
+                    email_to=user_email.email,
+                    key=base64.b16encode(user_email.username)
                 )
             except:
                 anti_spam_new = request.POST['anti_spam']
@@ -156,7 +155,7 @@ def settings_view(request):
 
 @login_required(login_url="/")
 def download_vcard(request):
-    host = settings.EMAIL_ADDRESS.split('@')[1]
+    host = settings.EMAIL_HOST_USER.split('@')[1]
     identity = UserIdentity.objects.get(user=request.user).identity
     key = identity.key
 

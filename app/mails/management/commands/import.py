@@ -53,10 +53,8 @@ class Command(BaseCommand):
                 sent_from,
                 imap
             )
-            tools.send_registration_mail(
-                subject = subject,
-                sender = sent_from,
-            )
+            tools.send_registration_mail(sent_from)
+
             return
 
         if identity.anti_spam:
@@ -86,17 +84,13 @@ class Command(BaseCommand):
                     )
             except:
                 # Anti-Spam activated but wrong recipient
-                reason = 'Wrong recipient'
                 tools.delete_mail_with_error(
                     mail,
                     reason,
                     sent_from,
                     imap
                 )
-                tools.send_error_mail(
-                    subject = subject,
-                    sender = sent_from,
-                )
+                tools.send_wrong_recipient_mail(sent_from)
 
         else:
             # If anti-spam isn't activated
