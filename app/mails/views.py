@@ -9,7 +9,7 @@ from mails.forms import SettingsForm
 from django.utils.decorators import method_decorator
 from django.shortcuts import render, get_object_or_404
 from django.contrib.auth.decorators import login_required
-from mails.models import Mail, UserIdentity, ObliviousStatistic
+from mails.models import Mail, UserIdentity, ObliviousStatistic, AddressLog
 from mails.models import SentStatistic, ReceivedStatistic, UserStatistic
 from django.core.signals import request_started
 from django.dispatch import receiver
@@ -212,6 +212,13 @@ def activate(request, key):
         user = User.objects.get(username=base64.b16decode(key))
         user.is_active = True
         user.save()
+        try:
+            user_log_entry = AddressLog.objects.filter(
+                email=user.email
+            )
+            user_log_entry.delete()
+        except:
+            pass
         return HttpResponseRedirect('/activation_success/')
     except:
         return HttpResponseRedirect('/activation_fail/')
