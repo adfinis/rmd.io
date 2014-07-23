@@ -1,10 +1,9 @@
-lib/
-local/
 bin/
 include/
+lib/
+local/
 share/
-*.pyc
-.*.swp
-.*.swo
-*.db
 .vagrant/
+*.pyc
+*.swo
+*.swp

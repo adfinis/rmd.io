@@ -26,7 +26,6 @@ echo "|   * PHPMyAdmin   Browse to http://localhost:8080/phpmyadmin            |
 echo "|   * SSH access:  Commandline: vagrant ssh                              |"
 echo "|                                                                        |"
 echo "| User accounts to work with:                                            |"
-echo "|     Application:     LDAP-User         / 123qwe                        |"
 echo "|     phpPgAdmin:      root              / vagrant                       |"
 echo "|     Shell:           vagrant           / vagrant                       |"
 echo "+------------------------------------------------------------------------+"

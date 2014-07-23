@@ -14,8 +14,6 @@ framework.
 
 """
 
-execfile('/vagrant/bin/activate_this.py', dict(__file__='/vagrant/bin/activate_this.py'))
-
 import os
 
 # Django development settings
