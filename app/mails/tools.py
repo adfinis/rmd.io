@@ -383,8 +383,7 @@ def create_additional_user(email, request):
 
     try:
         user_log_entry = AddressLog.objects.filter(
-            email=request.user.email,
-            reason=1
+            email=request.user.email
         )
         user_log_entry.delete()
     except:
