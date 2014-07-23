@@ -1,5 +1,4 @@
 # Django settings for maildelay project.
-import os
 
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
@@ -14,8 +13,8 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
         'NAME': 'maildelay',
-        'USER': 'jonas',
-        'PASSWORD': '',
+        'USER': 'maildelay',
+        'PASSWORD': 'vagrant',
         'HOST': '127.0.0.1',
         'PORT': '',
     }
@@ -35,9 +34,9 @@ TIME_ZONE = 'Europe/Zurich'
 # http://www.i18nguy.com/unicode/language-identifiers.html
 LANGUAGE_CODE = 'en-us'
 
-SITE_ID = 1
+SITE_URL = 'https://maildelay.vm'
 
-SITE_URL = 'http://127.0.0.1:8000'
+SITE_ID = 1
 
 # If you set this to False, Django will make some optimizations so as not
 # to load the internationalization machinery.
@@ -63,7 +62,7 @@ MEDIA_URL = ''
 # Don't put anything in this directory yourself; store your static files
 # in apps' "static/" subdirectories and in STATICFILES_DIRS.
 # Example: "/var/www/example.com/static/"
-STATIC_ROOT = os.getcwd()
+STATIC_ROOT = '/vagrant/app/static'
 
 # URL prefix for static files.
 # Example: "http://example.com/static/", "http://static.example.com/"
@@ -74,7 +73,8 @@ STATICFILES_DIRS = (
     # Put strings here, like "/home/html/static" or "C:/www/django/static".
     # Always use forward slashes, even on Windows.
     # Don'ys use forward slashes, even on Windows.
-    os.path.join(os.getcwd(), 'static'),
+    # os.path.join(os.getcwd(), "static"),
+    # '/vagrant/app/static'
 )
 
 # List of finder classes that know how to find static files in
@@ -82,7 +82,7 @@ STATICFILES_DIRS = (
 STATICFILES_FINDERS = (
     'django.contrib.staticfiles.finders.FileSystemFinder',
     'django.contrib.staticfiles.finders.AppDirectoriesFinder',
-    #'django.contrib.staticfiles.finders.DefaultStorageFinder',
+    # 'django.contrib.staticfiles.finders.DefaultStorageFinder',
 )
 
 # Make this unique, and don't share it with anybody.
@@ -92,7 +92,7 @@ SECRET_KEY = 'qkk)_bi42*bikzfakx3)vqlr$7o3vn92z*or66c@8z2)$o767d'
 TEMPLATE_LOADERS = (
     'django.template.loaders.filesystem.Loader',
     'django.template.loaders.app_directories.Loader',
-    #'django.template.loaders.eggs.Loader',
+    # 'django.template.loaders.eggs.Loader',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -114,7 +114,7 @@ TEMPLATE_DIRS = (
     # Put strings here, like "/home/html/django_templates".
     # Always use forward slashes, even on Windows.
     # Don't forget to use absolute paths, not relative paths.
-    os.path.join(os.getcwd(), 'templates'),
+    '/vagrant/app/templates'
 )
 
 INSTALLED_APPS = (
@@ -149,6 +149,8 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     'django.contrib.messages.context_processors.messages',
 )
 
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+CSRF_COOKIE_SECURE = True
 SESSION_COOKIE_SECURE = False
 
 LOGIN_REDIRECT_URL = '/'

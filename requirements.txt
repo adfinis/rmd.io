@@ -1,5 +1,5 @@
 Django
-django-browserid
+django-browserid==0.9
 django_extensions
 pytz
 lockfile
