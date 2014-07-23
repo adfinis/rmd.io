@@ -12,6 +12,10 @@ vagrant-reset-user:
 	@vagrant ssh -c "sudo su - postgres -c psql < /vagrant/tools/vagrant/user.sql > /dev/null 2>&1"
 	@echo "Successfully resetted users"
 
+vagrant-clear-log:
+	@vagrant ssh -c "sudo su - postgres -c psql < /vagrant/tools/vagrant/clear-log.sql > /dev/null 2>&1"
+	@echo "Successfully cleared address log"
+
 vagrant-destroy:
 	@vagrant destroy -f
 
