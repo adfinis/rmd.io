@@ -1,6 +1,6 @@
-Hello {{ email }}
+Hello {{ recipient }}
 
-Your mail was deleted because you aren't registered at https://{{ host }}.
+Your mail was deleted because you aren't registered at {{ url }}.
 Please register and try again.
 
 If you didn't send a mail to us, nothing will happen. You won't get any more mails.

@@ -1,0 +1,49 @@
+<div class="modal-dialog">
+    <div class="modal-content">
+        <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+            <h3 class="modal-title">Info</h3>
+        </div>
+        <div class="modal-body">
+            <table class="table table-striped">
+                <tr>
+                    <td><strong>Subject:</strong></td>
+                    <td>{{mail.subject}}</td>
+                </tr>
+                <tr>
+                    <td><strong>Sender:</strong></td>
+                    <td>{{mail.sender}}</td>
+                </tr>
+                <tr>
+                    <td><strong>Sent:</strong></td>
+                    <td>{{mail.sent|date:"Y-m-d H:i"}}</td>
+                </tr>
+                <tr>
+                    <td><strong>Due:</strong></td>
+                    <td>{{mail.due|date:"Y-m-d H:i"}}</td>
+                </tr>
+                <tr>
+                    <td>
+                        <strong>Recipient{% if mail.recipient_set.count > 1 %}s{% endif %}:</strong>
+                    </td>
+                    <td>
+                        <ul class="recipients">
+                        {% for recipient in mail.recipient_set.all %}
+                        <li>
+                            {% if recipient.name != '' %}
+                                {{ recipient.name }} <em>({{ recipient.email }})</em>
+                            {% else %}
+                                {{ recipient.email }}
+                            {% endif %}
+                        </li>
+                        {% endfor %}
+                        </ul>
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,66 @@
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>
+                Subject
+            </th>
+            <th class="hidden-sm hidden-xs">
+                Sent
+            </th>
+            <th>
+                Due
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+    {% for mail in mails %}
+    <tr class="item" id="{{ mail.id }}">
+            <td class="subject">
+                <span
+                 title="Sent from {{ mail.sender }}"
+                 class="add-popover"
+                 data-toggle="popover"
+                 data-placement="right"
+                 data-content="{% include 'mails/mail_recipients.html' %}"
+                >
+                {{ mail.subject }}
+                </span>
+            </td>
+            <td class="hidden-xs sent">
+                {{ mail.sent | date:"Y-m-d H:i" }}
+            </td>
+            <td>
+                <span id="due-{{ mail.id }}">{{ mail.due | date:"Y-m-d H:i" }}</span>
+                <div class="input-group date pull-right break-none">
+                    <input type="text" class="form-control hidden" value="{{ mail.due | date:"Y-m-d H:i"}}" disabled>
+                    <span class="input-group-addon datepickerbutton">
+                        <a href="#" class="btn btn-default btn-xs"><i title="Edit due date" class="fa fa-pencil"></i></a>
+                    </span>
+                    <span class="input-group-addon">
+                    <a
+                     id="show-info"
+                     class="btn btn-default btn-xs"
+                     href="/mails/info/{{ mail.id }}/"
+                     title="Show info about this mail"
+                    ><i class="fa fa-info"></i></a>
+                    </span>
+                    <span class="input-group-addon">
+                    <a
+                     id="delete-mail"
+                     class="btn btn-default btn-xs"
+                     href="/mails/delete/confirm/{{ mail.id }}/"
+                     title="Delete this mail"
+                    ><i class="fa fa-trash-o"></i></a>
+                    </span>
+                </div>
+            </td>
+        </tr>
+    {% empty %}
+        <tr>
+            <td colspan="5" style="text-align:center;">
+                There aren't any mails!
+            </td>
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>
