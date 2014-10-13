@@ -58,22 +58,17 @@
     }
 
     function newTime(evt) {
-        var duetext = $(evt.target).closest('td').find('.due-text')
+        var due = $(evt.target).find('input').val()
+        var id  = $(evt.target).closest('tr').attr('id')
         $.post(
-            $(evt.target).closest('form').attr('action'),
-            {due: evt.target.value}
-        )
-        .done( function() {
-            updateDue()
-            duetext.effect("highlight", {color: '#58FA58'}, 2000)
+            '/mails/update/' + id + '/',
+            {
+                'due': due
+            }
+        ).done( function() {
+            var duefield = $('#due-' + id)
+            duefield.text(due)
         })
-        function updateDue() {
-            $('.duedate').each(function(i, form) {
-                var due = $(form).find('.date-form').val()
-                var duetext = $(form).find('.due-text')
-                duetext.text(due)
-            })
-        }
     }
 
     function saveSettings() {
@@ -118,48 +113,61 @@
         )
     }
 
-    $('#datatable_mails').on('click', '.delete-button', ajaxPopup('delete'))
+    function initiateDatetimepicker() {
+        $('.date').datetimepicker({
+            format: "YYYY-MM-DD hh:mm",
+            minDate: new Date(),
+            showToday: true,
+            useCurrent: true,
+            useSeconds: false,
+            useMinutes: true,
+            minuteStepping: 1,
+            icons : {
+                time: "fa fa-clock-o",
+                date: "fa fa-calendar",
+                up:   "fa fa-arrow-up",
+                down: "fa fa-arrow-down"
+            }
+        })
+        $('.date').on('dp.change', newTime)
+    }
+
+    function initiateSearch() {
+        $('#searchMails').keyup(function() {
+            var key = $(this).val()
+            var regex = new RegExp(key, 'i')
+            $('.item').each( function() {
+                var subject = $(this).find('.subject').text()
+                var sent = $(this).find('.sent').text()
+                var due = $(this).find('.date').find('input').val()
+                var texts = [subject, sent, due]
+                if (regex.test(texts.join(' '))) {
+                    $(this).show()
+                }
+                else {
+                    $(this).hide()
+                }
+            })
+        })
+    }
+
+    $('#list').on('click', '#delete-mail', ajaxPopup('delete'))
+    $('#list').on('click', '#show-info', ajaxPopup('info'))
     $('#settings').click(ajaxPopup('settings'))
+    $('#list').on('mouseover', '.add-popover', function(e) {$(e.target).popover()})
 
     function refresh() {
-        // Do not poll when datepicker is visible. This breaks it horribly
-        if ($('.datetimepicker').is(':visible')) {
+        // Do not poll when datepicker or search is active
+        if ($('.bootstrap-datetimepicker-widget').is(':visible') ||
+            $('#searchMails').val()){
             return
         }
-        // Do not poll when search is active. This breaks it
-        if ($('#searchMails').val()) {
-            return
-        }
-
         $.ajax({
-            url: '/table/',
+            url: '/mails/table/',
             success: function(data) {
-                $('#datatable_mails').html(data)
-                $('.form-datetime').datetimepicker({
-                    format: "yyyy-mm-dd hh:ii",
-                    todayBtn:  1,
-                    startDate: new Date(),
-                    autoclose: 1,
-                    todayHighlight: 1,
-                    pickerPosition: "bottom-left",
-                    minuteStep: 15,
-                })
-                $('.date-form').change(newTime)
-
-                $('#searchMails').keyup(function() {
-                    var key = $(this).val()
-                    var regex = new RegExp(key, 'i')
-                    $('.mailTableRow').each( function() {
-                        var subject = $(this).find('.subject').text()
-                        var recipient = $(this).find('.recipient').text()
-                        if (regex.test(subject + ' ' + recipient)) {
-                            $(this).show()
-                        }
-                        else {
-                            $(this).hide()
-                        }
-                    })
-                })
+                $('#list').html(data)
+                initiateDatetimepicker()
+                initiateSearch()
             }
         })
     }
