@@ -12,9 +12,9 @@ import email.header
 import email.utils
 import imaplib
 import logging
+import pytz
 import os
 import re
-import time
 
 
 class Tools():
@@ -71,10 +71,10 @@ class Tools():
         :rtype:          datetime.datetime
         """
         dt_tuple  = email.utils.parsedate_tz(datestr)
-        timestamp = time.mktime(dt_tuple)
-        dt        = datetime.datetime.fromtimestamp(timestamp)
+        timestamp = email.utils.mktime_tz(dt_tuple)
+        dt        = datetime.datetime.utcfromtimestamp(timestamp)
 
-        return dt
+        return dt.replace(tzinfo=pytz.utc)
 
     def get_recipients_from_message(self, msg):
         """Parses recipients from message
@@ -238,7 +238,7 @@ class Tools():
 
         try:
             AddressLog.objects.get(email=recipient, reason='NREG')
-            self.logger.info(
+            self.logger.warning(
                 'No registration email was sent. %s is blocked'
                 % (recipient)
             )
@@ -333,7 +333,7 @@ class Tools():
             )
 
             if log_entry.date < timezone.now() or log_entry.attempt > 5:
-                self.logger.info(
+                self.logger.warning(
                     'No registration email was sent. %s is blocked'
                     % (recipient)
                 )
@@ -469,7 +469,7 @@ class Tools():
         """
         # do not delete in debug mode
         # self.imap.store(email_id, '+FLAGS', '\\Deleted')
-        self.logger.info('Mail from %s deleted: %s' % (sender, reason))
+        self.logger.warning('Mail from %s deleted: %s' % (sender, reason))
 
     def create_additional_user(self, email, request):
         """Creates an additional user with the same password and identity

@@ -1,33 +1,38 @@
-from mails.tools import get_all_addresses
-from django.db import models
-from django.contrib.auth.models import User
 from django_browserid.signals import user_created
+from django.contrib.auth.models import User
+from django.db import models
 from django.dispatch import receiver
-import base64
-import os
+from mails.tools import Tools
+
+tools = Tools()
 
 
 class Mail(models.Model):
-    subject = models.CharField(max_length=200)
-    sent = models.DateTimeField('Date sent')
-    due = models.DateTimeField('Date due')
-    sent_from = models.EmailField(max_length=75)
-    sent_to = models.EmailField(max_length=75)
+    subject   = models.CharField(max_length=200)
+    sent      = models.DateTimeField()
+    due       = models.DateTimeField()
+    sender    = models.EmailField(max_length=75)
 
     @classmethod
     def my_mails(cls, request):
-        addresses = get_all_addresses(request)
+        addresses = tools.get_all_addresses(request)
 
-        return cls.objects.filter(sent_from__in=addresses)
+        return cls.objects.filter(sender__in=addresses)
+
+
+class Recipient(models.Model):
+    mail  = models.ForeignKey(Mail)
+    email = models.EmailField(max_length=75)
+    name  = models.CharField(max_length=200, null=True)
 
 
 class Identity(models.Model):
-    key = models.CharField(max_length=10, unique=True)
+    key       = models.CharField(max_length=10, unique=True)
     anti_spam = models.BooleanField(default=False)
 
 
 class UserIdentity(models.Model):
-    user = models.ForeignKey(User)
+    user     = models.ForeignKey(User)
     identity = models.ForeignKey(Identity)
 
     class Meta:
@@ -35,43 +40,44 @@ class UserIdentity(models.Model):
 
 
 class AddressLog(models.Model):
-    email = models.EmailField(max_length=75)
-    reason = models.IntegerField()
+    reasons = (
+        ('SPAM', 'Spam'),
+        ('NREG', 'Not Registered')
+    )
+
+    email   = models.EmailField(max_length=75)
+    reason  = models.CharField(max_length=4, choices=reasons)
     attempt = models.IntegerField()
-    date = models.DateTimeField('Date of last attempt')
+    date    = models.DateTimeField(auto_now_add=True)
 
 
-class SentStatistic(models.Model):
-    date = models.DateField('Date sent')
+class Statistic(models.Model):
+    types = (
+        ('SENT', 'Sent'),
+        ('REC',  'Received'),
+        ('USER', 'User'),
+        ('OBL',  'Oblivious'),
+    )
 
-
-class ReceivedStatistic(models.Model):
-    email = models.EmailField(max_length=75)
-    date = models.DateField('Date received')
-
-
-class UserStatistic(models.Model):
-    email = models.EmailField(max_length=75)
-    date = models.DateField('Date sent')
-
-
-class ObliviousStatistic(models.Model):
-    email = models.EmailField(max_length=75)
-    date = models.DateField('Date sent')
+    type  = models.CharField(max_length=4, choices=types)
+    email = models.EmailField(null=True, max_length=75)
+    date  = models.DateField(auto_now_add=True)
 
 
 class LastImport(models.Model):
-    date = models.DateTimeField('Date of last import')
+    date = models.DateTimeField(auto_now=True)
 
 
 @receiver(user_created)
-def generate_user(user, **kwargs):
+def generate_identity(user, **kwargs):
     identity = Identity(
-        key = base64.b32encode(os.urandom(7))[:10].lower(),
+        key = tools.generate_key(),
     )
-    identity.save()
+
     user_identity = UserIdentity(
         user=user,
         identity=identity
     )
+
+    identity.save()
     user_identity.save()

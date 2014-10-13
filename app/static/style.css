@@ -27,6 +27,31 @@ body {
         line-height: 30px;
     }
 
+.popover-table {
+    width: 100%;
+}
+
+.popover-table td {
+    padding: 10px 5px 5px;
+}
+
+.popover-table td em {
+    font-size: 11px;
+}
+
+.popover-table th {
+    padding: 5px;
+    border-bottom: 1px solid #DDDDDD;
+}
+
+.recipients {
+    padding-left: 15px;
+}
+
+.recipients em {
+    font-size: 11px;
+}
+
 #searchMails {
     width: 250px;
     float: right;

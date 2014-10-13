@@ -3,13 +3,13 @@ from mails.models import Mail
 
 class MailAdmin(admin.ModelAdmin):
     fieldsets = (
-        (None,                {'fields' : ['subject', 'sent_from']}),
+        (None,                {'fields' : ['subject', 'sender']}),
         ('Date Informations', {'fields' : ['sent', 'due'],
                                'classes': ['collapse']
                               }
         ),
     )
-    list_display = ('subject', 'sent_from', 'sent', 'due')
+    list_display = ('subject', 'sender', 'sent', 'due')
     list_filter = ['due']
     search_fields = ['subject']
 

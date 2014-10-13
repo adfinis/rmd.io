@@ -151,23 +151,31 @@
         })
     }
 
+    function initiate() {
+        $('.add-popover').popover('destroy')
+        $('.add-popover').popover({html : true, trigger : 'hover'})
+        initiateDatetimepicker()
+        initiateSearch()
+    }
+
     $('#list').on('click', '#delete-mail', ajaxPopup('delete'))
     $('#list').on('click', '#show-info', ajaxPopup('info'))
     $('#settings').click(ajaxPopup('settings'))
-    $('#list').on('mouseover', '.add-popover', function(e) {$(e.target).popover()})
 
     function refresh() {
         // Do not poll when datepicker or search is active
-        if ($('.bootstrap-datetimepicker-widget').is(':visible') ||
-            $('#searchMails').val()){
+        if (
+            $('.bootstrap-datetimepicker-widget').is(':visible') ||
+            $('#searchMails').val() ||
+            $('.popover').is(':visible')
+        ){
             return
         }
         $.ajax({
             url: '/mails/table/',
             success: function(data) {
                 $('#list').html(data)
-                initiateDatetimepicker()
-                initiateSearch()
+                initiate()
             }
         })
     }
@@ -177,6 +185,7 @@
         setTimeout(scheduleRefresh, 10 * 1000)
     }
 
+    initiate()
     scheduleRefresh()
 
 })();

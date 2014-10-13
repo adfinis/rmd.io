@@ -1,8 +1,7 @@
-import re
 import email
 from django.contrib.auth.models import User
 from mails.models import LastImport, UserIdentity
-from mails import tools
+from mails.tools import Tools
 from django.utils import timezone
 import datetime
 from lockfile import FileLock
@@ -11,129 +10,100 @@ from django.core.management.base import BaseCommand
 
 class Command(BaseCommand):
 
-    def import_mail(self, mail, imap):
-        parser = email.Parser.Parser()
+    def __init__(self, *args, **kwargs):
+        super(Command, self).__init__(*args, **kwargs)
+        self.tools = Tools()
 
-        results, data = imap.fetch(mail, 'RFC822')
-        raw_email = data[0][1]
-        msg = parser.parsestr(raw_email)
+    def import_mail(self, email_id):
+
+        results, data = self.tools.imap.fetch(email_id, 'RFC822')
+        raw_email     = data[0][1]
+        msg           = email.message_from_string(raw_email)
+
         try:
-            sent_from = re.sub(r'([<>])', '', msg['return-path']).lower()
-            sent_to = tools.recipients_from_message(msg).lower()
-            subject = tools.subject_from_message(msg)
-            sent = tools.parsedate(msg['date'])
-            delay = tools.delay_days_from_message(msg)
-            due = sent + datetime.timedelta(delay)
-            delay_address = tools.get_delay_address(msg)
-            recipients = tools.recipients_email_from_message(msg)
-        except TypeError:
-            # invalid email with wrong header.
-            # TODO: log error
-            reason = 'Wrong header'
-            tools.delete_mail_with_error(
-                mail,
-                reason,
-                sent_from,
-                imap
+            sender        = self.tools.get_sender_from_message(msg)
+            recipients    = self.tools.get_recipients_from_message(msg)
+            subject       = self.tools.get_subject_from_message(msg)
+            sent_date     = self.tools.get_sent_date_from_message(msg)
+            key           = self.tools.get_key_from_email_address(sender)
+            delay_address = self.tools.get_delay_address_from_recipients(
+                recipients
+            )
+            due_date      = sent_date + datetime.timedelta(
+                self.tools.get_delay_days_from_email_address(delay_address)
+            )
+        except Exception as e:
+            self.tools.delete_email_with_error(
+                email_id,
+                e.args[0],
+                sender
             )
             return
 
         try:
             user = User.objects.get(
-                email=sent_from,
+                email=sender,
                 is_active=True
             )
             identity = UserIdentity.objects.get(user=user).identity
         except:
-            # No user with this email address found - deleting
-            reason = 'User not registred'
-            tools.delete_mail_with_error(
-                mail,
-                reason,
-                sent_from,
-                imap
+            self.tools.delete_email_with_error(
+                email_id,
+                'User not registered',
+                sender
             )
-            tools.send_registration_mail(sent_from)
+            self.tools.send_registration_mail(sender)
 
             return
 
         if identity.anti_spam:
-            # If anti-spam is activated
-            try:
-                mail_key = tools.key_from_message(msg)
-                if mail_key == identity.key:
-                    tools.save_mail(
-                        subject,
-                        sent_to,
-                        sent_from,
-                        delay_address,
-                        due,
-                        sent,
-                        imap,
-                        mail,
-                        recipients
-                    )
-                else:
-                    # User key not equivalent with mail key
-                    reason = 'Wrong key'
-                    tools.delete_mail_with_error(
-                        mail,
-                        reason,
-                        sent_from,
-                        imap
-                    )
-            except:
-                # Anti-Spam activated but wrong recipient
-                tools.delete_mail_with_error(
-                    mail,
-                    reason,
-                    sent_from,
-                    imap
+            if not key:
+                self.tools.delete_email_with_error(
+                    email,
+                    'No key',
+                    sender
                 )
-                tools.send_wrong_recipient_mail(sent_from)
+                self.tools.send_wrong_recipient_mail(sender)
+            elif key != identity.key:
+                self.tools.delete_email_with_error(
+                    email,
+                    'Wrong key',
+                    sender,
+                )
 
-        else:
-            # If anti-spam isn't activated
-            tools.save_mail(
-                subject,
-                sent_to,
-                sent_from,
-                delay_address,
-                due,
-                sent,
-                imap,
-                mail,
-                recipients
-            )
+        self.tools.save_mail(
+            subject,
+            recipients,
+            sender,
+            sent_date,
+            delay_address,
+            due_date,
+            email_id
+        )
+
+    def get_email_ids(self):
+        results, data = self.tools.imap.search(None, 'UNFLAGGED')
+        ids = data[0].split()
+
+        return ids
 
     def handle(self, *args, **kwargs):
 
         lock = FileLock('/tmp/lockfile.tmp')
         with lock:
-            try:
-                imap = tools.imap_login()
-                results, data = imap.search(None, 'UNFLAGGED')
-                ids = data[0]
-                mails = ids.split()
-            except:
-                return
 
-            try:
-                last_import = LastImport.objects.get(id=1)
-            except:
-                last_import = LastImport(date=timezone.now())
-                last_import.save()
+            last_import, created = LastImport.objects.get_or_create()
 
             import_diff = timezone.now() - last_import.date
 
             if import_diff > datetime.timedelta(seconds=10):
-                last_import.date = datetime.datetime.now()
                 last_import.save()
             else:
                 return
 
-            for mail in mails:
-                self.import_mail(mail, imap)
+            email_ids = self.get_email_ids()
 
-            imap.expunge()
-            imap.logout()
+            for email_id in email_ids:
+                self.import_mail(email_id)
+
+            self.tools.imap.expunge()
