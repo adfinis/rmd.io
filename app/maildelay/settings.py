@@ -114,23 +114,20 @@ TEMPLATE_DIRS = (
     # Put strings here, like "/home/html/django_templates".
     # Always use forward slashes, even on Windows.
     # Don't forget to use absolute paths, not relative paths.
-    '/vagrant/app/templates'
+    '/vagrant/app/templates',
 )
 
 INSTALLED_APPS = (
     'django.contrib.auth',
-    'django_browserid',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
-    'django.contrib.sites',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'django_extensions',
-    # Uncomment the next line to enable the admin:
     'django.contrib.admin',
-    # Uncomment the next line to enable admin documentation:
-    # 'django.contrib.admindocs',
+    'django_browserid',
+    'django_extensions',
     'mails',
+    'south',
 )
 
 AUTHENTICATION_BACKENDS = (
@@ -153,9 +150,9 @@ SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 CSRF_COOKIE_SECURE = True
 SESSION_COOKIE_SECURE = False
 
-LOGIN_REDIRECT_URL = '/'
+LOGIN_REDIRECT_URL = '/mails/'
 
-LOGIN_REDIRECT_URL_FAILURE = '/login_failed/'
+LOGIN_REDIRECT_URL_FAILURE = '/'
 
 LOGOUT_REDIRECT_URL = '/'
 
@@ -173,15 +170,33 @@ CACHES = {
 # more details on how to customize your logging configuration.
 LOGGING = {
     'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'verbose': {
+            'format'  : ("[%(asctime)s] %(levelname)s "
+                         "[%(name)s:%(lineno)s] %(message)s"),
+            'datefmt' : "%d/%b/%Y %H:%M:%S"
+        },
+        'simple': {
+            'format'  : '%(levelname)s %(message)s'
+        },
+    },
     'handlers': {
-        'console': {
-            'level': 'DEBUG',
-            'class': 'logging.StreamHandler'
+        'file': {
+            'level'     : 'DEBUG',
+            'class'     : 'logging.FileHandler',
+            'filename'  : '/var/log/django/error.log',
+            'formatter' : 'verbose',
         }
     },
     'loggers': {
         'django_browserid': {
-            'handlers': ['console'],
+            'handlers': ['file'],
+            'level'   : 'DEBUG',
+            'filename': '/var/log/browserid-debug.log',
+        },
+        'mails': {
+            'handlers': ['file'],
             'level': 'DEBUG',
         },
     }
@@ -196,7 +211,7 @@ CSP_FRAME_SRC = ("'self'", 'https://login.persona.org')
 EMAIL_HOST_USER = 'maildelay@maildelay.tk'
 EMAIL_HOST_PASSWORD = '3p7KDn4FugQQ'
 EMAIL_HOST = 'maildelay.tk'
-FOLDER = 'INBOX'
+EMAIL_FOLDER = 'INBOX'
 
 MAILBOXES = [
     ('1d', 'Mail Delay for 1 day'),
