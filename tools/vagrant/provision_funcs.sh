@@ -27,11 +27,10 @@ function install_packages() {
 
     echo "Installing packages..."
     apt-get update
-    apt-get -q -y install postgresql phppgadmin python
-    apt-get -q -y install python-virtualenv postgresql-server-dev-all
-    apt-get -q -y install python-psycopg2 postgresql-contrib lsof
-    apt-get -q -y install ssl-cert openssl libcurl4-openssl-dev
-    apt-get -q -y install python-dev libapache2-mod-wsgi
+    apt-get -q -y install postgresql phppgadmin python python-virtualenv \
+                          postgresql-server-dev-all python-psycopg2 lsof \
+                          postgresql-contrib ssl-cert python-dev openssl \
+                          libcurl4-openssl-dev libapache2-mod-wsgi
 }
 
 function install_requirements() {
@@ -79,7 +78,8 @@ function configure_apache() {
 }
 
 function enable_cronjob() {
-    crontab /vagrant/tools/vagrant/cronjob
+    # Set cronjobs
+    crontab /vagrant/tools/vagrant/crontab
 }
 
 # vim:sw=4:ts=4:et:

@@ -7,28 +7,28 @@ Vagrant.configure("2") do |config|
   # please see the online documentation at vagrantup.com.
 
   # Every Vagrant virtual environment requires a box to build off of.
-  config.vm.box = "precise64"
+  config.vm.box = "ubuntu/trusty64"
   config.vm.guest = :ubuntu
   config.vm.hostname = 'maildelay.vm'
 
   begin
     if Vagrant.plugin("2").manager.config.has_key? :vbguest then
-      #config.vbguest.auto_update = false
+      config.vbguest.auto_update = false
     end
   rescue
   end
 
   config.vm.provider "virtualbox" do |v|
-	  v.customize ['storagectl', :id, '--name', 'SATA Controller', '--hostiocache', 'on']
-	  v.customize ["modifyvm", :id, "--rtcuseutc", "on"]
+    v.customize ['storagectl', :id, '--name', 'SATAController', '--hostiocache', 'on']
+    v.customize ["modifyvm", :id, "--rtcuseutc", "on"]
+    v.customize ["modifyvm", :id, "--memory", "2048"]
   end
 
   config.hostsupdater.remove_on_suspend = true
-  #config.hostsupdater.aliases = ["timescout.vm"]
 
   # The url from where the 'config.vm.box' box will be fetched if it
   # doesn't already exist on the user's system.
-  config.vm.box_url = "https://vagrantcloud.com/hashicorp/precise64/version/2/provider/virtualbox.box"
+  config.vm.box_url = "https://vagrantcloud.com/ubuntu/trusty64/version/1/provider/virtualbox.box"
 
   # Create a forwarded port mapping which allows access to a specific port
   # within the machine from a port on the host machine. In the example below,
