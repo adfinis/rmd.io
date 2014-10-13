@@ -1,38 +1,39 @@
-
 .PHONY: all config
-
-all: help
 
 .SUFFIXES: .po .mo
 
 .mo.po:
 	@msgfmt $< -o $@
 
-vagrant-reset-user:
+vagrant-user:
 	@vagrant ssh -c "sudo su - postgres -c psql < /vagrant/tools/vagrant/user.sql > /dev/null 2>&1"
 	@echo "Successfully resetted users"
 
-vagrant-import:
-	@vagrant ssh -c "python /vagrant/app/manage.py import"
+import:
+	@vagrant ssh -c "/vagrant/envpy /vagrant/app/manage.py import"
 
-vagrant-sendmail:
-	@vagrant ssh -c "python /vagrant/app/manage.py sendmail"
+sendmail:
+	@vagrant ssh -c "/vagrant/envpy /vagrant/app/manage.py sendmail"
 
-vagrant-clear-log:
+clear-log:
 	@vagrant ssh -c "sudo su - postgres -c psql < /vagrant/tools/vagrant/clear-log.sql > /dev/null 2>&1"
 	@echo "Successfully cleared address log"
 
-vagrant-destroy:
+destroy:
 	@vagrant destroy -f
 
 vagrant-prepare:
-	vagrant plugin install vagrant-hostsupdater
-	vagrant up
-	vagrant ssh -c 'sudo /etc/init.d/apache2 restart'
-	vagrant ssh -c 'sudo /etc/init.d/mysql restart'
+	@vagrant plugin install vagrant-hostsupdater
+	@vagrant up
+	@vagrant ssh -c 'sudo /etc/init.d/apache2 restart'
 
 vagrant: vagrant-prepare vagrant-user
 	@vagrant ssh -c 'cd /vagrant && bash ./tools/vagrant/showinfo.sh'
 
-vagrant-reset: vagrant-destroy vagrant
+vagrant-reset: destroy vagrant
 	@echo "Vagrant reset successful"
+
+migrate:
+	@vagrant ssh -c "/vagrant/app/manage.py schemamigration mails --auto"
+	@vagrant ssh -c "/vagrant/app/manage.py migrate mails"
+	@echo "Successfully migrated DB structure"

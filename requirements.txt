@@ -1,5 +1,7 @@
-Django
+Django==1.6
 django-browserid==0.9
-django_extensions
+django_extensions==1.2.5
+psycopg2
 pytz
 lockfile
+South

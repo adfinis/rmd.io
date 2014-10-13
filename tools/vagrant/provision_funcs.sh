@@ -34,7 +34,8 @@ function install_packages() {
 }
 
 function install_requirements() {
-    pip install -r /vagrant/requirements.txt
+    virtualenv /vagrant
+    /vagrant/bin/pip install -r /vagrant/requirements.txt
 }
 
 function setup_postgres() {
@@ -62,18 +63,19 @@ function prepare_database() {
 
 function prepare_django() {
     # Now run all DB migrations for all installed apps
-    su vagrant -c "cd /vagrant/app; python manage.py syncdb --noinput"
-    cp -R /usr/local/lib/python2.7/dist-packages/django_browserid/static/browserid/ /vagrant/app/static/
-    cp -R /usr/local/lib/python2.7/dist-packages/django/contrib/admin/static/admin/ /vagrant/app/static/
+    mkdir /var/log/django/
+    chmod -R 777 /var/log/django/
+    su vagrant -c "/vagrant/envpy /vagrant/app/manage.py syncdb --noinput"
+    su vagrant -c "/vagrant/envpy /vagrant/app/manage.py migrate"
 }
 
 function configure_apache() {
     echo "Setting up Apache config..."
-    cp /vagrant/tools/vagrant/vhost.conf /etc/apache2/sites-available/default
+    cp /vagrant/tools/vagrant/vhost.conf /etc/apache2/sites-available/000-default.conf
     cp /vagrant/tools/vagrant/phppgadmin.conf /etc/apache2/conf.d/phppgadmin
-    usermod -a -G vagrant www-data
     a2enmod ssl
     a2enmod rewrite
+    usermod -a -G vagrant www-data
     /etc/init.d/apache2 restart
 }
 
