@@ -4,39 +4,31 @@
 <!DOCTYPE HTML>
 <html lang="en">
     <head>
-        <link rel="stylesheet" media="screen" href="{% static 'style.css' %}" />
         <link rel="stylesheet" media="screen" href="{% static 'lib/bootstrap/css/bootstrap.min.css' %}" />
         <link rel="stylesheet" media="screen" href="{% static 'lib/bootstrap-datetimepicker/build/css/bootstrap-datetimepicker.min.css' %}" />
         <link rel="stylesheet" media="screen" href="{% static 'lib/font-awesome/css/font-awesome.min.css' %}">
+        <link rel="stylesheet" media="screen" href="{% static 'style.css' %}" />
         <link rel="shortcut icon" href="{% static 'images/titlebar.png' %}" type="image/png">
-        {% browserid_css %}
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <meta charset="UTF-8">
-        <title>rmd.io - your friendly mail reminder</title>
+        <title>rmd.io {% block title %}{% endblock %}</title>
     </head>
     <body>
         {% browserid_info %}
+        {% include 'messages.html' %}
         <div class="wrapper">
             {% include 'navbar.html' %}
             <div class="container">
                 {% block content %}{% endblock %}
             </div>
         </div>
-        <div class="footer">
-            <div class="container">
-                <a id="terms" class="footer-link" href="/terms">Terms & Conditions</a>
-                <a id="help" class="footer-link" href="/help">Help</a>
-                <div class="pull-right hidden-xs" >
-                    <p class="footer-text">Provided by:</p>
-                    <a href="https://adfinis-sygroup.ch"><img src="{% static 'images/adsylogo.png' %}" id="adsylogo" alt="Adfinis SyGroup AG"></a>
-                </div>
-            </div>
-        </div>
+        {% include 'footer.html' %}
         <script src="{% static 'lib/jquery/jquery-1.11.1.min.js' %}"></script>
         <script src="{% static 'lib/bootstrap/js/bootstrap.min.js' %}"></script>
         <script src="{% static 'lib/bootstrap-notify/js/bootstrap-notify.js' %}"></script>
-        <script src="{% static 'popups.js' %}"></script>
-        {%block bottomscripts%}{%endblock%}
+        <script src="{% static 'js/popups.js' %}"></script>
+        <script src="{% static 'js/notify.js' %}"></script>
+        {% block bottomscripts %}{% endblock %}
         {% browserid_js %}
     </body>
 </html>

@@ -36,9 +36,9 @@
                 $('body').append('<div id="'+name+'_popup" class="modal fade" role="dialog"/>')
                 popup = $('#'+name+'_popup')
                 if (name === 'settings') {
-                    $('#settings_popup').on('click', '.delete-address', deleteAddress)
-                    $('#settings_popup').on('click', '#submit', saveSettings)
-                    $('#settings_popup').on('click', '#send_email', sendEmail)
+                    $('#settings_popup').on('click', '.delete_user', deleteUser)
+                    $('#settings_popup').on('click', '.send_acitvation', sendActivation)
+                    $('#settings_popup').on('click', '#add_user', addUser)
                     $('input').keypress(function (e) {
                       if (e.which === 13) {
                           $('#submit').trigger('click')
@@ -71,44 +71,38 @@
         })
     }
 
-    function saveSettings() {
-        var address = $('#address').val()
-        var anti_spam = $('#id_anti_spam').prop('checked')
+    function deleteUser(evt) {
+        var row = $(evt.target).closest('tr')
+        var id = $(evt.target).data('user-id')
         $.post(
-            '/settings/',
-            {
-                address : address,
-                anti_spam : anti_spam
-            },
+            '/user/delete/',
+            {id : id},
             function(data) {
-                $('#settings_popup').html(data)
+                row.hide('slow')
+                $('#users').html(data)
             }
         )
-        .done (
-            $('#address').val('')
+    }
+
+    function addUser(evt) {
+        var email = $('#email').val()
+        $.post(
+            '/user/add/',
+            {email : email},
+            function(data) {
+                $('#users').html(data)
+            }
+        ).done(
+            $('#email').val('')
         )
     }
 
-    function deleteAddress(evt) {
-        var row = $(evt.target).closest('tr')
-        var id = $(evt.target).attr('id')
-        return row.hide('slow')
-        .done(
-            $.post(
-                '/settings/',
-                {
-                    user_id : id
-                }
-            )
-        )
-    }
-
-    function sendEmail(evt) {
-        var user_email = $(evt.target).next('input').val()
+    function sendActivation(evt) {
+        var id = $(evt.target).data('user-id')
         return $.post(
-            '/settings/',
+            '/user/activate/send/',
             {
-                user_email : user_email
+                'id' : id
             }
         )
     }
