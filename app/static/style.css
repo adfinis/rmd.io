@@ -1,162 +1,118 @@
-html, body {
-    height: 100%;
-}
+html {
+  height: 100%; }
 
 body {
-    padding-top: 70px;
-}
+  height: 100%;
+  padding-top: 70px; }
 
-#example {
-    margin: 0 auto;
-}
+.notification {
+  z-index: 2000;
+  position: fixed;
+  top: 10px;
+  right: 10px; }
 
 .navbar-brand {
-    padding: 0 0 0 15px !important;
-}
+  padding: 0 0 0 15px !important; }
 
 .footer {
-    background-color: #F5F5F5;
-    height: 50px;
-    padding: 10px 0;
-}
-
-    .footer .container {
-        margin-top: 0px;
-        margin-bottom: 0px;
-        vertical-align: middle;
-        line-height: 30px;
-    }
+  background-color: whitesmoke;
+  height: 50px;
+  padding: 10px 0; }
+  .footer .container {
+    margin-top: 0px;
+    margin-bottom: 0px;
+    vertical-align: middle;
+    line-height: 30px; }
 
 .popover-table {
-    width: 100%;
-}
-
-.popover-table td {
-    padding: 10px 5px 5px;
-}
-
-.popover-table td em {
-    font-size: 11px;
-}
-
-.popover-table th {
+  width: 100%; }
+  .popover-table td {
+    padding: 10px 5px 5px; }
+    .popover-table td em {
+      font-size: 11px; }
+  .popover-table th {
     padding: 5px;
-    border-bottom: 1px solid #DDDDDD;
-}
+    border-bottom: 1px solid #dddddd; }
 
 .recipients {
-    padding-left: 15px;
-}
+  padding-left: 15px; }
+  .recipients em {
+    font-size: 11px; }
 
-.recipients em {
-    font-size: 11px;
-}
-
-#searchMails {
-    width: 250px;
-    float: right;
-}
+.search {
+  width: 250px;
+  float: right; }
 
 @media (max-width: 768px) {
-    #searchMails {
-        margin-right: 10px;
-    }
-}
-
-#settings-alerts .alert {
-    margin: 15px 0 0;
-}
-
+  .searchMails {
+    margin-right: 10px; } }
 #adsylogo {
-    height: 30px;
-}
+  height: 30px; }
 
 #logo {
-    height: 50px;
-}
+  height: 50px; }
 
 .wrapper {
-    height: auto;
-    margin: 0 auto -50px;
-    min-height: 100%;
-    padding: 0 0 60px;
-}
+  height: auto;
+  margin: 0 auto -50px;
+  min-height: 100%;
+  padding: 0 0 60px; }
 
 .footer-text {
-    color: #999999;
-    display: inline-block;
-    line-height: 30px;
-}
+  color: #999999;
+  display: inline-block;
+  line-height: 30px; }
 
 .footer-link {
+  color: #999999;
+  display: inline-block;
+  line-height: 30px;
+  margin-right: 15px; }
+  .footer-link:hover, .footer-link:link, .footer-link:active, .footer-link:visited {
     color: #999999;
-    display: inline-block;
-    line-height: 30px;
-    margin-right: 15px;
-}
-
-    .footer-link:hover,
-    .footer-link:link,
-    .footer-link:active,
-    .footer-link:visited {
-        color: #999999;
-        text-decoration: none;
-    }
+    text-decoration: none; }
 
 .navbar {
-    margin-bottom: 20px;
-    border-radius: 0px;
-}
+  margin-bottom: 20px;
+  border-radius: 0px; }
 
 .date {
-    width: 80px;
-}
-
-.date,
-.date .form-control,
-.date .input-group-addon {
+  width: 80px;
+  background: transparent !important;
+  border: none;
+  padding: 0;
+  margin: 0;
+  box-shadow: none;
+  height: 20px;
+  color: #333333;
+  cursor: text !important;
+  user-select: text !important;
+  -moz-user-select: text !important;
+  -webkit-user-select: text !important; }
+  .date .form-control, .date .input-group-addon {
     background: transparent !important;
     border: none;
     padding: 0;
     margin: 0;
     box-shadow: none;
     height: 20px;
-    color: #333;
+    color: #333333;
     cursor: text !important;
     user-select: text !important;
     -moz-user-select: text !important;
-    -webkit-user-select: text !important;
-}
-
-.statistic thead th:last-child,
-.statistic tbody tr td:last-child {
-    text-align: right;
-}
+    -webkit-user-select: text !important; }
 
 .fa.btn {
-    margin: 0;
-}
+  margin: 0; }
 
 .address {
-    margin: 40px auto 0px 40px;
-    font-size: 12px;
-    font-style: italic;
-}
-
-#alltime table tr td:first-child,
-#month table tr td:first-child,
-#week table tr td:first-child,
-#alltime table tr td:last-child,
-#month table tr td:last-child,
-#week table tr td:last-child {
-    width: 50px;
-}
+  margin: 40px auto 0px 40px;
+  font-size: 12px;
+  font-style: italic; }
 
 .btn-xs {
-    height: 22px;
-    width: 22px;
-}
+  height: 22px;
+  width: 22px; }
 
 #tabs {
-    margin-top: 25px;
-}
+  margin-top: 25px; }
