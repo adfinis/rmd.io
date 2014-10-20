@@ -1,8 +1,8 @@
 \c maildelay;
 
 TRUNCATE auth_user CASCADE;
-TRUNCATE mails_identity CASCADE;
-TRUNCATE mails_useridentity CASCADE;
+TRUNCATE mails_userprofile CASCADE;
+TRUNCATE mails_account CASCADE;
 
 INSERT INTO auth_user VALUES (
     1,
@@ -18,13 +18,13 @@ INSERT INTO auth_user VALUES (
     '2014-07-23 08:29:15.800919+00'
 );
 
-INSERT INTO mails_identity VALUES (
+INSERT INTO mails_account VALUES (
     1,
     'ru4u26aoew',
     false
 );
 
-INSERT INTO mails_useridentity VALUES (
+INSERT INTO mails_userprofile VALUES (
     1,
     1,
     1
