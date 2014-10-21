@@ -105,14 +105,15 @@ body {
 .fa.btn {
   margin: 0; }
 
-.address {
+address {
   margin: 40px auto 0px 40px;
   font-size: 12px;
   font-style: italic; }
 
 .btn-xs {
   height: 22px;
-  width: 22px; }
+  width: 22px;
+  padding: 2px 6px 6px; }
 
 #tabs {
   margin-top: 25px; }
