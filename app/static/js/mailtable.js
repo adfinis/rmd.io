@@ -73,14 +73,12 @@
 
     function deleteUser(evt) {
         var row = $(evt.target).closest('tr')
-        var id = $(evt.target).data('user-id')
+        var id = $(evt.target).closest('a').data('user-id')
         $.post(
             '/user/delete/',
-            {id : id},
-            function(data) {
-                row.hide('slow')
-                $('#users').html(data)
-            }
+            {id : id}
+        ).done(
+            row.hide('slow')
         )
     }
 
@@ -127,7 +125,7 @@
     }
 
     function initiateSearch() {
-        $('#searchMails').keyup(function() {
+        $('.search').keyup(function() {
             var key = $(this).val()
             var regex = new RegExp(key, 'i')
             $('.item').each( function() {
@@ -157,7 +155,7 @@
     $('#settings').click(ajaxPopup('settings'))
 
     function refresh() {
-        // Do not poll when datepicker or search is active
+        // Do not poll when datepicker, popover or search is active
         if (
             $('.bootstrap-datetimepicker-widget').is(':visible') ||
             $('#searchMails').val() ||
