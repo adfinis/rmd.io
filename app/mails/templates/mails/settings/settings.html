@@ -1,50 +1,40 @@
 <div class="modal-dialog">
     <div class="modal-content">
-        <div class="modal-header">
-            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-            <h3 class="modal-title">Settings</h3>
-        </div>
-        <div class="modal-body" id="settings">
-            <h3>Anti-Spam</h3>
-            <label>
-                {{ anti_spam.anti_spam }}
-                Enable anti-spam measure
-            </label>
-            {% if identity.anti_spam %}
-            <p>Your key: <strong>{{ identity.key }}</strong></p>
-            {% endif %}
-            <h3>Additonal Addresses</h3>
-            <table class="table table-striped" id="additional_addresses">
-                <tr>
-                    <td>{{ main_user.email }}</td>
-                    <td></td>
-                </tr>
-            {% for additional_user in additional_users %}
-                <tr>
-                    <td>{{ additional_user.email }}
-                        {% if additional_user.is_active == False %}
-                        <small>
-                            (needs <a href="#" title="Send Activation E-Mail" id="send_email">activation</a>)
-                            <input type="hidden" value="{{ additional_user.email }}">
-                        </small>
-                        {% endif %}
-                    </td>
-                    <td>
-                        <a href="#" class="delete-address glyphicon glyphicon-remove" id="{{ additional_user.id }}" title="Delete Additional Address"></a>
-                    </td>
-                </tr>
-            {% endfor %}
-            </table>
-            <input class="form-control" type="text" id="address" name="email" placeholder="example@example.com">
-            <div id="settings-alerts">
-                {% for alert in alerts %}
-                    {% include alert %}
-                {% endfor %}
+        <form action="/settings/" method="post">
+            {% csrf_token %}
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h3 class="modal-title">Settings</h3>
             </div>
-        </div>
-        <div class="modal-footer">
-            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-            <button type=submit" class="btn btn-primary" id="submit">Save changes</button>
-        </div>
+            <div class="modal-body" id="settings">
+                <div class="panel panel-default">
+                    <div class="panel-heading"><strong>Anti-Spam</strong></div>
+                    <div class="panel-body">
+                        <label for="anti_spam">
+                            <input type="checkbox" id="anti_spam" name="anti_spam" {% if account.anti_spam %}checked{% endif %}> Enable anti-spam measure
+                        </label>
+                        {% if account.anti_spam %}
+                        <br><br><div class="well well-sm" style="margin:0;">Your key: <strong>{{ account.key }}</strong></div>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="panel panel-default">
+                    <div class="panel-heading"><strong>E-Mail-Addresses</strong></div>
+                    <div class="panel-body">
+                        {% include 'mails/settings/user_table.html' %}
+                        <div class="input-group">
+                            <input class="form-control" type="email" id="email" name="email" placeholder="example@example.com">
+                            <span class="input-group-btn">
+                                <button class="btn btn-default" id="add_user" type="button">Add email</button>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                <input type="submit" class="btn btn-primary" value="Save" />
+            </div>
+        </form>
     </div>
 </div>

@@ -1,16 +1,16 @@
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
-from django.utils.decorators import method_decorator
 from django.contrib.auth.models import User
+from django.contrib import messages
 from django.core import management
 from django.core.signals import request_started
 from django.db.models import Count
 from django.dispatch import receiver
 from django.http import HttpResponseRedirect
 from django.shortcuts import render, get_object_or_404, redirect
+from django.utils.decorators import method_decorator
 from django.views import generic
-from mails.models import Mail, UserIdentity, Statistic
-from mails.forms import SettingsForm
+from mails.models import Mail, Statistic
 from mails.tools import Tools
 import base64
 import datetime
@@ -40,7 +40,7 @@ class MailView(generic.ListView):
 
     def get_queryset(self):
         if self.request.user.is_authenticated():
-            mails = Mail.my_mails(self.request)
+            mails = Mail.my_mails(self.request.user)
             return mails.order_by('due')
 
     @method_decorator(login_required)
@@ -73,11 +73,10 @@ class HelpView(generic.TemplateView):
     def get_context_data(self, **kwargs):
         context = super(HelpView, self).get_context_data(**kwargs)
         if self.request.user.is_authenticated():
-            identity = UserIdentity.objects.get(
-                user=self.request.user
-            ).identity
-            if identity.anti_spam:
-                context['key'] = '.%s' % identity.key
+            account = self.request.user.get_account()
+
+            if account.anti_spam:
+                context['key'] = '.%s' % account.key
             else:
                 context['key'] = ''
         else:
@@ -88,16 +87,15 @@ class HelpView(generic.TemplateView):
 @login_required()
 def download_vcard(request):
     host = settings.EMAIL_HOST_USER.split('@')[1]
-    identity = UserIdentity.objects.get(user=request.user).identity
-    key = identity.key
+    account = request.user.get_account()
 
-    if identity.anti_spam:
+    if account.anti_spam:
         mail_template = '{delay}.{key}@{host}'
     else:
         mail_template = '{delay}@{host}'
 
     values = {
-        'key' : key or None,
+        'key' : account.key or None,
         'host' : host,
     }
 
@@ -183,7 +181,7 @@ def mail_delete_confirm(request, id):
 @login_required()
 def mail_delete(request):
     mail_id = request.POST['id']
-    mail = Mail.my_mails(request).filter(id=mail_id)
+    mail = Mail.my_mails(request.user).filter(id=mail_id)
     mail.delete()
     tools.delete_email(mail_id)
     return HttpResponseRedirect("/")
@@ -191,61 +189,62 @@ def mail_delete(request):
 
 @login_required()
 def settings_view(request):
-    template_name = 'mails/settings/settings.html'
-
-    identity = UserIdentity.objects.get(user=request.user).identity
-
-    anti_spam = SettingsForm(request.POST or None, instance=identity)
-
-    alerts = []
+    account = request.user.get_account()
 
     if request.method == 'POST':
-        try:
-            user = User.objects.get(id=request.POST['user_id'])
-            user.delete()
-            tools.delete_log_entries(user.email)
-        except:
-            try:
-                user_email = User.objects.get(email=request.POST['user_email'])
-                tools.send_activation_mail(
-                    email_to=user_email.email,
-                    key=base64.b16encode(user_email.username)
-                )
-            except:
-                anti_spam_new = request.POST['anti_spam']
-                anti_spam_old = str(identity.anti_spam).lower()
-                if anti_spam_old != anti_spam_new:
-                    anti_spam.anti_spam = anti_spam_new
-                    anti_spam.save()
-                    if identity.anti_spam is True:
-                        alerts.append('mails/anti_spam_on.html')
-                    else:
-                        alerts.append('mails/anti_spam_off.html')
-                elif request.POST['address'] != '':
-                    address = request.POST['address']
-                    if User.objects.filter(email=address).exists():
-                        alerts.append('mails/address_already_exists.html')
-                    else:
-                        tools.create_additional_user(
-                            email=address,
-                            request=request
-                        )
-                        alerts.append('mails/address_added.html')
-                alerts.append('mails/settings_saved.html')
+        anti_spam = request.POST.get('anti_spam', False)
+        if bool(anti_spam) != bool(account.anti_spam):
+            account.anti_spam = anti_spam
+            account.save()
+            if account.anti_spam is True:
+                messages.info(request, 'Antispam is now enabled. Please use your key for every address.')
+            else:
+                messages.info(request, 'Antispam is now disabled. You can use your normal addresses.')
 
-    additional_users = tools.get_all_users(request)
-    additional_users.remove(request.user)
+        return HttpResponseRedirect("/")
+
+    users = tools.get_all_users_of_account(request.user)
 
     response = render(
         request,
-        template_name,
+        'mails/settings/settings.html',
         {
-            'anti_spam' : anti_spam,
-            'alerts' : alerts,
-            'identity' : identity,
-            'additional_users' : additional_users,
-            'main_user' : request.user
+            'anti_spam_enabled' : account.anti_spam,
+            'account' : account,
+            'users' : users
         }
     )
 
     return response
+
+
+@login_required()
+def add_user_view(request):
+    if request.POST:
+        email = request.POST.get('email', False)
+        if User.objects.filter(email=email).exists():
+            pass
+        elif email != '':
+            tools.create_additional_user(
+                email=email,
+                request=request
+            )
+
+    users = tools.get_all_users_of_account(request.user)
+
+    response = render(
+        request,
+        'mails/settings/user_table.html',
+        {'users' : users}
+    )
+
+    return response
+
+
+@login_required()
+def delete_user_view(request):
+    if request.POST:
+        user = User.objects.get(id=request.POST['id'])
+        user.delete()
+
+        tools.delete_log_entries(user.email)
