@@ -1,6 +1,6 @@
 import email
 from django.contrib.auth.models import User
-from mails.models import LastImport, UserIdentity
+from mails.models import ImportLog
 from mails.tools import Tools
 from django.utils import timezone
 import datetime
@@ -45,7 +45,7 @@ class Command(BaseCommand):
                 email=sender,
                 is_active=True
             )
-            identity = UserIdentity.objects.get(user=user).identity
+            account = user.get_account()
         except:
             self.tools.delete_email_with_error(
                 email_id,
@@ -56,7 +56,7 @@ class Command(BaseCommand):
 
             return
 
-        if identity.anti_spam:
+        if account.anti_spam:
             if not key:
                 self.tools.delete_email_with_error(
                     email,
@@ -64,7 +64,7 @@ class Command(BaseCommand):
                     sender
                 )
                 self.tools.send_wrong_recipient_mail(sender)
-            elif key != identity.key:
+            elif key != account.key:
                 self.tools.delete_email_with_error(
                     email,
                     'Wrong key',
@@ -74,7 +74,7 @@ class Command(BaseCommand):
         self.tools.save_mail(
             subject,
             recipients,
-            sender,
+            user,
             sent_date,
             delay_address,
             due_date,
@@ -92,14 +92,18 @@ class Command(BaseCommand):
         lock = FileLock('/tmp/lockfile.tmp')
         with lock:
 
-            last_import, created = LastImport.objects.get_or_create()
+            try:
+                last_import = ImportLog.objects.latest('date')
 
-            import_diff = timezone.now() - last_import.date
+                import_diff = timezone.now() - last_import.date
 
-            if import_diff > datetime.timedelta(seconds=10):
-                last_import.save()
-            else:
-                return
+                if import_diff > datetime.timedelta(seconds=10):
+                    ImportLog().save()
+                else:
+                    return
+
+            except:
+                ImportLog().save()
 
             email_ids = self.get_email_ids()
 

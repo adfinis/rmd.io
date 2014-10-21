@@ -310,7 +310,7 @@ class Tools():
         from mails.models import AddressLog
 
         subject = 'Activate your address on %s' % self.host
-        tpl     = get_template('mails/activation_mail.txt')
+        tpl     = get_template('mails/messages/activation_mail.txt')
         content = tpl.render(
             Context({
                 'recipient' : recipient,
@@ -322,7 +322,7 @@ class Tools():
         msg = EmailMessage(
             subject,
             content,
-            self.email,
+            self.email_user,
             [recipient]
         )
 
@@ -375,7 +375,7 @@ class Tools():
         self,
         subject,
         recipients,
-        sender,
+        user,
         sent_date,
         delay_address,
         due_date,
@@ -387,8 +387,8 @@ class Tools():
         :type   subject:       string
         :param  recipients:    the recipients of the email
         :type   recipients:    set
-        :param  sender:        the sender of the email
-        :type   sender:        string
+        :param  user:          the user of the email
+        :type   user:          django.auth.models.User
         :param  sent_date:     the date, when the email was sent
         :type   sent_date:     datetime.datetime
         :param  delay_address: the delay address of the email
@@ -405,7 +405,7 @@ class Tools():
                 subject=subject,
                 sent=sent_date,
                 due=due_date,
-                sender=sender,
+                user=user,
             )
             rec_stat = Statistic(
                 type='REC',
@@ -413,7 +413,7 @@ class Tools():
             )
             user_stat = Statistic(
                 type='USER',
-                email=sender,
+                email=user.email,
             )
             mail.save()
             rec_stat.save()
@@ -442,23 +442,17 @@ class Tools():
             self.delete_email_with_error(
                 email_id,
                 'Could not save mail',
-                sender
+                user.email
             )
 
-    def get_all_addresses(self, request):
-        """Gets all addresses of the users identity
+    def get_all_users_of_account(self, user):
+        """Gets all users of the current users account
 
-        :param  request: the http request
-        :type   request: HttpRequest
-        :rtype           list
+        :param  user: the user
+        :type   user: models.User
+        :rtype        list
         """
-        from mails.models import UserIdentity
-
-        identity = UserIdentity.objects.get(user=request.user).identity
-        accounts = UserIdentity.objects.filter(identity=identity)
-        addresses = [account.user.email for account in accounts]
-
-        return addresses
+        return User.objects.filter(userprofile__account=user.get_account())
 
     def delete_email_with_error(self, email_id, reason, sender):
         """Deletes an email and logs an error message
@@ -479,7 +473,7 @@ class Tools():
         :param  request: http request
         :type   request: HttpRequest
         """
-        from mails.models import UserIdentity, AddressLog
+        from mails.models import UserProfile, AddressLog
 
         new_user = User(
             email = email,
@@ -492,11 +486,13 @@ class Tools():
         )
         new_user.save()
 
-        identity = UserIdentity.objects.get(user=request.user).identity
-        user_identity = UserIdentity(
+        account = request.user.get_account()
+        user_profile = UserProfile(
             user=new_user,
-            identity=identity
+            account=account
         )
+
+        user_profile.save()
 
         try:
             user_log_entry = AddressLog.objects.filter(
@@ -507,11 +503,9 @@ class Tools():
             pass
 
         self.send_activation_mail(
-            email_to=email,
+            recipient=email,
             key=base64.b16encode(new_user.username)
         )
-
-        user_identity.save()
 
     def delete_log_entries(self, email):
         from mails.models import AddressLog

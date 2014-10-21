@@ -11,40 +11,46 @@ class Migration(SchemaMigration):
         # Adding model 'Mail'
         db.create_table(u'mails_mail', (
             (u'id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
+            ('user', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['auth.User'])),
             ('subject', self.gf('django.db.models.fields.CharField')(max_length=200)),
             ('sent', self.gf('django.db.models.fields.DateTimeField')()),
             ('due', self.gf('django.db.models.fields.DateTimeField')()),
-            ('sender', self.gf('django.db.models.fields.EmailField')(max_length=75)),
         ))
         db.send_create_signal(u'mails', ['Mail'])
+
+        # Adding model 'Account'
+        db.create_table(u'mails_account', (
+            (u'id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
+            ('key', self.gf('django.db.models.fields.CharField')(unique=True, max_length=10)),
+            ('anti_spam', self.gf('django.db.models.fields.BooleanField')(default=False)),
+        ))
+        db.send_create_signal(u'mails', ['Account'])
+
+        # Adding model 'UserProfile'
+        db.create_table(u'mails_userprofile', (
+            (u'id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
+            ('user', self.gf('django.db.models.fields.related.OneToOneField')(to=orm['auth.User'], unique=True)),
+            ('account', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['mails.Account'])),
+        ))
+        db.send_create_signal(u'mails', ['UserProfile'])
 
         # Adding model 'Recipient'
         db.create_table(u'mails_recipient', (
             (u'id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
             ('mail', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['mails.Mail'])),
-            ('email', self.gf('django.db.models.fields.EmailField')(max_length=75)),
-            ('name', self.gf('django.db.models.fields.CharField')(max_length=200, null=True)),
+            ('name', self.gf('django.db.models.fields.CharField')(max_length=200, blank=True)),
+            ('email', self.gf('django.db.models.fields.EmailField')(max_length=75, blank=True)),
         ))
         db.send_create_signal(u'mails', ['Recipient'])
 
-        # Adding model 'Identity'
-        db.create_table(u'mails_identity', (
+        # Adding model 'Statistic'
+        db.create_table(u'mails_statistic', (
             (u'id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('key', self.gf('django.db.models.fields.CharField')(unique=True, max_length=10)),
-            ('anti_spam', self.gf('django.db.models.fields.BooleanField')(default=False)),
+            ('type', self.gf('django.db.models.fields.CharField')(max_length=4)),
+            ('email', self.gf('django.db.models.fields.EmailField')(max_length=75, null=True)),
+            ('date', self.gf('django.db.models.fields.DateField')(auto_now_add=True, blank=True)),
         ))
-        db.send_create_signal(u'mails', ['Identity'])
-
-        # Adding model 'UserIdentity'
-        db.create_table(u'mails_useridentity', (
-            (u'id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('user', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['auth.User'])),
-            ('identity', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['mails.Identity'])),
-        ))
-        db.send_create_signal(u'mails', ['UserIdentity'])
-
-        # Adding unique constraint on 'UserIdentity', fields ['user', 'identity']
-        db.create_unique(u'mails_useridentity', ['user_id', 'identity_id'])
+        db.send_create_signal(u'mails', ['Statistic'])
 
         # Adding model 'AddressLog'
         db.create_table(u'mails_addresslog', (
@@ -56,47 +62,35 @@ class Migration(SchemaMigration):
         ))
         db.send_create_signal(u'mails', ['AddressLog'])
 
-        # Adding model 'Statistic'
-        db.create_table(u'mails_statistic', (
-            (u'id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('type', self.gf('django.db.models.fields.CharField')(max_length=4)),
-            ('email', self.gf('django.db.models.fields.EmailField')(max_length=75, null=True)),
-            ('date', self.gf('django.db.models.fields.DateField')(auto_now_add=True, blank=True)),
-        ))
-        db.send_create_signal(u'mails', ['Statistic'])
-
-        # Adding model 'LastImport'
-        db.create_table(u'mails_lastimport', (
+        # Adding model 'ImportLog'
+        db.create_table(u'mails_importlog', (
             (u'id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
             ('date', self.gf('django.db.models.fields.DateTimeField')(auto_now=True, blank=True)),
         ))
-        db.send_create_signal(u'mails', ['LastImport'])
+        db.send_create_signal(u'mails', ['ImportLog'])
 
 
     def backwards(self, orm):
-        # Removing unique constraint on 'UserIdentity', fields ['user', 'identity']
-        db.delete_unique(u'mails_useridentity', ['user_id', 'identity_id'])
-
         # Deleting model 'Mail'
         db.delete_table(u'mails_mail')
+
+        # Deleting model 'Account'
+        db.delete_table(u'mails_account')
+
+        # Deleting model 'UserProfile'
+        db.delete_table(u'mails_userprofile')
 
         # Deleting model 'Recipient'
         db.delete_table(u'mails_recipient')
 
-        # Deleting model 'Identity'
-        db.delete_table(u'mails_identity')
-
-        # Deleting model 'UserIdentity'
-        db.delete_table(u'mails_useridentity')
+        # Deleting model 'Statistic'
+        db.delete_table(u'mails_statistic')
 
         # Deleting model 'AddressLog'
         db.delete_table(u'mails_addresslog')
 
-        # Deleting model 'Statistic'
-        db.delete_table(u'mails_statistic')
-
-        # Deleting model 'LastImport'
-        db.delete_table(u'mails_lastimport')
+        # Deleting model 'ImportLog'
+        db.delete_table(u'mails_importlog')
 
 
     models = {
@@ -136,6 +130,12 @@ class Migration(SchemaMigration):
             'model': ('django.db.models.fields.CharField', [], {'max_length': '100'}),
             'name': ('django.db.models.fields.CharField', [], {'max_length': '100'})
         },
+        u'mails.account': {
+            'Meta': {'object_name': 'Account'},
+            'anti_spam': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
+            u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
+            'key': ('django.db.models.fields.CharField', [], {'unique': 'True', 'max_length': '10'})
+        },
         u'mails.addresslog': {
             'Meta': {'object_name': 'AddressLog'},
             'attempt': ('django.db.models.fields.IntegerField', [], {}),
@@ -144,14 +144,8 @@ class Migration(SchemaMigration):
             u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'reason': ('django.db.models.fields.CharField', [], {'max_length': '4'})
         },
-        u'mails.identity': {
-            'Meta': {'object_name': 'Identity'},
-            'anti_spam': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
-            u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'key': ('django.db.models.fields.CharField', [], {'unique': 'True', 'max_length': '10'})
-        },
-        u'mails.lastimport': {
-            'Meta': {'object_name': 'LastImport'},
+        u'mails.importlog': {
+            'Meta': {'object_name': 'ImportLog'},
             'date': ('django.db.models.fields.DateTimeField', [], {'auto_now': 'True', 'blank': 'True'}),
             u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'})
         },
@@ -159,16 +153,16 @@ class Migration(SchemaMigration):
             'Meta': {'object_name': 'Mail'},
             'due': ('django.db.models.fields.DateTimeField', [], {}),
             u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'sender': ('django.db.models.fields.EmailField', [], {'max_length': '75'}),
             'sent': ('django.db.models.fields.DateTimeField', [], {}),
-            'subject': ('django.db.models.fields.CharField', [], {'max_length': '200'})
+            'subject': ('django.db.models.fields.CharField', [], {'max_length': '200'}),
+            'user': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['auth.User']"})
         },
         u'mails.recipient': {
             'Meta': {'object_name': 'Recipient'},
-            'email': ('django.db.models.fields.EmailField', [], {'max_length': '75'}),
+            'email': ('django.db.models.fields.EmailField', [], {'max_length': '75', 'blank': 'True'}),
             u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'mail': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['mails.Mail']"}),
-            'name': ('django.db.models.fields.CharField', [], {'max_length': '200', 'null': 'True'})
+            'name': ('django.db.models.fields.CharField', [], {'max_length': '200', 'blank': 'True'})
         },
         u'mails.statistic': {
             'Meta': {'object_name': 'Statistic'},
@@ -177,11 +171,11 @@ class Migration(SchemaMigration):
             u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'type': ('django.db.models.fields.CharField', [], {'max_length': '4'})
         },
-        u'mails.useridentity': {
-            'Meta': {'unique_together': "(('user', 'identity'),)", 'object_name': 'UserIdentity'},
+        u'mails.userprofile': {
+            'Meta': {'object_name': 'UserProfile'},
+            'account': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['mails.Account']"}),
             u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'identity': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['mails.Identity']"}),
-            'user': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['auth.User']"})
+            'user': ('django.db.models.fields.related.OneToOneField', [], {'to': u"orm['auth.User']", 'unique': 'True'})
         }
     }
 

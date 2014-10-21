@@ -8,47 +8,32 @@ tools = Tools()
 
 
 class Mail(models.Model):
+    user      = models.ForeignKey(User)
     subject   = models.CharField(max_length=200)
     sent      = models.DateTimeField()
     due       = models.DateTimeField()
-    sender    = models.EmailField(max_length=75)
 
     @classmethod
-    def my_mails(cls, request):
-        addresses = tools.get_all_addresses(request)
+    def my_mails(cls, user):
+        users  = tools.get_all_users_of_account(user)
 
-        return cls.objects.filter(sender__in=addresses)
-
-
-class Recipient(models.Model):
-    mail  = models.ForeignKey(Mail)
-    email = models.EmailField(max_length=75)
-    name  = models.CharField(max_length=200, null=True)
+        return cls.objects.filter(user__in=users)
 
 
-class Identity(models.Model):
+class Account(models.Model):
     key       = models.CharField(max_length=10, unique=True)
     anti_spam = models.BooleanField(default=False)
 
 
-class UserIdentity(models.Model):
-    user     = models.ForeignKey(User)
-    identity = models.ForeignKey(Identity)
-
-    class Meta:
-        unique_together = ('user', 'identity')
+class UserProfile(models.Model):
+    user = models.OneToOneField(User)
+    account = models.ForeignKey(Account)
 
 
-class AddressLog(models.Model):
-    reasons = (
-        ('SPAM', 'Spam'),
-        ('NREG', 'Not Registered')
-    )
-
-    email   = models.EmailField(max_length=75)
-    reason  = models.CharField(max_length=4, choices=reasons)
-    attempt = models.IntegerField()
-    date    = models.DateTimeField(auto_now_add=True)
+class Recipient(models.Model):
+    mail  = models.ForeignKey(Mail)
+    name  = models.CharField(max_length=200, blank=True)
+    email = models.EmailField(max_length=75, blank=True)
 
 
 class Statistic(models.Model):
@@ -64,20 +49,30 @@ class Statistic(models.Model):
     date  = models.DateField(auto_now_add=True)
 
 
-class LastImport(models.Model):
+class AddressLog(models.Model):
+    reasons = (
+        ('SPAM', 'Spam'),
+        ('NREG', 'Not Registered')
+    )
+
+    email   = models.EmailField(max_length=75)
+    reason  = models.CharField(max_length=4, choices=reasons)
+    attempt = models.IntegerField()
+    date    = models.DateTimeField(auto_now_add=True)
+
+
+class ImportLog(models.Model):
     date = models.DateTimeField(auto_now=True)
 
 
+def get_account(self):
+    return self.userprofile.account
+
 @receiver(user_created)
-def generate_identity(user, **kwargs):
-    identity = Identity(
-        key = tools.generate_key(),
-    )
+def generate_account(user, **kwargs):
+    account = Account(key=tools.generate_key())
+    account.user_set.add(user)
 
-    user_identity = UserIdentity(
-        user=user,
-        identity=identity
-    )
+    account.save()
 
-    identity.save()
-    user_identity.save()
+User.add_to_class('get_account', get_account)
