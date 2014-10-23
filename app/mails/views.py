@@ -127,10 +127,12 @@ def activate(request, key):
         user = User.objects.get(username=base64.b16decode(key))
         user.is_active = True
         user.save()
+        messages.success(request, 'The user %s was successfully activated.' % user.email)
         tools.delete_log_entries(user.email)
-        return HttpResponseRedirect('/activation_success/')
     except:
-        return HttpResponseRedirect('/activation_fail/')
+        messages.error(request, 'The user could not be activated.')
+
+    return HttpResponseRedirect('/')
 
 
 @login_required()

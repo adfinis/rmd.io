@@ -315,7 +315,7 @@ class Tools():
             Context({
                 'recipient' : recipient,
                 'key'       : key,
-                'url'       : self.url
+                'host'      : self.host
             })
         )
 
