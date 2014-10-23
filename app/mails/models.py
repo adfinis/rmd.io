@@ -45,7 +45,7 @@ class Statistic(models.Model):
     )
 
     type  = models.CharField(max_length=4, choices=types)
-    email = models.EmailField(null=True, max_length=75)
+    email = models.EmailField(blank=True, max_length=75)
     date  = models.DateField(auto_now_add=True)
 
 
