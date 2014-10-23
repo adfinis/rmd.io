@@ -20,6 +20,7 @@
                 <li class="active"><a href="#alltime-users" role="tab" data-toggle="tab">Users</a></li>
                 <li><a href="#alltime-addresses" role="tab" data-toggle="tab">Addresses</a></li>
                 <li><a href="#alltime-oblivious" role="tab" data-toggle="tab">Oblivious</a></li>
+                <li><a href="#alltime-mails" role="tab" data-toggle="tab">Mails</a></li>
             </ul>
             <div class="tab-content">
                 <div class="tab-pane active" id="alltime-users">
@@ -79,24 +80,24 @@
                         <tbody>
                     </table>
                 </div>
-            </div>
-            <div class="row">
-                <h2>Mails:</h2>
-                <table class="table table-striped statistic">
-                    <thead>
-                        <th colspan="2">Mails</th>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>Received:</td>
-                            <td>{{ received_alltime }}</td>
-                        <tr>
-                        </tr>
-                            <td>Sent:</td>
-                            <td>{{ sent_alltime }}</td>
-                        </tr>
-                    <tbody>
-                </table>
+                <div class="tab-pane" id="alltime-mails">
+                    <h2>Mails:</h2>
+                    <table class="table table-striped statistic">
+                        <thead>
+                            <th colspan="2">Mails</th>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Received:</td>
+                                <td>{{ received_alltime }}</td>
+                            <tr>
+                            </tr>
+                                <td>Sent:</td>
+                                <td>{{ sent_alltime }}</td>
+                            </tr>
+                        <tbody>
+                    </table>
+                </div>
             </div>
         </div>
         <div class="col-md-8 pull-right tab-pane fade" id="month">
@@ -104,6 +105,7 @@
                 <li class="active"><a href="#month-users" role="tab" data-toggle="tab">Users</a></li>
                 <li><a href="#month-addresses" role="tab" data-toggle="tab">Addresses</a></li>
                 <li><a href="#month-oblivious" role="tab" data-toggle="tab">Oblivious</a></li>
+                <li><a href="#month-mails" role="tab" data-toggle="tab">Mails</a></li>
             </ul>
             <div class="tab-content">
                 <div class="tab-pane active" id="month-users">
@@ -163,24 +165,24 @@
                         <tbody>
                     </table>
                 </div>
-            </div>
-            <div class="row">
-                <h2>Mails:</h2>
-                <table class="table table-striped statistic">
-                    <thead>
-                        <th colspan="2">Mails</th>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>Received:</td>
-                            <td>{{ received_month }}</td>
-                        <tr>
-                        </tr>
-                            <td>Sent:</td>
-                            <td>{{ sent_month }}</td>
-                        </tr>
-                    <tbody>
-                </table>
+                <div class="tab-pane" id="month-mails">
+                    <h2>Mails:</h2>
+                    <table class="table table-striped statistic">
+                        <thead>
+                            <th colspan="2">Mails</th>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Received:</td>
+                                <td>{{ received_month }}</td>
+                            <tr>
+                            </tr>
+                                <td>Sent:</td>
+                                <td>{{ sent_month }}</td>
+                            </tr>
+                        <tbody>
+                    </table>
+                </div>
             </div>
         </div>
         <div class="col-md-8 pull-right tab-pane fade in active" id="week">
@@ -188,6 +190,7 @@
                 <li class="active"><a href="#week-users" role="tab" data-toggle="tab">Users</a></li>
                 <li><a href="#week-addresses" role="tab" data-toggle="tab">Addresses</a></li>
                 <li><a href="#week-oblivious" role="tab" data-toggle="tab">Oblivious</a></li>
+                <li><a href="#week-mails" role="tab" data-toggle="tab">Mails</a></li>
             </ul>
             <div class="tab-content">
                 <div class="tab-pane active" id="week-users">
@@ -247,24 +250,24 @@
                         <tbody>
                     </table>
                 </div>
-            </div>
-            <div class="row">
-                <h2>Mails:</h2>
-                <table class="table table-striped statistic">
-                    <thead>
-                        <th colspan="2">Mails</th>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>Received:</td>
-                            <td>{{ received_week }}</td>
-                        <tr>
-                        </tr>
-                            <td>Sent:</td>
-                            <td>{{ sent_week }}</td>
-                        </tr>
-                    <tbody>
-                </table>
+                <div class="tab-pane" id="week-mails">
+                    <h2>Mails:</h2>
+                    <table class="table table-striped statistic">
+                        <thead>
+                            <th colspan="2">Mails</th>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Received:</td>
+                                <td>{{ received_week }}</td>
+                            <tr>
+                            </tr>
+                                <td>Sent:</td>
+                                <td>{{ sent_week }}</td>
+                            </tr>
+                        <tbody>
+                    </table>
+                </div>
             </div>
         </div>
     </div>
