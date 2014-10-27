@@ -3,37 +3,46 @@ import smtplib
 from django.utils import timezone
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
-from mails.models import Mail, SentStatistic
-from mails import tools
+from mails.models import Mail, Statistic
+from mails.tools import Tools
 from django.core.management.base import BaseCommand
 from django.conf import settings
+from django.template import Context
+from django.template.loader import get_template
 
 
 class Command(BaseCommand):
 
+    def __init__(self, *args, **kwargs):
+        super(Command, self).__init__(*args, **kwargs)
+        self.tools = Tools()
+        self.smtp = smtplib.SMTP(settings.EMAIL_HOST)
+
     def handle(self, *args, **kwargs):
         try:
-            imap = tools.imap_login()
-            smtp = smtplib.SMTP(settings.EMAIL_HOST)
-            smtp.starttls()
-            smtp.login(settings.EMAIL_HOST_USER, settings.EMAIL_HOST_PASSWORD)
+            self.smtp.starttls()
+            self.smtp.login(settings.EMAIL_HOST_USER, settings.EMAIL_HOST_PASSWORD)
             mails_to_send = Mail.objects.filter(due__lte=timezone.now())
         except:
             return
 
         for mail_to_send in mails_to_send:
 
-            imap_mail_ids = tools.mails_with_id(mail_to_send.id, imap)
+            imap_mail_ids = self.tools.get_mail_by_db_id(mail_to_send.id)
 
             for mail_in_imap in imap_mail_ids:
 
-                results, data = imap.fetch(mail_in_imap, 'RFC822')
+                results, data = self.tools.imap.fetch(mail_in_imap, 'RFC822')
                 raw_email = data[0][1]
 
                 original_msg = email.message_from_string(raw_email)
                 charset = original_msg.get_content_charset()
-                text = 'This mail was originally sent to: %s' % (
-                    mail_to_send.sent_to
+                recipients = mail_to_send.recipient_set
+                tpl = get_template('mails/messages/mail_attachment.txt')
+                text = tpl.render(
+                    Context({
+                        'recipients' : recipients
+                    })
                 )
 
                 if original_msg.is_multipart():
@@ -62,11 +71,11 @@ class Command(BaseCommand):
                         mail_to_send.subject
                     )
                     msg['From'] = settings.EMAIL_HOST_USER
-                    msg['To'] = mail_to_send.sent_from
+                    msg['To'] = mail_to_send.user.email
                     msg['Date'] = email.utils.formatdate(localtime=True)
                     msg['References'] = original_msg['Message-ID']
                 except:
-                    tools.delete_imap_mail(mail_in_imap)
+                    self.tools.delete_email(mail_to_send.id)
                     print('Failed to write new header')
                     break
 
@@ -74,18 +83,19 @@ class Command(BaseCommand):
                     # Attachs text if isn't a multipart message
                     msg = str(msg) + '\n\n' + str(text)
 
-                smtp.sendmail(
+                self.smtp.sendmail(
                     settings.EMAIL_HOST_USER,
-                    mail_to_send.sent_from,
+                    mail_to_send.user.email,
                     str(msg)
                 )
-                l = SentStatistic(
+                l = Statistic(
+                    type='SENT',
                     date=timezone.now()
                 )
                 l.save()
 
-            tools.delete_imap_mail(mail_to_send.id)
+            self.tools.delete_email(mail_to_send.id)
             mail_to_send.delete()
 
-        smtp.quit()
-        imap.logout()
+        self.smtp.quit()
+        self.tools.imap.logout()
