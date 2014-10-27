@@ -38,7 +38,8 @@
                     </span>
                     <span class="input-group-addon">
                     <a
-                     id="show-info"
+                     data-target="dialog"
+                     data-name="mail_info"
                      class="btn btn-default btn-xs"
                      href="/mails/info/{{ mail.id }}/"
                      title="Show info about this mail"
@@ -46,7 +47,8 @@
                     </span>
                     <span class="input-group-addon">
                     <a
-                     id="delete-mail"
+                     data-target="dialog"
+                     data-name="mail_delete"
                      class="btn btn-default btn-xs"
                      href="/mails/delete/confirm/{{ mail.id }}/"
                      title="Delete this mail"

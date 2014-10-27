@@ -20,42 +20,8 @@
              if (!(/^http:.*/.test(settings.url) || /^https:.*/.test(settings.url))) {
                  xhr.setRequestHeader("X-CSRFToken", getCookie('csrftoken'))
              }
-         },
-         error: function() {
-            var error_popup = $('#error_popup')
-            error_popup.show()
-            error_popup.modal()
          }
     })
-
-    function ajaxPopup(name) {
-        return function(evt) {
-            evt.preventDefault()
-            var popup = $('#'+name+'_popup')
-            if(popup.length === 0) {
-                $('body').append('<div id="'+name+'_popup" class="modal fade" role="dialog"/>')
-                popup = $('#'+name+'_popup')
-                if (name === 'settings') {
-                    $('#settings_popup').on('click', '.delete_user', deleteUser)
-                    $('#settings_popup').on('click', '.send_acitvation', sendActivation)
-                    $('#settings_popup').on('click', '#add_user', addUser)
-                    $('input').keypress(function (e) {
-                      if (e.which === 13) {
-                          $('#submit').trigger('click')
-                      }
-                    })
-                }
-            }
-            $.get(
-                this.href,
-                {},
-                function(resp, status, xhr) {
-                    popup.html(resp)
-                    popup.modal()
-                }, 'html'
-            )
-        }
-    }
 
     function newTime(evt) {
         var due = $(evt.target).find('input').val()
@@ -69,40 +35,6 @@
             var duefield = $('#due-' + id)
             duefield.text(due)
         })
-    }
-
-    function deleteUser(evt) {
-        var row = $(evt.target).closest('tr')
-        var id = $(evt.target).closest('a').data('user-id')
-        $.post(
-            '/user/delete/',
-            {id : id}
-        ).done(
-            row.hide('slow')
-        )
-    }
-
-    function addUser(evt) {
-        var email = $('#email').val()
-        $.post(
-            '/user/add/',
-            {email : email},
-            function(data) {
-                $('#users').html(data)
-            }
-        ).done(
-            $('#email').val('')
-        )
-    }
-
-    function sendActivation(evt) {
-        var id = $(evt.target).data('user-id')
-        return $.post(
-            '/user/activate/send/',
-            {
-                'id' : id
-            }
-        )
     }
 
     function initiateDatetimepicker() {
@@ -150,15 +82,11 @@
         initiateSearch()
     }
 
-    $('#list').on('click', '#delete-mail', ajaxPopup('delete'))
-    $('#list').on('click', '#show-info', ajaxPopup('info'))
-    $('#settings').click(ajaxPopup('settings'))
-
     function refresh() {
         // Do not poll when datepicker, popover or search is active
         if (
             $('.bootstrap-datetimepicker-widget').is(':visible') ||
-            $('#searchMails').val() ||
+            $('.search').val() ||
             $('.popover').is(':visible')
         ){
             return
