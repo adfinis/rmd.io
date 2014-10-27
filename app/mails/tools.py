@@ -452,7 +452,9 @@ class Tools():
         :type   user: models.User
         :rtype        list
         """
-        return User.objects.filter(userprofile__account=user.get_account())
+        return User.objects.filter(
+                userprofile__account=user.get_account()
+            ).order_by('-last_login')
 
     def delete_email_with_error(self, email_id, reason, sender):
         """Deletes an email and logs an error message
