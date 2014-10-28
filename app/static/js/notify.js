@@ -7,7 +7,11 @@ $(function() {
         $(this).notify({
             type: type,
             message: { html: text },
-            fadeOut: { enabled: true, delay: 5000}
+            fadeOut: { enabled: true, delay: 10000}
         }).show();
     });
+
+    $('.notification').on('click', function(e){
+      $(this).slideUp();
+    })
 });

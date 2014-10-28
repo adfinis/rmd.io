@@ -23,15 +23,10 @@
          }
     })
 
-    $('body').on('shown.bs.modal', function (e) {
+    $('body').on('show.bs.modal', function (e) {
         $('.delete_user').on('click', deleteUser)
         $('.send_acitvation').on('click', sendActivation)
         $('#add_user').on('click', addUser)
-        $('input[type="email"]').keypress(function (e) {
-            if (e.which === 13) {
-                $('#add_user').trigger('click')
-            }
-        })
     })
 
     function deleteUser(evt) {

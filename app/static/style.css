@@ -124,3 +124,7 @@ address {
 
 #tabs {
   margin-top: 25px; }
+
+.notification .alert:hover {
+  opacity: 0.7;
+  cursor: pointer; }
