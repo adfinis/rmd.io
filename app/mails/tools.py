@@ -243,7 +243,7 @@ class Tools():
                 % (recipient)
             )
         except:
-            tpl = get_template('mails/not_registered_mail.txt')
+            tpl = get_template('mails/messages/not_registered_mail.txt')
 
             subject = 'Register at %s!' % self.host
             content = tpl.render(
@@ -281,13 +281,13 @@ class Tools():
         try:
             AddressLog.objects.get(email=recipient)
         except:
-            tpl     = get_template('mails/wrong_recipient_mail.txt')
+            tpl     = get_template('mails/messages/wrong_recipient_mail.txt')
 
             subject = 'Your mail on %s was deleted!' % self.host
             content = tpl.render(
                 Context({
                     'recipient' : recipient,
-                    'url'       : self.url
+                    'host'      : self.host
                 })
             )
             msg = EmailMessage(
@@ -463,8 +463,7 @@ class Tools():
         :type   msg: email.message.Message
         :rtype:      datetime.datetime
         """
-        # do not delete in debug mode
-        # self.imap.store(email_id, '+FLAGS', '\\Deleted')
+        self.imap.store(email_id, '+FLAGS', '\\Deleted')
         self.logger.warning('Mail from %s deleted: %s' % (sender, reason))
 
     def create_additional_user(self, email, request):

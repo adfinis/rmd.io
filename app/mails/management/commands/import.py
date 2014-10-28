@@ -59,17 +59,21 @@ class Command(BaseCommand):
         if account.anti_spam:
             if not key:
                 self.tools.delete_email_with_error(
-                    email,
+                    email_id,
                     'No key',
                     sender
                 )
                 self.tools.send_wrong_recipient_mail(sender)
+
+                return
             elif key != account.key:
                 self.tools.delete_email_with_error(
-                    email,
+                    email_id,
                     'Wrong key',
                     sender,
                 )
+
+                return
 
         self.tools.save_mail(
             subject,
