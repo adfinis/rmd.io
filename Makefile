@@ -40,3 +40,9 @@ migrate:
 
 restart-apache:
 	@vagrant ssh -c "sudo service apache2 restart"
+
+css:
+	@cd app/static; make css
+
+watch:
+	@cd app/static; make watch
