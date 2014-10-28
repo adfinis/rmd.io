@@ -198,7 +198,7 @@ def settings_view(request):
         if bool(anti_spam) != bool(account.anti_spam):
             account.anti_spam = anti_spam
             account.save()
-            if account.anti_spam is True:
+            if bool(account.anti_spam) is True:
                 messages.info(request, 'Antispam is now enabled. Please use your key for every address.')
             else:
                 messages.info(request, 'Antispam is now disabled. You can use your normal addresses.')
