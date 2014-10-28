@@ -5,6 +5,9 @@ body {
   height: 100% !important;
   padding-top: 70px; }
 
+body.nopadding {
+  padding-top: 45px; }
+
 .notification {
   z-index: 2000;
   position: fixed;
@@ -52,9 +55,6 @@ body {
 @media (max-width: 768px) {
   .searchMails {
     margin-right: 10px; } }
-#carousel {
-  margin-top: -25px; }
-
 #adsylogo {
   height: 30px; }
 
@@ -63,7 +63,7 @@ body {
 
 .wrapper {
   min-height: 100%;
-  margin-bottom: -25px; }
+  margin-bottom: -50px; }
 
 .footer-text {
   color: #999999;
