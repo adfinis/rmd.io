@@ -5,6 +5,7 @@
 {% block title %}- Statistics{% endblock %}
 
 {% block content %}
+<div class="row">
     <div class="col-md-3">
         <div class="row">
             <ul class="nav nav-pills nav-stacked" id="tabs">
@@ -34,9 +35,9 @@
                         <tbody>
                             {% for user in users_alltime %}
                                 <tr>
-                                    <td>{{ forloop.counter }}</td>
+                                    <td class="col-md-1">{{ forloop.counter }}</td>
                                     <td>{{ user.email }}</td>
-                                    <td>{{ user.id__count }}</td>
+                                    <td class="text-right col-md-1">{{ user.id__count }}</td>
                                 </tr>
                             {% endfor %}
                         <tbody>
@@ -53,9 +54,9 @@
                         <tbody>
                             {% for address in addresses_alltime %}
                                 <tr>
-                                    <td>{{ forloop.counter }}</td>
+                                    <td class="col-md-1">{{ forloop.counter }}</td>
                                     <td>{{ address.email }}</td>
-                                    <td>{{ address.id__count }}</td>
+                                    <td class="text-right col-md-1">{{ address.id__count }}</td>
                                 </tr>
                             {% endfor %}
                         <tbody>
@@ -72,9 +73,9 @@
                         <tbody>
                             {% for oblivious in oblivious_alltime %}
                                 <tr>
-                                    <td>{{ forloop.counter }}</td>
+                                    <td class="col-md-1">{{ forloop.counter }}</td>
                                     <td>{{ oblivious.email }}</td>
-                                    <td>{{ oblivious.id__count }}</td>
+                                    <td class="text-right col-md-1">{{ oblivious.id__count }}</td>
                                 </tr>
                             {% endfor %}
                         <tbody>
@@ -89,11 +90,11 @@
                         <tbody>
                             <tr>
                                 <td>Received:</td>
-                                <td>{{ received_alltime }}</td>
-                            <tr>
+                                <td class="text-right col-md-1">{{ received_alltime }}</td>
                             </tr>
+                            <tr>
                                 <td>Sent:</td>
-                                <td>{{ sent_alltime }}</td>
+                                <td class="text-right col-md-1">{{ sent_alltime }}</td>
                             </tr>
                         <tbody>
                     </table>
@@ -119,9 +120,9 @@
                         <tbody>
                             {% for user in users_month %}
                                 <tr>
-                                    <td>{{ forloop.counter }}</td>
+                                    <td class="col-md-1">{{ forloop.counter }}</td>
                                     <td>{{ user.email }}</td>
-                                    <td>{{ user.id__count }}</td>
+                                    <td class="text-right col-md-1">{{ user.id__count }}</td>
                                 </tr>
                             {% endfor %}
                         <tbody>
@@ -138,9 +139,9 @@
                         <tbody>
                             {% for address in addresses_month %}
                                 <tr>
-                                    <td>{{ forloop.counter }}</td>
+                                    <td class="col-md-1">{{ forloop.counter }}</td>
                                     <td>{{ address.email }}</td>
-                                    <td>{{ address.id__count }}</td>
+                                    <td class="text-right col-md-1">{{ address.id__count }}</td>
                                 </tr>
                             {% endfor %}
                         <tbody>
@@ -157,9 +158,9 @@
                         <tbody>
                             {% for oblivious in oblivious_month %}
                                 <tr>
-                                    <td>{{ forloop.counter }}</td>
+                                    <td class="col-md-1">{{ forloop.counter }}</td>
                                     <td>{{ oblivious.email }}</td>
-                                    <td>{{ oblivious.id__count }}</td>
+                                    <td class="text-right col-md-1">{{ oblivious.id__count }}</td>
                                 </tr>
                             {% endfor %}
                         <tbody>
@@ -174,11 +175,11 @@
                         <tbody>
                             <tr>
                                 <td>Received:</td>
-                                <td>{{ received_month }}</td>
-                            <tr>
+                                <td class="text-right col-md-1">{{ received_month }}</td>
                             </tr>
+                            <tr>
                                 <td>Sent:</td>
-                                <td>{{ sent_month }}</td>
+                                <td class="text-right col-md-1">{{ sent_month }}</td>
                             </tr>
                         <tbody>
                     </table>
@@ -204,9 +205,9 @@
                         <tbody>
                             {% for user in users_week %}
                                 <tr>
-                                    <td>{{ forloop.counter }}</td>
+                                    <td class="col-md-1">{{ forloop.counter }}</td>
                                     <td>{{ user.email }}</td>
-                                    <td>{{ user.id__count }}</td>
+                                    <td class="text-right col-md-1">{{ user.id__count }}</td>
                                 </tr>
                             {% endfor %}
                         <tbody>
@@ -223,9 +224,9 @@
                         <tbody>
                             {% for address in addresses_week %}
                                 <tr>
-                                    <td>{{ forloop.counter }}</td>
+                                    <td class="col-md-1">{{ forloop.counter }}</td>
                                     <td>{{ address.email }}</td>
-                                    <td>{{ address.id__count }}</td>
+                                    <td class="text-right col-md-1">{{ address.id__count }}</td>
                                 </tr>
                             {% endfor %}
                         <tbody>
@@ -242,9 +243,9 @@
                         <tbody>
                             {% for oblivious in oblivious_week %}
                                 <tr>
-                                    <td>{{ forloop.counter }}</td>
+                                    <td class="col-md-1">{{ forloop.counter }}</td>
                                     <td>{{ oblivious.email }}</td>
-                                    <td>{{ oblivious.id__count }}</td>
+                                    <td class="text-right col-md-1">{{ oblivious.id__count }}</td>
                                 </tr>
                             {% endfor %}
                         <tbody>
@@ -259,11 +260,11 @@
                         <tbody>
                             <tr>
                                 <td>Received:</td>
-                                <td>{{ received_week }}</td>
-                            <tr>
+                                <td class="text-right col-md-1">{{ received_week }}</td>
                             </tr>
+                            <tr>
                                 <td>Sent:</td>
-                                <td>{{ sent_week }}</td>
+                                <td class="text-right col-md-1">{{ sent_week }}</td>
                             </tr>
                         <tbody>
                     </table>
@@ -271,6 +272,7 @@
             </div>
         </div>
     </div>
+</div>
 {% endblock %}
 
 {% block bottomscripts %}
