@@ -4,7 +4,6 @@
 # <codecell>
 
 import psycopg2
-from IPython.display import display
 
 try:
     conn1 = psycopg2.connect("dbname='maildelay_old' user='maildelay' host='localhost' password='vagrant'")
