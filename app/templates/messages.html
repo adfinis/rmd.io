@@ -3,7 +3,19 @@
     <div
         class="notification"
         data-notify-type="{%if message.tags == 'error'%}danger{%else%}{{message.tags}}{%endif%}"
-        data-notify-text="<strong>{{message.tags|capfirst}}!</strong> {{message}} "
+        data-notify-text="
+            <i class='fa
+            {% if message.tags == 'error' %}
+                fa-bolt
+            {% elif message.tags == 'warning' %}
+                fa-warning
+            {% elif message.tags == 'info' %}
+                fa-info-circle
+            {% elif message.tags == 'success' %}
+                fa-check-circle
+            {% endif %}
+            '></i>
+            <strong> {{message.tags|capfirst}}!</strong> {{message}} "
     ></div>
     {% endfor %}
 {% endif %}
