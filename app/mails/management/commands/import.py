@@ -96,18 +96,13 @@ class Command(BaseCommand):
         lock = FileLock('/tmp/lockfile.tmp')
         with lock:
 
-            try:
-                last_import = ImportLog.objects.latest('date')
+            last_import, created = ImportLog.objects.get_or_create()
+            import_diff = timezone.now() - last_import.date
 
-                import_diff = timezone.now() - last_import.date
-
-                if import_diff > datetime.timedelta(seconds=10):
-                    ImportLog().save()
-                else:
-                    return
-
-            except:
-                ImportLog().save()
+            if import_diff > datetime.timedelta(seconds=30):
+                last_import.save()
+            else:
+                return
 
             email_ids = self.get_email_ids()
 
