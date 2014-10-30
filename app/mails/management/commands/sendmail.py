@@ -60,7 +60,7 @@ class Command(BaseCommand):
 
                 else:
                     msg = MIMEText(
-                        original_msg.get_payload(),
+                        '\n\n'.join((original_msg.get_payload(), text)),
                         'plain',
                         charset
                     )
@@ -78,10 +78,6 @@ class Command(BaseCommand):
                     self.tools.delete_email(mail_to_send.id)
                     print('Failed to write new header')
                     break
-
-                if not msg.is_multipart():
-                    # Attachs text if isn't a multipart message
-                    msg = str(msg) + '\n\n' + str(text)
 
                 self.smtp.sendmail(
                     settings.EMAIL_HOST_USER,
