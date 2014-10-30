@@ -27,5 +27,6 @@ urlpatterns = patterns(
     url(r'^statistic/$', views.statistic_view),
     url(r'^user/add/$', views.add_user_view),
     url(r'^user/delete/$', views.delete_user_view),
+    url(r'^user/activate/send/$', views.send_activation),
     url(r'^user/activate/(?P<key>\w+)/$', views.activate),
 )

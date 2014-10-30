@@ -25,11 +25,12 @@
 
     $('body').on('show.bs.modal', function (e) {
         $('.delete_user').on('click', deleteUser)
-        $('.send_acitvation').on('click', sendActivation)
+        $('.send_activation').on('click', sendActivation)
         $('#add_user').on('click', addUser)
     })
 
     function deleteUser(evt) {
+        evt.preventDefault()
         var row = $(evt.target).closest('tr')
         var id = $(evt.target).closest('a').data('user-id')
         $.post(
@@ -41,6 +42,7 @@
     }
 
     function addUser(evt) {
+        evt.preventDefault()
         var email = $('#email').val()
         $.post(
             '/user/add/',
@@ -54,8 +56,9 @@
     }
 
     function sendActivation(evt) {
-        var id = $(evt.target).data('user-id')
-        return $.post(
+        evt.preventDefault()
+        var id = $(this).data('user-id')
+        $.post(
             '/user/activate/send/',
             {
                 'id' : id

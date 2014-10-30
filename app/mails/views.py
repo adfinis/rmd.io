@@ -6,7 +6,7 @@ from django.core import management
 from django.core.signals import request_started
 from django.db.models import Count
 from django.dispatch import receiver
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, HttpResponse
 from django.shortcuts import render, get_object_or_404, redirect
 from django.utils.decorators import method_decorator
 from django.views import generic
@@ -250,3 +250,19 @@ def delete_user_view(request):
         user.delete()
 
         tools.delete_log_entries(user.email)
+
+    return HttpResponse('')
+
+
+@login_required()
+def send_activation(request):
+    if request.POST:
+        user = User.objects.get(id=request.POST['id'])
+        email = user.email
+
+        tools.send_activation_mail(
+            recipient = email,
+            key = base64.b16encode(user.username)
+        )
+
+    return HttpResponse('')

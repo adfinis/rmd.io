@@ -8,7 +8,7 @@
             <td>{{ u.email }}
                 {% if not u.is_active %}
                 <small>
-                    (needs <a href="#" title="Send Activation E-Mail" data-user-id="{{ u.id }}" id="send_activation">activation</a>)
+                    (needs <a href="#" title="Send Activation E-Mail" data-user-id="{{ u.id }}" class="send_activation">activation</a>)
                 </small>
                 {% endif %}
             </td>
