@@ -60,7 +60,7 @@ class Command(BaseCommand):
 
                 else:
                     msg = MIMEText(
-                        '\n\n'.join((original_msg.get_payload(), text)),
+                        '\n\n'.join((original_msg.get_payload(), str(text))),
                         'plain',
                         charset
                     )
