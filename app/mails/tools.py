@@ -186,7 +186,7 @@ class Tools():
             return re.search(
                 '^\d+[dmw]\.([0-9a-z]{10})@',
                 email_address
-            ).group()
+            ).group(1)
         except AttributeError:
             return None
 

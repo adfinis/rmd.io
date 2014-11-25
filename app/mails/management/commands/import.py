@@ -25,10 +25,10 @@ class Command(BaseCommand):
             recipients    = self.tools.get_recipients_from_message(msg)
             subject       = self.tools.get_subject_from_message(msg)
             sent_date     = self.tools.get_sent_date_from_message(msg)
-            key           = self.tools.get_key_from_email_address(sender)
             delay_address = self.tools.get_delay_address_from_recipients(
                 recipients
             )
+            key           = self.tools.get_key_from_email_address(delay_address)
             due_date      = sent_date + datetime.timedelta(
                 self.tools.get_delay_days_from_email_address(delay_address)
             )
