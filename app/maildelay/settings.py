@@ -208,9 +208,9 @@ CSP_FRAME_SRC = ("'self'", 'https://login.persona.org')
 
 # Mailserver login settings
 
-EMAIL_HOST_USER = 'maildelay@maildelay.tk'
+EMAIL_HOST_USER = 'maildelay@maildelay.ml'
 EMAIL_HOST_PASSWORD = '3p7KDn4FugQQ'
-EMAIL_HOST = 'maildelay.tk'
+EMAIL_HOST = 'maildelay.ml'
 EMAIL_FOLDER = 'INBOX'
 
 MAILBOXES = [

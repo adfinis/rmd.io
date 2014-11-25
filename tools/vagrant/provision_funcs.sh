@@ -72,6 +72,7 @@ function prepare_django() {
 function configure_apache() {
     echo "Setting up Apache config..."
     cp /vagrant/tools/vagrant/vhost.conf /etc/apache2/sites-available/000-default.conf
+    cp /vagrant/tools/vagrant/phppgadmin /etc/apache2/conf.d/phppgadmin
     ln -s /etc/apache2/conf.d/phppgadmin /etc/apache2/conf-enabled/phppgadmin.conf
     a2enmod ssl
     a2enmod rewrite

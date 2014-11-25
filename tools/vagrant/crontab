@@ -1,2 +1,2 @@
-*   *  *   *   *     /var/www/app/manage.py import
-*   *  *   *   *     /var/www/app/manage.py sendmail
+*   *  *   *   *     /vagrant/envpy /vagrant/app/manage.py import
+*   *  *   *   *     /vagrant/envpy /vagrant/app/manage.py sendmail
