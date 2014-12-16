@@ -148,7 +148,7 @@ class Tools():
         :rtype                 int
         """
         try:
-            match = re.search('^(\d+)([dmw])', email_address).group()
+            match = re.findall('^(\d+)([dmw])', email_address)[0]
             multiplicator = self.multiplicate_number_with[match[1]]
             delay = int(match[0]) * int(multiplicator)
             return delay

@@ -17,6 +17,15 @@ import datetime
 
 tools = Tools()
 
+def has_access_to_mail(mail, request):
+    users = tools.get_all_users_of_account(request.user)
+    if mail.user in users:
+        return True
+    else:
+        messages.error(request, 'Access denied!')
+        return False
+
+
 def staff_required(login_url=None):
     return user_passes_test(lambda u: u.is_staff, login_url=login_url)
 
@@ -51,16 +60,20 @@ class MailView(generic.ListView):
         return super(MailView, self).dispatch(*args, **kwargs)
 
 
-class MailInfoView(generic.DetailView):
-    model = Mail
-    template_name = 'mails/mail_info.html'
+@login_required(login_url='/login/')
+def mail_info(request, id):
+    mail = get_object_or_404(Mail, pk=id)
+    if has_access_to_mail(mail, request):
+        return render(request, 'mails/mail_info.html', {'mail' : mail})
+    else:
+        return redirect('/mails/')
 
 
 @login_required(login_url='/login/')
 def mail_update(request, id):
     due = request.POST['due']
     mail = get_object_or_404(Mail, pk=id)
-    if mail.sender == request.user.email:
+    if has_access_to_mail(mail, request):
         mail.due = due
         mail.save()
     return redirect('/mails/')
@@ -184,16 +197,22 @@ def statistic_view(request):
 @login_required(login_url='/login/')
 def mail_delete_confirm(request, id):
     mail = get_object_or_404(Mail, pk=id)
-    return render(request, 'mails/mail_delete_confirm.html', {'mail' : mail})
+    if has_access_to_mail(mail, request):
+        return render(request, 'mails/mail_delete_confirm.html', {'mail' : mail})
+    else:
+        return redirect('/mails/')
 
 
 @login_required(login_url='/login/')
 def mail_delete(request):
     mail_id = request.POST['id']
     mail = Mail.my_mails(request.user).filter(id=mail_id)
-    mail.delete()
-    tools.delete_email(mail_id)
-    return HttpResponseRedirect("/")
+    if has_access_to_mail(mail, request):
+        mail.delete()
+        tools.delete_email(mail_id)
+        return HttpResponseRedirect("/")
+    else:
+        return redirect('/mails/')
 
 
 @login_required(login_url='/login/')
