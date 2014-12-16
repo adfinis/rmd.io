@@ -181,13 +181,13 @@ def statistic_view(request):
     )
 
 
-@login_required()
+@login_required(login_url='/login/')
 def mail_delete_confirm(request, id):
     mail = get_object_or_404(Mail, pk=id)
     return render(request, 'mails/mail_delete_confirm.html', {'mail' : mail})
 
 
-@login_required()
+@login_required(login_url='/login/')
 def mail_delete(request):
     mail_id = request.POST['id']
     mail = Mail.my_mails(request.user).filter(id=mail_id)
