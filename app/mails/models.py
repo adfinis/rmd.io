@@ -71,8 +71,11 @@ def get_account(self):
 @receiver(user_created)
 def generate_account(user, **kwargs):
     account = Account(key=tools.generate_key())
-    account.user_set.add(user)
-
     account.save()
+    user_profile = UserProfile(
+        user=user,
+        account=account
+    )
+    user_profile.save()
 
 User.add_to_class('get_account', get_account)
