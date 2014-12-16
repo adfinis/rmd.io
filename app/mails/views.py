@@ -17,6 +17,11 @@ import datetime
 
 tools = Tools()
 
+
+def page_not_found(request):
+    return render(request, '404.html')
+
+
 def has_access_to_mail(mail, request):
     users = tools.get_all_users_of_account(request.user)
     if mail.user in users:

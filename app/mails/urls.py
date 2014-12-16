@@ -1,6 +1,8 @@
 from django.conf.urls import patterns, url
 from mails import views
 
+handler404 = 'maildelay.views.page_not_found'
+
 urlpatterns = patterns(
     '',
     url(r'^$',       views.BaseView.as_view()),
