@@ -1,5 +1,5 @@
 from django.conf import settings
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib.auth.models import User
 from django.contrib import messages
 from django.core import management
@@ -16,6 +16,9 @@ import base64
 import datetime
 
 tools = Tools()
+
+def staff_required(login_url=None):
+    return user_passes_test(lambda u: u.is_staff, login_url=login_url)
 
 
 class BaseView(generic.RedirectView):
@@ -53,7 +56,7 @@ class MailInfoView(generic.DetailView):
     template_name = 'mails/mail_info.html'
 
 
-@login_required()
+@login_required(login_url='/login/')
 def mail_update(request, id):
     due = request.POST['due']
     mail = get_object_or_404(Mail, pk=id)
@@ -84,7 +87,7 @@ class HelpView(generic.TemplateView):
         return context
 
 
-@login_required()
+@login_required(login_url='/login/')
 def download_vcard(request):
     host = settings.EMAIL_HOST_USER.split('@')[1]
     account = request.user.get_account()
@@ -121,7 +124,7 @@ def download_vcard(request):
     return response
 
 
-@login_required()
+@login_required(login_url='/login/')
 def activate(request, key):
     try:
         user = User.objects.get(username=base64.b16decode(key))
@@ -135,8 +138,12 @@ def activate(request, key):
     return HttpResponseRedirect('/')
 
 
-@login_required()
+@login_required(login_url='/login/')
 def statistic_view(request):
+    if not request.user.is_staff:
+        messages.error(request, 'Access denied.')
+        return redirect('/')
+
     now = datetime.datetime.now()
     week = now - datetime.timedelta(7)
     month = now - datetime.timedelta(30)
@@ -189,7 +196,7 @@ def mail_delete(request):
     return HttpResponseRedirect("/")
 
 
-@login_required()
+@login_required(login_url='/login/')
 def settings_view(request):
     account = request.user.get_account()
 
@@ -220,7 +227,7 @@ def settings_view(request):
     return response
 
 
-@login_required()
+@login_required(login_url='/login/')
 def add_user_view(request):
     if request.POST:
         email = request.POST.get('email', False)
@@ -243,7 +250,7 @@ def add_user_view(request):
     return response
 
 
-@login_required()
+@login_required(login_url='/login/')
 def delete_user_view(request):
     if request.POST:
         user = User.objects.get(id=request.POST['id'])
@@ -254,7 +261,7 @@ def delete_user_view(request):
     return HttpResponse('')
 
 
-@login_required()
+@login_required(login_url='/login/')
 def send_activation(request):
     if request.POST:
         user = User.objects.get(id=request.POST['id'])
