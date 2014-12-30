@@ -39,9 +39,10 @@
 
     function initiateDatetimepicker() {
         $('.date').datetimepicker({
-            format: "YYYY-MM-DD hh:mm",
+            format: "YYYY-MM-DD HH:mm",
             minDate: new Date(),
             showToday: true,
+            language: 'en',
             useCurrent: true,
             useSeconds: false,
             useMinutes: true,
