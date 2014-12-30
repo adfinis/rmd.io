@@ -23,9 +23,10 @@ def page_not_found(request):
 
 
 def has_access_to_mail(mail, request):
-    users = tools.get_all_users_of_account(request.user)
-    if mail.user in users:
-        return True
+    if isinstance(mail, Mail):
+        users = tools.get_all_users_of_account(request.user)
+        if mail.user in users:
+            return True
     else:
         messages.error(request, 'Access denied!')
         return False
@@ -210,8 +211,8 @@ def mail_delete_confirm(request, id):
 
 @login_required(login_url='/login/')
 def mail_delete(request):
-    mail_id = request.POST['id']
-    mail = Mail.my_mails(request.user).filter(id=mail_id)
+    mail_id = request.POST.get('id')
+    mail = get_object_or_404(Mail, pk=mail_id)
     if has_access_to_mail(mail, request):
         mail.delete()
         tools.delete_email(mail_id)
