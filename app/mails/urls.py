@@ -25,7 +25,8 @@ urlpatterns = patterns(
     url(r'^settings/$', views.settings_view),
     url(r'^statistic/$', views.statistic_view),
     url(r'^user/add/$', views.add_user_view),
-    url(r'^user/delete/$', views.delete_user_view),
+    url(r'^user/delete/confirm/(?P<id>\d+)/$', views.user_delete_confirm),
+    url(r'^user/delete/$', views.user_delete),
     url(r'^user/activate/send/$', views.send_activation),
     url(r'^user/activate/(?P<key>\w+)/$', views.activate),
 )

@@ -20,7 +20,18 @@
              if (!(/^http:.*/.test(settings.url) || /^https:.*/.test(settings.url))) {
                  xhr.setRequestHeader("X-CSRFToken", getCookie('csrftoken'))
              }
-         }
+         },
+        error: function(jqXHR, textStatus, errorThrown) {
+            var message = 'Ooops, something went wrong'
+            if (jqXHR.status == 404) {
+                message = '404 - Page not found'
+            }
+            addNotification({
+                type:'danger',
+                text: '<i class="fa fa-bolt"></i><strong> Error!<strong> ' + message
+            })
+            $('.modal').modal('hide')
+        }
     })
 
     function newTime(evt) {

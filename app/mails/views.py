@@ -6,7 +6,7 @@ from django.core import management
 from django.core.signals import request_started
 from django.db.models import Count
 from django.dispatch import receiver
-from django.http import HttpResponseRedirect, HttpResponse
+from django.http import HttpResponseRedirect, HttpResponse, Http404
 from django.shortcuts import render, get_object_or_404, redirect
 from django.utils.decorators import method_decorator
 from django.views import generic
@@ -22,24 +22,18 @@ def page_not_found(request):
     return render(request, '404.html')
 
 
-def has_access_to_mail(mail, request):
-    if isinstance(mail, Mail):
-        users = tools.get_all_users_of_account(request.user)
-        if mail.user in users:
-            return True
-    else:
-        messages.error(request, 'Access denied!')
-        return False
-
-
 def staff_required(login_url=None):
     return user_passes_test(lambda u: u.is_staff, login_url=login_url)
 
 
 class BaseView(generic.RedirectView):
     def get_redirect_url(self, **kwargs):
+        next_url = self.request.GET.get('next', None)
         if self.request.user.is_authenticated():
-            return '/mails/'
+            if next_url:
+                return next_url
+            else:
+                return '/mails/'
         else:
             return '/login/'
 
@@ -68,20 +62,16 @@ class MailView(generic.ListView):
 
 @login_required(login_url='/login/')
 def mail_info(request, id):
-    mail = get_object_or_404(Mail, pk=id)
-    if has_access_to_mail(mail, request):
-        return render(request, 'mails/mail_info.html', {'mail' : mail})
-    else:
-        return redirect('/mails/')
+    mail = get_object_or_404(Mail.my_mails(request.user), pk=id)
+    return render(request, 'mails/mail_info.html', {'mail' : mail})
 
 
 @login_required(login_url='/login/')
 def mail_update(request, id):
     due = request.POST['due']
-    mail = get_object_or_404(Mail, pk=id)
-    if has_access_to_mail(mail, request):
-        mail.due = due
-        mail.save()
+    mail = get_object_or_404(Mail.my_mails(request.user), pk=id)
+    mail.due = due
+    mail.save()
     return redirect('/mails/')
 
 
@@ -160,7 +150,7 @@ def activate(request, key):
 @login_required(login_url='/login/')
 def statistic_view(request):
     if not request.user.is_staff:
-        messages.error(request, 'Access denied.')
+        messages.error(request, 'Access denied!')
         return redirect('/')
 
     now = datetime.datetime.now()
@@ -202,23 +192,19 @@ def statistic_view(request):
 
 @login_required(login_url='/login/')
 def mail_delete_confirm(request, id):
-    mail = get_object_or_404(Mail, pk=id)
-    if has_access_to_mail(mail, request):
-        return render(request, 'mails/mail_delete_confirm.html', {'mail' : mail})
-    else:
-        return redirect('/mails/')
+    mail = get_object_or_404(Mail.my_mails(request.user), pk=id)
+    return render(request, 'mails/mail_delete_confirm.html', {'mail' : mail})
 
 
 @login_required(login_url='/login/')
 def mail_delete(request):
     mail_id = request.POST.get('id')
-    mail = get_object_or_404(Mail, pk=mail_id)
-    if has_access_to_mail(mail, request):
-        mail.delete()
-        tools.delete_email(mail_id)
-        return HttpResponseRedirect("/")
-    else:
-        return redirect('/mails/')
+    mail = get_object_or_404(Mail.my_mails(request.user), pk=mail_id)
+
+    mail.delete()
+    tools.delete_email(mail_id)
+
+    return HttpResponseRedirect("/")
 
 
 @login_required(login_url='/login/')
@@ -257,7 +243,7 @@ def add_user_view(request):
     if request.POST:
         email = request.POST.get('email', False)
         if User.objects.filter(email=email).exists():
-            pass
+            messages.warning(request, "The user '%s' already exists." % email)
         elif email != '':
             tools.create_additional_user(
                 email=email,
@@ -276,14 +262,26 @@ def add_user_view(request):
 
 
 @login_required(login_url='/login/')
-def delete_user_view(request):
+def user_delete_confirm(request, id):
+    users = tools.get_all_users_of_account(request.user)
+    user = get_object_or_404(User, pk=id)
+    if user in users:
+        return render(request, 'mails/settings/user_delete_confirm.html', {'user' : user})
+    else:
+        return Http404
+
+
+@login_required(login_url='/login/')
+def user_delete(request):
     if request.POST:
+        users = tools.get_all_users_of_account(request.user)
         user = User.objects.get(id=request.POST['id'])
-        user.delete()
-
-        tools.delete_log_entries(user.email)
-
-    return HttpResponse('')
+        if user in users:
+            user.delete()
+            tools.delete_log_entries(user.email)
+        else:
+            return Http404
+    return HttpResponseRedirect('/')
 
 
 @login_required(login_url='/login/')

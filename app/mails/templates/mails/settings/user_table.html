@@ -16,7 +16,7 @@
                 {% if u == user %}
                     <em>(current user)</em>
                 {% else %}
-                    <a href="#" data-user-id="{{ u.id }}" title="Delete User" class="delete_user"><i class="fa fa-times"></i></a>
+                    <a href="/user/delete/confirm/{{u.id}}" data-target="dialog" title="Delete User"><i class="fa fa-times"></i></a>
                 {% endif %}
             </td>
         </tr>
