@@ -31,18 +31,21 @@ def get_delay_days_from_email_address(email_address):
     except:
         raise Exception('Invalid delay')
 
-def get_delay_address_from_recipients(recipients):
-    '''Gets the delay days from a set of recipients
+def get_delay_addresses_from_recipients(recipients):
+    '''Gets the delay addresses from a set of recipients
 
     :param  recipients: dict of recipients
     :type   recipients: dict
-    :rtype:             int
+    :rtype:             list
     '''
+    delay_addresses = []
     for recipient in recipients:
         if re.search('^(\d+[dmw])', recipient):
-            return recipient
-
-    raise Exception('Could not find a delay address')
+            delay_addresses.append(recipient)
+    if len(delay_addresses):
+        return delay_addresses
+    else:
+        raise Exception('Could not find a delay address')
 
 def get_key_from_email_address(email_address):
     '''Get the key of an email address'''

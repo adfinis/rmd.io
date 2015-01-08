@@ -1,7 +1,7 @@
 from django.contrib.auth.models import User
 from django.core.management.base import BaseCommand
 from django.utils import timezone
-from mails.models import Mail, Statistic, Recipient
+from mails.models import Mail, Statistic, Recipient, Due
 from lockfile import FileLock
 from mails import imaphelper, tools
 from mails.models import ImportLog
@@ -18,15 +18,12 @@ class Command(BaseCommand):
     def import_mail(self, message):
 
         try:
-            sender        = message.get_sender()
-            recipients    = message.get_recipients()
-            subject       = message.get_subject()
-            sent_date     = message.get_sent_date()
-            delay_address = tools.get_delay_address_from_recipients(recipients)
-            key           = tools.get_key_from_email_address(delay_address)
-            due_date      = sent_date + datetime.timedelta(
-                tools.get_delay_days_from_email_address(delay_address)
-            )
+            sender          = message.get_sender()
+            recipients      = message.get_recipients()
+            subject         = message.get_subject()
+            sent_date       = message.get_sent_date()
+            delay_addresses = tools.get_delay_addresses_from_recipients(recipients)
+            keys            = [tools.get_key_from_email_address(x) for x in delay_addresses]
         except Exception as e:
             message.delete()
             logger.error('Mail from %s deleted: Failed to parse header, %s' % (sender, e.args[0]))
@@ -47,13 +44,13 @@ class Command(BaseCommand):
             return
 
         if account.anti_spam:
-            if not key:
+            if not len(keys):
                 message.delete()
                 logger.error('Mail from %s deleted: No key' % sender)
                 tools.send_wrong_recipient_mail(sender)
 
                 return
-            elif key != account.key:
+            elif not any(key == account.key for key in keys):
                 message.delete()
                 logger.error('Mail from %s deleted: Wrong key' % sender)
 
@@ -63,19 +60,26 @@ class Command(BaseCommand):
             mail = Mail(
                 subject=subject,
                 sent=sent_date,
-                due=due_date,
-                user=user,
+                user=user
             )
-            rec_stat = Statistic(
-                type='REC',
-                email=delay_address
-            )
+            mail.save()
+            for delay_address in delay_addresses:
+                rec_stat = Statistic(
+                    type='REC',
+                    email=delay_address
+                )
+                due = Due(
+                    mail=mail,
+                    due=sent_date + datetime.timedelta(
+                        tools.get_delay_days_from_email_address(delay_address)
+                    )
+                )
+                due.save()
+                rec_stat.save()
             user_stat = Statistic(
                 type='USER',
                 email=user.email,
             )
-            mail.save()
-            rec_stat.save()
             user_stat.save()
 
             for i in recipients:

@@ -1,15 +1,18 @@
 import email
 import smtplib
+import logging
 from django.utils import timezone
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
-from mails.models import Mail, Statistic
+from mails.models import Statistic, Due
 from mails import imaphelper
 from django.core.management.base import BaseCommand
 from django.conf import settings
 from django.template import Context
 from django.template.loader import get_template
 
+
+logger = logging.getLogger('mails')
 
 class Command(BaseCommand):
 
@@ -21,9 +24,10 @@ class Command(BaseCommand):
         except:
             return
 
-        mails = Mail.objects.filter(due__lte=timezone.now())
+        dues = Due.objects.filter(due__lte=timezone.now())
 
-        for mail in mails:
+        for due in dues:
+            mail = due.mail
 
             imap_conn = imaphelper.get_connection()
             message = imaphelper.IMAPMessage.from_dbid(mail.id, imap_conn)
@@ -82,7 +86,10 @@ class Command(BaseCommand):
             )
             l.save()
 
-            message.delete()
-            mail.delete()
+            due.delete()
+
+            if mail.due_set.count():
+                message.delete()
+                mail.delete()
 
         smtp.quit()

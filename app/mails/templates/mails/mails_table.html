@@ -8,7 +8,7 @@
                 Sent
             </th>
             <th class="col-md-4">
-                Due
+                Next Due
             </th>
         </tr>
     </thead>
@@ -30,7 +30,7 @@
                 {{ mail.sent | date:"Y-m-d H:i" }}
             </td>
             <td>
-                <span id="due-{{ mail.id }}">{{ mail.due | date:"Y-m-d H:i" }}</span>
+                <span id="due-{{ mail.id }}">{{ mail.next_due.due | date:"Y-m-d H:i" }}</span>
                 <div class="input-group date pull-right break-none">
                     <input type="text" class="form-control hidden" value="{{ mail.due | date:"Y-m-d H:i"}}" disabled>
                     <span class="input-group-addon datepickerbutton">

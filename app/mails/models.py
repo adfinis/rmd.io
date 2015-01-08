@@ -6,16 +6,17 @@ from mails import tools
 
 
 class Mail(models.Model):
-    user      = models.ForeignKey(User)
-    subject   = models.CharField(max_length=200)
-    sent      = models.DateTimeField()
-    due       = models.DateTimeField()
+    user    = models.ForeignKey(User)
+    subject = models.CharField(max_length=200)
+    sent    = models.DateTimeField()
 
     @classmethod
     def my_mails(cls, user):
-        users  = tools.get_all_users_of_account(user)
-
+        users = tools.get_all_users_of_account(user)
         return cls.objects.filter(user__in=users)
+
+    def next_due(self):
+        return Due.objects.filter(mail=self).order_by('due')[0]
 
 
 class Account(models.Model):
@@ -24,7 +25,7 @@ class Account(models.Model):
 
 
 class UserProfile(models.Model):
-    user = models.OneToOneField(User)
+    user    = models.OneToOneField(User)
     account = models.ForeignKey(Account)
 
 
@@ -32,6 +33,11 @@ class Recipient(models.Model):
     mail  = models.ForeignKey(Mail)
     name  = models.CharField(max_length=200, blank=True)
     email = models.EmailField(max_length=75, blank=True)
+
+
+class Due(models.Model):
+    mail = models.ForeignKey(Mail)
+    due  = models.DateTimeField()
 
 
 class Statistic(models.Model):

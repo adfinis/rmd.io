@@ -4,13 +4,12 @@ from mails.models import Mail
 class MailAdmin(admin.ModelAdmin):
     fieldsets = (
         (None,                {'fields' : ['subject', 'user']}),
-        ('Date Informations', {'fields' : ['sent', 'due'],
+        ('Date Informations', {'fields' : ['sent'],
                                'classes': ['collapse']
                               }
         ),
     )
-    list_display = ('subject', 'user', 'sent', 'due')
-    list_filter = ['due']
+    list_display = ('subject', 'user', 'sent')
     search_fields = ['subject']
 
 admin.site.register(Mail, MailAdmin)

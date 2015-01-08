@@ -19,15 +19,25 @@
                     <td>{{mail.sent|date:"Y-m-d H:i"}}</td>
                 </tr>
                 <tr>
-                    <td><strong>Due:</strong></td>
-                    <td>{{mail.due|date:"Y-m-d H:i"}}</td>
+                    <td>
+                        <strong>Due{% if mail.due_set.count > 1 %}s{% endif %}:</strong>
+                    </td>
+                    <td>
+                        <ul class="info-list">
+                        {% for due in mail.due_set.all %}
+                        <li>
+                            {{due.due|date:"Y-m-d H:i"}}
+                        </li>
+                        {% endfor %}
+                        </ul>
+                    </td>
                 </tr>
                 <tr>
                     <td>
                         <strong>Recipient{% if mail.recipient_set.count > 1 %}s{% endif %}:</strong>
                     </td>
                     <td>
-                        <ul class="recipients">
+                        <ul class="info-list">
                         {% for recipient in mail.recipient_set.all %}
                         <li>
                             {% if recipient.name != '' %}
