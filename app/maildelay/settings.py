@@ -1,5 +1,7 @@
 # Django settings for maildelay project.
 
+import datetime
+
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
 
@@ -248,3 +250,17 @@ MAILBOXES = [
     ('10m', 'Mail Delay for 10 months'),
     ('11m', 'Mail Delay for 11 months'),
 ]
+
+BLOCK_DELAYS = {
+    1 : datetime.timedelta(minutes = 10),
+    2 : datetime.timedelta(hours   =  1),
+    3 : datetime.timedelta(days    =  1),
+    4 : datetime.timedelta(days    =  3),
+    5 : datetime.timedelta(days    =  7)
+}
+
+EMAIL_SUFFIX_TO_DAY = {
+    'd' : 1,
+    'w' : 7,
+    'm' : 30,
+}

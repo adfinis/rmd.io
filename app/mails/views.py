@@ -11,11 +11,9 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.utils.decorators import method_decorator
 from django.views import generic
 from mails.models import Mail, Statistic
-from mails.tools import Tools
+from mails import tools, imaphelper
 import base64
 import datetime
-
-tools = Tools()
 
 
 def page_not_found(request):
@@ -202,7 +200,8 @@ def mail_delete(request):
     mail = get_object_or_404(Mail.my_mails(request.user), pk=mail_id)
 
     mail.delete()
-    tools.delete_email(mail_id)
+    imap_mail = imaphelper.IMAPMessage.from_dbid(mail_id)
+    imap_mail.delete()
 
     return HttpResponseRedirect("/")
 

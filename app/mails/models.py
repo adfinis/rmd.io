@@ -2,9 +2,7 @@ from django_browserid.signals import user_created
 from django.contrib.auth.models import User
 from django.db import models
 from django.dispatch import receiver
-from mails.tools import Tools
-
-tools = Tools()
+from mails import tools
 
 
 class Mail(models.Model):

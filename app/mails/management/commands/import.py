@@ -1,43 +1,36 @@
-import email
 from django.contrib.auth.models import User
-from mails.models import ImportLog
-from mails.tools import Tools
-from django.utils import timezone
-import datetime
-from lockfile import FileLock
 from django.core.management.base import BaseCommand
+from django.utils import timezone
+from mails.models import Mail, Statistic, Recipient
+from lockfile import FileLock
+from mails import imaphelper, tools
+from mails.models import ImportLog
+import datetime
+import logging
 
+logger = logging.getLogger('mails')
 
 class Command(BaseCommand):
 
     def __init__(self, *args, **kwargs):
         super(Command, self).__init__(*args, **kwargs)
-        self.tools = Tools()
 
-    def import_mail(self, email_id):
-
-        results, data = self.tools.imap.fetch(email_id, 'RFC822')
-        raw_email     = data[0][1]
-        msg           = email.message_from_string(raw_email)
+    def import_mail(self, message):
 
         try:
-            sender        = self.tools.get_sender_from_message(msg)
-            recipients    = self.tools.get_recipients_from_message(msg)
-            subject       = self.tools.get_subject_from_message(msg)
-            sent_date     = self.tools.get_sent_date_from_message(msg)
-            delay_address = self.tools.get_delay_address_from_recipients(
-                recipients
-            )
-            key           = self.tools.get_key_from_email_address(delay_address)
+            sender        = message.get_sender()
+            recipients    = message.get_recipients()
+            subject       = message.get_subject()
+            sent_date     = message.get_sent_date()
+            delay_address = tools.get_delay_address_from_recipients(recipients)
+            key           = tools.get_key_from_email_address(delay_address)
             due_date      = sent_date + datetime.timedelta(
-                self.tools.get_delay_days_from_email_address(delay_address)
+                tools.get_delay_days_from_email_address(delay_address)
             )
         except Exception as e:
-            self.tools.delete_email_with_error(
-                email_id,
-                e.args[0],
-                sender
-            )
+            message.delete()
+            logger.error('Mail from %s deleted: Failed to parse header, %s' % (sender, e.args[0]))
+
             return
 
         try:
@@ -47,49 +40,66 @@ class Command(BaseCommand):
             )
             account = user.get_account()
         except:
-            self.tools.delete_email_with_error(
-                email_id,
-                'User not registered',
-                sender
-            )
-            self.tools.send_registration_mail(sender)
+            message.delete()
+            logger.error('Mail from %s deleted: User not registered' % sender)
+            tools.send_registration_mail(sender)
 
             return
 
         if account.anti_spam:
             if not key:
-                self.tools.delete_email_with_error(
-                    email_id,
-                    'No key',
-                    sender
-                )
-                self.tools.send_wrong_recipient_mail(sender)
+                message.delete()
+                logger.error('Mail from %s deleted: No key' % sender)
+                tools.send_wrong_recipient_mail(sender)
 
                 return
             elif key != account.key:
-                self.tools.delete_email_with_error(
-                    email_id,
-                    'Wrong key',
-                    sender,
-                )
+                message.delete()
+                logger.error('Mail from %s deleted: Wrong key' % sender)
 
                 return
 
-        self.tools.save_mail(
-            subject,
-            recipients,
-            user,
-            sent_date,
-            delay_address,
-            due_date,
-            email_id
-        )
+        try:
+            mail = Mail(
+                subject=subject,
+                sent=sent_date,
+                due=due_date,
+                user=user,
+            )
+            rec_stat = Statistic(
+                type='REC',
+                email=delay_address
+            )
+            user_stat = Statistic(
+                type='USER',
+                email=user.email,
+            )
+            mail.save()
+            rec_stat.save()
+            user_stat.save()
 
-    def get_email_ids(self):
-        results, data = self.tools.imap.search(None, 'UNFLAGGED')
-        ids = data[0].split()
+            for i in recipients:
+                recipient = Recipient(
+                    mail=mail,
+                    email=recipients[i]['email'],
+                    name=recipients[i]['name']
+                )
+                recipient.save()
+                if recipients[i]['email'] != delay_address:
+                    obl_stat = Statistic(
+                        type='OBL',
+                        email=recipients[i]['email']
+                    )
+                    obl_stat.save()
+                else:
+                    continue
 
-        return ids
+            message.flag(mail.id)
+        except:
+            message.delete()
+            logger.error('Mail from %s deleted: Could not save mail' % sender)
+
+            return
 
     def handle(self, *args, **kwargs):
 
@@ -104,9 +114,10 @@ class Command(BaseCommand):
             else:
                 return
 
-            email_ids = self.get_email_ids()
+            imap_conn = imaphelper.get_connection()
+            messages = imaphelper.get_unflagged(imap_conn)
 
-            for email_id in email_ids:
-                self.import_mail(email_id)
+            for message in messages:
+                self.import_mail(message)
 
-            self.tools.imap.expunge()
+            imap_conn.expunge()
