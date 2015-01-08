@@ -12,9 +12,6 @@ logger = logging.getLogger('mails')
 
 class Command(BaseCommand):
 
-    def __init__(self, *args, **kwargs):
-        super(Command, self).__init__(*args, **kwargs)
-
     def import_mail(self, message):
 
         try:
