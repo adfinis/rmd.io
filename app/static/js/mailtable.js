@@ -1,6 +1,12 @@
 (function (){
     "use strict";
 
+    var isPageBeingRefreshed = false
+
+    window.onbeforeunload = function() {
+        isPageBeingRefreshed = true
+    }
+
     $.ajaxSetup({
          beforeSend: function(xhr, settings) {
              function getCookie(name) {
@@ -22,15 +28,17 @@
              }
          },
         error: function(jqXHR, textStatus, errorThrown) {
-            var message = 'Ooops, something went wrong'
-            if (jqXHR.status == 404) {
-                message = '404 - Page not found'
+            if (!isPageBeingRefreshed) {
+                var message = 'Ooops, something went wrong'
+                if (jqXHR.status == 404) {
+                    message = '404 - Page not found'
+                }
+                addNotification({
+                    type:'danger',
+                    text: '<i class="fa fa-bolt"></i><strong> Error!<strong> ' + message
+                })
+                $('.modal').modal('hide')
             }
-            addNotification({
-                type:'danger',
-                text: '<i class="fa fa-bolt"></i><strong> Error!<strong> ' + message
-            })
-            $('.modal').modal('hide')
         }
     })
 
