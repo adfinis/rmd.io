@@ -5,15 +5,15 @@
 .mo.po:
 	@msgfmt $< -o $@
 
-user:
+init-user:
 	@vagrant ssh -c "sudo su - postgres -c psql < /vagrant/tools/vagrant/user.sql > /dev/null 2>&1"
 	@echo "Successfully resetted users"
 
 import:
-	@vagrant ssh -c "/vagrant/envpy /vagrant/app/manage.py import"
+	vagrant ssh -c "/vagrant/envpy /vagrant/app/manage.py import"
 
 sendmail:
-	@vagrant ssh -c "/vagrant/envpy /vagrant/app/manage.py sendmail"
+	vagrant ssh -c "/vagrant/envpy /vagrant/app/manage.py sendmail"
 
 clear-address-log:
 	@vagrant ssh -c "sudo su - postgres -c psql < /vagrant/tools/vagrant/clear-log.sql > /dev/null 2>&1"
