@@ -34,15 +34,15 @@ def get_delay_days_from_email_address(email_address):
 def get_delay_addresses_from_recipients(recipients):
     '''Gets the delay addresses from a set of recipients
 
-    :param  recipients: dict of recipients
-    :type   recipients: dict
+    :param  recipients: list of recipients
+    :type   recipients: list
     :rtype:             list
     '''
     delay_addresses = []
     for recipient in recipients:
-        if re.search('^(\d+[dmw])', recipient):
-            delay_addresses.append(recipient)
-    if len(delay_addresses):
+        if re.search('^(\d+[dmw])', recipient['email']):
+            delay_addresses.append(recipient['email'])
+    if delay_addresses:
         return delay_addresses
     else:
         raise Exception('Could not find a delay address')

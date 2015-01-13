@@ -12,7 +12,15 @@ logger = logging.getLogger('mails')
 
 class Command(BaseCommand):
 
+    def __init__(self, *args, **kwargs):
+        super(Command, self).__init__(*args, **kwargs)
+        self.imported_mail_ids = []
+
     def import_mail(self, message):
+
+        if message.msg['Message-ID'] in self.imported_mail_ids:
+            message.delete()
+            return
 
         try:
             sender          = message.get_sender()
@@ -79,23 +87,24 @@ class Command(BaseCommand):
             )
             user_stat.save()
 
-            for i in recipients:
+            for rec in recipients:
                 recipient = Recipient(
                     mail=mail,
-                    email=recipients[i]['email'],
-                    name=recipients[i]['name']
+                    email=rec['email'],
+                    name=rec['name']
                 )
                 recipient.save()
-                if recipients[i]['email'] != delay_address:
+                if rec['email'] not in delay_addresses:
                     obl_stat = Statistic(
                         type='OBL',
-                        email=recipients[i]['email']
+                        email=rec['email']
                     )
                     obl_stat.save()
                 else:
                     continue
 
             message.flag(mail.id)
+            self.imported_mail_ids.append(message.msg['Message-ID'])
         except:
             message.delete()
             logger.error('Mail from %s deleted: Could not save mail' % sender)

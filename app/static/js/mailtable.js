@@ -35,7 +35,7 @@
                 }
                 addNotification({
                     type:'danger',
-                    text: '<i class="fa fa-bolt"></i><strong> Error!<strong> ' + message
+                    text: message
                 })
                 $('.modal').modal('hide')
             }
@@ -54,26 +54,6 @@
             var duefield = $('#due-' + id)
             duefield.text(due)
         })
-    }
-
-    function initiateDatetimepicker() {
-        $('.date').datetimepicker({
-            format: "YYYY-MM-DD HH:mm",
-            minDate: new Date(),
-            showToday: true,
-            language: 'en',
-            useCurrent: true,
-            useSeconds: false,
-            useMinutes: true,
-            minuteStepping: 1,
-            icons : {
-                time: "fa fa-clock-o",
-                date: "fa fa-calendar",
-                up:   "fa fa-arrow-up",
-                down: "fa fa-arrow-down"
-            }
-        })
-        $('.date').on('dp.change', newTime)
     }
 
     function initiateSearch() {
@@ -98,7 +78,6 @@
     function initiate() {
         $('.add-popover').popover('destroy')
         $('.add-popover').popover({html : true, trigger : 'hover'})
-        initiateDatetimepicker()
         initiateSearch()
     }
 

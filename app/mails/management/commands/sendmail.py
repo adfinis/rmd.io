@@ -82,13 +82,14 @@ class Command(BaseCommand):
             )
             l = Statistic(
                 type='SENT',
+                email=mail.user.email,
                 date=timezone.now()
             )
             l.save()
 
             due.delete()
 
-            if mail.due_set.count():
+            if not mail.due_set.count():
                 message.delete()
                 mail.delete()
 

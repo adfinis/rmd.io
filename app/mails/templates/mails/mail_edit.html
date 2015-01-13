@@ -1,0 +1,83 @@
+<div class="modal-dialog">
+    <div class="modal-content">
+        <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+            <h3 class="modal-title">Edit due dates</h3>
+        </div>
+        <form action="/mails/update/" method="post">
+            {% csrf_token %}
+            <input type="hidden" name="mail_id" value="{{ mail_id }}" />
+            <div class="modal-body">
+                <div id="dues">
+                    {% for due in dues %}
+                    <div class="form-group saved">
+                        <div class="input-group date">
+                            <input class="form-control" type="text" name="due-{{due.id}}" value="{{ due.due | date:'Y-m-d H:i' }}"></input>
+                            <span class="input-group-addon datepickerbutton"><i class="fa fa-calendar"></i></span>
+                            <span class="input-group-addon remove"><i class="fa fa-times"></i></span>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                <div class="text-right">
+                    <button class="btn btn-default" id="add-due"><i class="fa fa-plus"></i> Add Due</button>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                <input type="submit" class="btn btn-primary" value="Save" />
+            </div>
+        </form>
+    </div>
+</div>
+<script>
+    function init() {
+        $('.date').datetimepicker({
+            format: "YYYY-MM-DD HH:mm",
+            minDate: new Date(),
+            showToday: true,
+            language: 'en',
+            useCurrent: true,
+            useSeconds: false,
+            useMinutes: true,
+            minuteStepping: 1,
+            icons : {
+                time: "fa fa-clock-o",
+                date: "fa fa-calendar",
+                up:   "fa fa-arrow-up",
+                down: "fa fa-arrow-down"
+            }
+        })
+    }
+
+    $('#dues').on('click', '.remove', function(e){
+        var dues = $('#dues')
+        var row  = $(e.target).parents('.form-group')
+        var saved = dues.children('.saved')
+
+        if (saved.length > 1 || saved.index(row) == -1) {
+            row.slideUp()
+            row.remove()
+        }
+        else {
+            addNotification({
+                type:'warning',
+                text: "You can't remove the last due date of a mail"
+            })
+        }
+    })
+
+    $('#add-due').click(function(e){
+        e.preventDefault()
+        var dues = $('#dues')
+        var el   = '<div class="form-group"><div class="input-group date">' +
+                   '<input class="form-control" type="text" name="due-new"></input>' +
+                   '<span class="input-group-addon datepickerbutton"><i class="fa fa-calendar"></i></span>' +
+                   '<span class="input-group-addon remove"><i class="fa fa-times"></i></span></div>'
+
+        dues.append(el)
+        init()
+    })
+
+    init()
+</script>

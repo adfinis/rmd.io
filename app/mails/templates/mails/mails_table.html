@@ -4,11 +4,13 @@
             <th class="col-md-5">
                 Subject
             </th>
+            <th class="col-md-3">
+                Next Due
+            </th>
             <th class="hidden-sm hidden-xs col-md-3">
                 Sent
             </th>
-            <th class="col-md-4">
-                Next Due
+            <th class="col-md-2">
             </th>
         </tr>
     </thead>
@@ -17,7 +19,7 @@
     <tr class="item" id="{{ mail.id }}">
             <td class="subject">
                 <span
-                 title="Sent from {{ mail.user.email }}"
+                 title="General info"
                  class="add-popover"
                  data-toggle="popover"
                  data-placement="right"
@@ -26,35 +28,42 @@
                 {{ mail.subject }}
                 </span>
             </td>
+            <td>
+                <span
+                 title="Due dates"
+                 class="add-popover"
+                 data-toggle="popover"
+                 data-placement="right"
+                 data-content="{% include 'mails/mail_duedates.html' %}"
+                >
+                {{ mail.next_due.due | date:"Y-m-d H:i" }}
+                </span>
+            </td>
             <td class="hidden-xs sent">
                 {{ mail.sent | date:"Y-m-d H:i" }}
             </td>
-            <td>
-                <span id="due-{{ mail.id }}">{{ mail.next_due.due | date:"Y-m-d H:i" }}</span>
-                <div class="input-group date pull-right break-none">
-                    <input type="text" class="form-control hidden" value="{{ mail.due | date:"Y-m-d H:i"}}" disabled>
-                    <span class="input-group-addon datepickerbutton">
-                        <a href="#" class="btn btn-default btn-xs"><i title="Edit due date" class="fa fa-pencil"></i></a>
-                    </span>
-                    <span class="input-group-addon">
-                    <a
-                     data-target="dialog"
-                     data-name="mail_info"
-                     class="btn btn-default btn-xs"
-                     href="/mails/info/{{ mail.id }}/"
-                     title="Show info about this mail"
-                    ><i class="fa fa-info"></i></a>
-                    </span>
-                    <span class="input-group-addon">
-                    <a
-                     data-target="dialog"
-                     data-name="mail_delete"
-                     class="btn btn-default btn-xs"
-                     href="/mails/delete/confirm/{{ mail.id }}/"
-                     title="Delete this mail"
-                    ><i class="fa fa-trash-o"></i></a>
-                    </span>
-                </div>
+            <td class="text-right break-none">
+                <a
+                 data-target="dialog"
+                 data-name="mail_edit"
+                 class="btn btn-default btn-xs"
+                 href="/mails/edit/{{ mail.id }}/"
+                 title="Edit due dates"
+                ><i class="fa fa-pencil"></i></a>
+                <a
+                 data-target="dialog"
+                 data-name="mail_info"
+                 class="btn btn-default btn-xs"
+                 href="/mails/info/{{ mail.id }}/"
+                 title="Show info about this mail"
+                ><i class="fa fa-info"></i></a>
+                <a
+                 data-target="dialog"
+                 data-name="mail_delete"
+                 class="btn btn-default btn-xs"
+                 href="/mails/delete/confirm/{{ mail.id }}/"
+                 title="Delete this mail"
+                ><i class="fa fa-trash-o"></i></a>
             </td>
         </tr>
     {% empty %}

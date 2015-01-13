@@ -16,20 +16,20 @@
                 </tr>
                 <tr>
                     <td><strong>Sent:</strong></td>
-                    <td>{{mail.sent|date:"Y-m-d H:i"}}</td>
+                    <td>{{mail.sent|date:"D\, d\. F Y H:i"}}</td>
                 </tr>
                 <tr>
                     <td>
                         <strong>Due{% if mail.due_set.count > 1 %}s{% endif %}:</strong>
                     </td>
                     <td>
-                        <ul class="info-list">
+                        <table class="table table-condensed table-striped table-bordered" style="margin:0">
                         {% for due in mail.due_set.all %}
-                        <li>
-                            {{due.due|date:"Y-m-d H:i"}}
-                        </li>
+                        <tr><td>
+                            {{due.due|date:"D\, d\. F Y H:i"}}
+                        </td></tr>
                         {% endfor %}
-                        </ul>
+                        </table>
                     </td>
                 </tr>
                 <tr>
@@ -37,17 +37,17 @@
                         <strong>Recipient{% if mail.recipient_set.count > 1 %}s{% endif %}:</strong>
                     </td>
                     <td>
-                        <ul class="info-list">
+                        <table class="table table-condensed table-striped table-bordered" style="margin:0">
                         {% for recipient in mail.recipient_set.all %}
-                        <li>
+                        <tr><td>
                             {% if recipient.name != '' %}
                                 {{ recipient.name }} <em>({{ recipient.email }})</em>
                             {% else %}
                                 {{ recipient.email }}
                             {% endif %}
-                        </li>
+                        </td></tr>
                         {% endfor %}
-                        </ul>
+                        </table>
                     </td>
                 </tr>
             </table>

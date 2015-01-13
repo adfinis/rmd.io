@@ -19,7 +19,8 @@ urlpatterns = patterns(
         r'^mails/table/$',
         views.MailView.as_view(template_name="mails/mails_table.html")
     ),
-    url(r'^mails/update/(?P<id>\d+)/$', views.mail_update),
+    url(r'^mails/edit/(?P<id>\d+)/$', views.mail_edit),
+    url(r'^mails/update/$', views.mail_update),
     url(r'^mails/info/(?P<id>\d+)/$', views.mail_info),
     url(r'^download/maildelay.vcf', views.download_vcard),
     url(r'^settings/$', views.settings_view),

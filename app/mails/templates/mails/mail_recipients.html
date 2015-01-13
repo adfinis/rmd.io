@@ -1,8 +1,18 @@
 <table class='popover-table'>
     <tr>
         <th>
-            <strong>Recipient{% if mail.recipient_set.count > 1 %}s{% endif %}:</strong>
+            <strong>Sender:</strong>
         <th>
+    </tr>
+    <tr>
+        <td>
+            {{ mail.user.email }}
+        </td>
+    </tr>
+    <tr>
+        <th>
+            <strong>Recipient{% if mail.recipient_set.count > 1 %}s{% endif %}:</strong>
+        </th>
     </tr>
     {% for recipient in mail.recipient_set.all %}
     <tr>

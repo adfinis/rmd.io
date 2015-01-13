@@ -59,7 +59,7 @@ class IMAPMessage(object):
         results, data = imap_conn.uid(
             'search',
             None,
-            '(KEYWORD "MAILDELAY-%d")' % dbid
+            '(KEYWORD "MAILDELAY-%d")' % int(dbid)
         )
         imapuid = data[0].split()[0]
 
@@ -170,19 +170,20 @@ class IMAPMessage(object):
     def get_recipients(self):
         '''Parses recipients from message
 
-        :rtype:      dictionary
+        :rtype:      list
         '''
-        recipients = {}
+        recipients = []
 
         for key in self.recipient_headers:
             try:
                 recipient_list = email.utils.getaddresses(self.msg.get_all(key, []))
                 for recipient in recipient_list:
-                    if not recipient[1] in recipients:
-                        recipients[recipient[1]] = {
-                            'name'  : recipient[0],
-                            'email' : recipient[1]
-                        }
+                    r = {
+                        'name'  : recipient[0],
+                        'email' : recipient[1]
+                    }
+                    if not r in recipients:
+                        recipients.append(r)
                     else:
                         continue
             except:

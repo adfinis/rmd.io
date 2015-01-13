@@ -10,10 +10,14 @@ from django.http import HttpResponseRedirect, HttpResponse, Http404
 from django.shortcuts import render, get_object_or_404, redirect
 from django.utils.decorators import method_decorator
 from django.views import generic
-from mails.models import Mail, Statistic
+from mails.models import Mail, Statistic, Due
 from mails import tools, imaphelper
+import re
 import base64
 import datetime
+import logging
+
+logger = logging.getLogger('mails')
 
 
 def page_not_found(request):
@@ -64,13 +68,40 @@ def mail_info(request, id):
     return render(request, 'mails/mail_info.html', {'mail' : mail})
 
 
-@login_required(login_url='/login/')
-def mail_update(request, id):
-    due = request.POST['due']
-    mail = get_object_or_404(Mail.my_mails(request.user), pk=id)
-    mail.due = due
-    mail.save()
-    return redirect('/mails/')
+def mail_edit(request, id):
+    dues = Due.objects.filter(mail__id=id)
+    return render(request, 'mails/mail_edit.html', {'dues' : dues, 'mail_id' : id})
+
+
+def mail_update(request):
+    mail = get_object_or_404(Mail.my_mails(request.user), pk=request.POST['mail_id'])
+    saved_dues = Due.objects.filter(mail=mail).values_list('id', flat=True)
+    edited_dues = []
+
+    dues = request.POST.lists()
+
+    for due in dues:
+        if due[0] == 'due-new':
+            for dt in due[1]:
+                d = Due(mail=mail, due=dt)
+                d.save()
+                edited_dues.append(d.id)
+        else:
+            try:
+                due_id = int(re.sub(r'due-', '', due[0]))
+                d = Due.objects.get(mail=mail, pk=due_id)
+                d.due = due[1][0]
+                d.save()
+                edited_dues.append(due_id)
+            except:
+                pass
+
+    for saved_due in saved_dues:
+        if saved_due not in edited_dues:
+            d = Due.objects.get(mail=mail, pk=saved_due)
+            d.delete()
+
+    return HttpResponseRedirect('/mails/')
 
 
 class TermsView(generic.TemplateView):
@@ -199,8 +230,9 @@ def mail_delete(request):
     mail_id = request.POST.get('id')
     mail = get_object_or_404(Mail.my_mails(request.user), pk=mail_id)
 
+    imap_conn = imaphelper.get_connection()
+    imap_mail = imaphelper.IMAPMessage.from_dbid(mail_id, imap_conn)
     mail.delete()
-    imap_mail = imaphelper.IMAPMessage.from_dbid(mail_id)
     imap_mail.delete()
 
     return HttpResponseRedirect("/")
