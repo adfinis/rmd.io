@@ -264,3 +264,11 @@ EMAIL_SUFFIX_TO_DAY = {
     'w' : 7,
     'm' : 30,
 }
+
+
+CALENDAR_STRIP_PREFIXES = (
+    r'^Re:\s*',
+    r'^Ant:\s*',
+    r'^Fwd:\s*',
+    r'^Wg:\s*',
+)

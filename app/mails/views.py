@@ -84,7 +84,7 @@ def calendar(request, secret):
 
     for due in dues:
         event = Event()
-        event.add('summary', 'rmd.io: %s' % due.mail.subject)
+        event.add('summary', '%s [rmd.io]' % tools.calendar_clean_subject(due.mail.subject))
         event.add('description', '%s/mails/' % settings.SITE_URL)
         event.add('dtstart', due.due)
         event.add('dtend', due.due)

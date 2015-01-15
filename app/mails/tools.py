@@ -208,6 +208,23 @@ def get_all_users_of_account(user):
             userprofile__account=user.get_account()
         ).order_by('-last_login')
 
+
+def calendar_clean_subject(subj):
+    '''Cleans the subject of a mail
+
+    Removes common prefixes like Re, Fwd...
+
+    :param  subj: the mails subject
+    :type   subj: str
+    :rtype:       str
+    '''
+    strip_re = "(%s)" % ")|(".join(settings.CALENDAR_STRIP_PREFIXES)
+    after = re.sub(strip_re, '', subj)
+    if after == subj:
+        return after
+    return calendar_clean_subject(after)
+
+
 def create_additional_user(email, user):
     '''Creates an additional user with the same password and identity
 
