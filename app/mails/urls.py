@@ -24,6 +24,7 @@ urlpatterns = patterns(
     url(r'^mails/info/(?P<id>\d+)/$', views.mail_info),
     url(r'^download/maildelay.vcf', views.download_vcard),
     url(r'^settings/$', views.settings_view),
+    url(r'^calendar/(?P<secret>\w+)/$', views.calendar),
     url(r'^statistic/$', views.statistic_view),
     url(r'^user/add/$', views.add_user_view),
     url(r'^user/delete/confirm/(?P<id>\d+)/$', views.user_delete_confirm),

@@ -10,6 +10,10 @@
                 <div class="panel panel-default">
                     <div class="panel-heading"><strong>Anti-Spam</strong></div>
                     <div class="panel-body">
+                        <small><p>Anti-Spam measure modifies your delay addresses from
+                        <em style="white-space:nowrap">1d@rmd.io</em> to <em style="white-space:nowrap">1d.&lt;secret-key&gt;@rmd.io</em>, so other
+                        people cannot generate reminders on your behalf by
+                        spoofing the sender address.</p></small>
                         <label for="anti_spam">
                             <input type="checkbox" id="anti_spam" name="anti_spam" {% if account.anti_spam %}checked{% endif %}> Enable anti-spam measure
                         </label>
@@ -28,6 +32,17 @@
                                 <button class="btn btn-default" id="add_user" type="button">Add email</button>
                             </span>
                         </div>
+                    </div>
+                </div>
+                <div class="panel panel-default">
+                    <div class="panel-heading"><strong>Calendar</strong></div>
+                    <div class="panel-body">
+                        <small><p>You can insert this into any application that
+                            supports the iCal format. Please copy the following
+                            address into your calendar application to have all
+                            your reminders visible at all times:</p>
+                        <p><a href="/calendar/{{secret}}/">{{domain}}/calendar/{{secret}}/</a></p>
+                        <p>Keep this link to yourself, as it enables everyone who knows it to see your reminders!</p></small>
                     </div>
                 </div>
                 <a href="/user/delete/confirm/{{user.id}}" class="pull-right" data-target="dialog">delete my account</a>

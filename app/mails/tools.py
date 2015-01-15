@@ -247,7 +247,7 @@ def create_additional_user(email, request):
 
     send_activation_mail(
         recipient=email,
-        key=base64.b16encode(new_user.username)
+        key=base64.urlsafe_b64encode(new_user.username)
     )
 
 def delete_log_entries(email):

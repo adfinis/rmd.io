@@ -12,6 +12,7 @@ from django.utils.decorators import method_decorator
 from django.views import generic
 from mails.models import Mail, Statistic, Due
 from mails import tools, imaphelper
+from icalendar import Calendar, Event
 import re
 import base64
 import datetime
@@ -71,6 +72,27 @@ def mail_info(request, id):
 def mail_edit(request, id):
     dues = Due.objects.filter(mail__id=id)
     return render(request, 'mails/mail_edit.html', {'dues' : dues, 'mail_id' : id})
+
+
+def calendar(request, secret):
+    user = User.objects.get(username=base64.urlsafe_b64decode(secret))
+    dues = Due.objects.filter(mail__in=Mail.my_mails(user))
+    cal = Calendar()
+    cal.add('prodid', '-//rmd.io Events Calendar//%s//EN' % settings.SITE_URL)
+    cal.add('version', '2.0')
+
+    for due in dues:
+        event = Event()
+        event.add('summary', 'rmd.io: %s' % due.mail.subject)
+        event.add('description', '%s/mails/' % settings.SITE_URL)
+        event.add('dtstart', due.due)
+        event.add('dtend', due.due)
+        cal.add_component(event)
+
+    response = HttpResponse(content=cal.to_ical(), mimetype='text/calendar')
+    response['Content-Disposition'] = 'attachment; filename=maildelay.ics'
+
+    return response
 
 
 def mail_update(request):
@@ -165,7 +187,7 @@ def download_vcard(request):
 @login_required(login_url='/login/')
 def activate(request, key):
     try:
-        user = User.objects.get(username=base64.b16decode(key))
+        user = User.objects.get(username=base64.urlsafe_b64decode(key))
         user.is_active = True
         user.save()
         messages.success(request, 'The user %s was successfully activated.' % user.email)
@@ -262,7 +284,9 @@ def settings_view(request):
         {
             'anti_spam_enabled' : account.anti_spam,
             'account' : account,
-            'users' : users
+            'users' : users,
+            'domain' : settings.SITE_URL,
+            'secret' : base64.urlsafe_b64encode(request.user.username),
         }
     )
 
@@ -323,7 +347,7 @@ def send_activation(request):
 
         tools.send_activation_mail(
             recipient = email,
-            key = base64.b16encode(user.username)
+            key = base64.urlsafe_b64encode(user.username)
         )
 
     return HttpResponse('')
