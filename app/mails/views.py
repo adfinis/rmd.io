@@ -75,7 +75,8 @@ def mail_edit(request, id):
 
 
 def calendar(request, secret):
-    user = User.objects.get(username=base64.urlsafe_b64decode(secret))
+    username = base64.urlsafe_b64decode(secret.encode('utf-8'))
+    user = User.objects.get(username=username)
     dues = Due.objects.filter(mail__in=Mail.my_mails(user))
     cal = Calendar()
     cal.add('prodid', '-//rmd.io Events Calendar//%s//EN' % settings.SITE_URL)
@@ -187,7 +188,8 @@ def download_vcard(request):
 @login_required(login_url='/login/')
 def activate(request, key):
     try:
-        user = User.objects.get(username=base64.urlsafe_b64decode(key))
+        username = base64.urlsafe_b64decode(key.encode('utf-8'))
+        user = User.objects.get(username=username)
         user.is_active = True
         user.save()
         messages.success(request, 'The user %s was successfully activated.' % user.email)
