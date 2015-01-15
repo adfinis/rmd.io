@@ -208,13 +208,13 @@ def get_all_users_of_account(user):
             userprofile__account=user.get_account()
         ).order_by('-last_login')
 
-def create_additional_user(email, request):
+def create_additional_user(email, user):
     '''Creates an additional user with the same password and identity
 
     :param  email:   the email address of the new user
     :type   email:   string
-    :param  request: http request
-    :type   request: HttpRequest
+    :param  user:    the user which wants to create a new user
+    :type   email:   django.contrib.auth.models.User
     '''
     from mails.models import UserProfile, AddressLog
 
@@ -224,12 +224,12 @@ def create_additional_user(email, request):
             sha1(smart_bytes(email)).digest()
         ).rstrip(b'='),
         date_joined = timezone.now(),
-        password = request.user.password,
+        password = user.password,
         is_active = False
     )
     new_user.save()
 
-    account = request.user.get_account()
+    account = user.get_account()
     user_profile = UserProfile(
         user=new_user,
         account=account
@@ -239,7 +239,7 @@ def create_additional_user(email, request):
 
     try:
         user_log_entry = AddressLog.objects.filter(
-            email=request.user.email
+            email=user.email
         )
         user_log_entry.delete()
     except:
@@ -247,7 +247,7 @@ def create_additional_user(email, request):
 
     send_activation_mail(
         recipient=email,
-        key=base64.urlsafe_b64encode(new_user.username)
+        key=base64.b16encode(new_user.username)
     )
 
 def delete_log_entries(email):

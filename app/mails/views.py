@@ -188,7 +188,7 @@ def download_vcard(request):
 @login_required(login_url='/login/')
 def activate(request, key):
     try:
-        username = base64.urlsafe_b64decode(key.encode('utf-8'))
+        username = base64.b16decode(key)
         user = User.objects.get(username=username)
         user.is_active = True
         user.save()
@@ -304,7 +304,7 @@ def add_user_view(request):
         elif email != '':
             tools.create_additional_user(
                 email=email,
-                request=request
+                user=request.user
             )
 
     users = tools.get_all_users_of_account(request.user)
