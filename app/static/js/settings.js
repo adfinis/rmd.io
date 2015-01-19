@@ -24,7 +24,6 @@
     })
 
     $('body').on('show.bs.modal', function (e) {
-        $('.delete_user').on('click', deleteUser)
         $('.send_activation').on('click', sendActivation)
         $('#add_user').on('click', addUser)
     })
@@ -47,18 +46,6 @@
         top: '50%',
         left: '50%'
     };
-
-    function deleteUser(evt) {
-        evt.preventDefault()
-        var row = $(evt.target).closest('tr')
-        var id = $(evt.target).closest('a').data('user-id')
-        $.post(
-            '/user/delete/',
-            {id : id}
-        ).done(
-            row.hide('slow')
-        )
-    }
 
     function addUser(evt) {
         evt.preventDefault()
