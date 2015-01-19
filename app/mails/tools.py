@@ -262,9 +262,10 @@ def create_additional_user(email, user):
     except:
         pass
 
+    key = base64.urlsafe_b64encode(new_user.username)
     send_activation_mail(
         recipient=email,
-        key=base64.b16encode(new_user.username)
+        key=key
     )
 
 def delete_log_entries(email):

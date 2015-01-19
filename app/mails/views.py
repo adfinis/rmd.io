@@ -188,7 +188,7 @@ def download_vcard(request):
 @login_required(login_url='/login/')
 def activate(request, key):
     try:
-        username = base64.b16decode(key)
+        username = base64.urlsafe_b64decode(key.encode('utf-8'))
         user = User.objects.get(username=username)
         user.is_active = True
         user.save()
