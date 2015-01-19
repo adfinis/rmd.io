@@ -29,6 +29,25 @@
         $('#add_user').on('click', addUser)
     })
 
+    var spinopts = {
+        lines: 13,
+        length: 20,
+        width: 10,
+        radius: 30,
+        corners: 1,
+        rotate: 0,
+        direction: 1,
+        color: '#000',
+        speed: 1,
+        trail: 60,
+        shadow: false,
+        hwaccel: false,
+        className: 'spinner',
+        zIndex: 2e9,
+        top: '50%',
+        left: '50%'
+    };
+
     function deleteUser(evt) {
         evt.preventDefault()
         var row = $(evt.target).closest('tr')
@@ -43,16 +62,26 @@
 
     function addUser(evt) {
         evt.preventDefault()
+        var usertable = $('#users')
         var email = $('#email').val()
+        if (email === '') {
+            addNotification({
+                'type' : 'danger',
+                'text' : 'Please enter an email address.'
+            })
+            return
+        }
+        var spinner = new Spinner(spinopts).spin(usertable.parents('.panel-body').get(0))
         $.post(
             '/user/add/',
             {email : email},
             function(data) {
-                $('#users').html(data)
+                usertable.html(data)
             }
-        ).done(
+        ).done(function() {
             $('#email').val('')
-        )
+            spinner.stop()
+        })
     }
 
     function sendActivation(evt) {
