@@ -186,6 +186,71 @@ def send_activation_mail(key, recipient):
         )
         log_entry.save()
 
+def send_connection_mail(key, recipient, account):
+    '''Sends a mail which confirms the connection of
+    an existing user to another existing account
+
+    :param  key:       the activation key (urlsafe b64 of username)
+    :type   key:       str
+    :param  recipient: the email address of the recipient
+    :type   recipient: str
+    :param  account    the account which it should be connected to
+    :type   account    mails.models.Account
+    '''
+    from mails.models import AddressLog
+
+    subject = 'Confirm your address on %s' % host
+    tpl     = get_template('mails/messages/connection_mail.txt')
+    content = tpl.render(
+        Context({
+            'recipient'  : recipient,
+            'account_id' : account.id,
+            'key'        : key,
+            'host'       : host
+        })
+    )
+
+    msg = EmailMessage(
+        subject,
+        content,
+        settings.EMAIL_HOST_USER,
+        [recipient]
+    )
+
+    try:
+        log_entry = AddressLog.objects.get(
+            email=recipient,
+            reason='SPAM'
+        )
+
+        if log_entry.date < timezone.now() or log_entry.attempt > 5:
+            logger.warning(
+                'No connection email was sent. %s is blocked'
+                % (recipient)
+            )
+            return
+
+        else:
+
+            log_entry.attempt += 1
+            log_entry.date = timezone.now() + get_block_delay(
+                log_entry.attempt
+            )
+            log_entry.save()
+
+        msg.send()
+
+    except:
+        msg.send()
+
+        log_entry = AddressLog(
+            email=recipient,
+            reason='SPAM',
+            attempt=0,
+            date=timezone.now()
+        )
+        log_entry.save()
+
 def get_block_delay(attempt):
     '''Gets the block delay by attempt
 

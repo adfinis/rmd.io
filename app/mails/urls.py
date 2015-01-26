@@ -31,4 +31,5 @@ urlpatterns = patterns(
     url(r'^user/delete/$', views.user_delete),
     url(r'^user/activate/send/$', views.send_activation),
     url(r'^user/activate/(?P<key>\w+)/$', views.activate),
+    url(r'^user/connect/(?P<account_id>\d+)/(?P<key>\w+)/$', views.connect_account),
 )

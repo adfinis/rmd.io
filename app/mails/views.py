@@ -10,7 +10,7 @@ from django.http import HttpResponseRedirect, HttpResponse, Http404
 from django.shortcuts import render, get_object_or_404, redirect
 from django.utils.decorators import method_decorator
 from django.views import generic
-from mails.models import Mail, Statistic, Due
+from mails.models import Mail, Statistic, Due, Account
 from mails import tools, imaphelper
 from icalendar import Calendar, Event
 import re
@@ -201,6 +201,23 @@ def activate(request, key):
 
 
 @login_required(login_url='/login/')
+def connect_account(request, key, account_id):
+    try:
+        account = Account.objects.get(pk=account_id)
+        username = base64.urlsafe_b64decode(key.encode('utf-8'))
+        user = User.objects.get(username=username)
+        old_account = user.userprofile.account
+        user.userprofile.account = account
+        user.userprofile.save()
+        old_account.delete()
+        messages.success(request, 'The user %s was successfully connected with this account.' % user.email)
+        tools.delete_log_entries(user.email)
+    except:
+        messages.error(request, 'The user could not be connected.')
+
+    return HttpResponseRedirect('/')
+
+@login_required(login_url='/login/')
 def statistic_view(request):
     if not request.user.is_staff:
         messages.error(request, 'Access denied!')
@@ -299,13 +316,16 @@ def settings_view(request):
 def add_user_view(request):
     if request.POST:
         email = request.POST.get('email', False)
-        if User.objects.filter(email=email).exists():
-            messages.warning(request, "The user '%s' already exists." % email)
-        elif email != '':
-            tools.create_additional_user(
-                email=email,
-                user=request.user
-            )
+        try:
+            user = User.objects.get(email=email)
+            key = base64.urlsafe_b64encode(user.username)
+            tools.send_connection_mail(account=request.user.get_account(), recipient=user.email, key=key)
+        except:
+            if email != '':
+                tools.create_additional_user(
+                    email=email,
+                    user=request.user
+                )
 
     users = tools.get_all_users_of_account(request.user)
 
