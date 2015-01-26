@@ -64,7 +64,8 @@ body.nopadding {
   height: 30px; }
 
 #logo {
-  height: 50px; }
+  height: 35px;
+  margin: 5px 0 5px; }
 
 .wrapper {
   min-height: 100%;
@@ -107,5 +108,3 @@ address {
 .notification .alert:hover {
   opacity: 0.7;
   cursor: pointer; }
-
-/*# sourceMappingURL=style.css.map */
