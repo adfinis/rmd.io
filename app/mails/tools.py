@@ -20,8 +20,8 @@ def get_delay_days_from_email_address(email_address):
     '''Gets the delay days from an email address
 
     :param  email_address: delay email address
-    :type   email_address: str
-    :rtype                 int
+    :type   email_address: string
+    :rtype: integer
     '''
     try:
         match = re.findall('^(\d+)([dmw])', email_address)[0]
@@ -36,7 +36,7 @@ def get_delay_addresses_from_recipients(recipients):
 
     :param  recipients: list of recipients
     :type   recipients: list
-    :rtype:             list
+    :rtype: list
     '''
     delay_addresses = []
     for recipient in recipients:
@@ -48,7 +48,12 @@ def get_delay_addresses_from_recipients(recipients):
         raise Exception('Could not find a delay address')
 
 def get_key_from_email_address(email_address):
-    '''Get the key of an email address'''
+    '''Get the key of an email address
+
+    :param  email_address: the email address with included key
+    :type   email_address: string
+    :rtype: string
+    '''
     try:
         return re.search(
             '^\d+[dmw]\.([0-9a-z]{10})@',
@@ -61,7 +66,7 @@ def send_registration_mail(recipient):
     '''Sends an error mail to not registred users and logs it
 
     :param  recipient: the email address of the recipient
-    :type   recipient: str
+    :type   recipient: string
     '''
     from mails.models import AddressLog
 
@@ -99,7 +104,7 @@ def send_wrong_recipient_mail(recipient):
     '''Sends an error mail to not registred users
 
     :param  recipient: the email address of the recipient
-    :type   recipient: str
+    :type   recipient: string
     '''
     from mails.models import AddressLog
 
@@ -129,9 +134,9 @@ def send_activation_mail(key, recipient):
     '''Sends an activation mail for additional addresses
 
     :param  key:       the activation key
-    :type   key:       str
+    :type   key:       string
     :param  recipient: the email address of the recipient
-    :type   recipient: str
+    :type   recipient: string
     '''
     from mails.models import AddressLog
 
@@ -191,9 +196,9 @@ def send_connection_mail(key, recipient, account):
     an existing user to another existing account
 
     :param  key:       the activation key (urlsafe b64 of username)
-    :type   key:       str
+    :type   key:       string
     :param  recipient: the email address of the recipient
-    :type   recipient: str
+    :type   recipient: string
     :param  account    the account which it should be connected to
     :type   account    mails.models.Account
     '''
@@ -255,7 +260,7 @@ def get_block_delay(attempt):
     '''Gets the block delay by attempt
 
     :param  attempt: the attempt to get the delay for
-    :type   attempt: int
+    :type   attempt: integer
     '''
     return settings.BLOCK_DELAYS.get(
         attempt,
@@ -267,7 +272,7 @@ def get_all_users_of_account(user):
 
     :param  user: the user
     :type   user: models.User
-    :rtype        list
+    :rtype: list
     '''
     return User.objects.filter(
             userprofile__account=user.get_account()
@@ -280,8 +285,8 @@ def calendar_clean_subject(subj):
     Removes common prefixes like Re, Fwd...
 
     :param  subj: the mails subject
-    :type   subj: str
-    :rtype:       str
+    :type   subj: string
+    :rtype: string
     '''
     strip_re = "(%s)" % ")|(".join(settings.CALENDAR_STRIP_PREFIXES)
     after = re.sub(strip_re, '', subj)
@@ -334,6 +339,11 @@ def create_additional_user(email, user):
     )
 
 def delete_log_entries(email):
+    '''Deletes all log entries of an email address
+
+    :param email: the email which should be removed from log
+    :type  email: string
+    '''
     from mails.models import AddressLog
 
     try:
