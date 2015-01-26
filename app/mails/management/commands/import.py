@@ -7,6 +7,7 @@ from mails import imaphelper, tools
 from mails.models import ImportLog
 import datetime
 import logging
+import re
 
 logger = logging.getLogger('mails')
 
@@ -71,7 +72,7 @@ class Command(BaseCommand):
             for delay_address in delay_addresses:
                 rec_stat = Statistic(
                     type='REC',
-                    email=delay_address
+                    email=re.sub(r'(^\d+[dmw])(\.[0-9a-z]{10})', r'\1', delay_address)
                 )
                 due = Due(
                     mail=mail,
