@@ -63,7 +63,7 @@
             $('.item').each( function() {
                 var subject = $(this).find('.subject').text()
                 var sent = $(this).find('.sent').text()
-                var due = $(this).find('.date').find('input').val()
+                var due = $(this).find('.due').text()
                 var texts = [subject, sent, due]
                 if (regex.test(texts.join(' '))) {
                     $(this).show()

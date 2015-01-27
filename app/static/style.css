@@ -53,13 +53,17 @@ body.nopadding {
   .info-list em {
     font-size: 11px; }
 
-.search {
-  width: 250px;
-  float: right; }
+.search-container {
+  padding-bottom: 10px; }
+  .search-container .search {
+    width: 250px;
+    float: right; }
 
 @media (max-width: 768px) {
-  .searchMails {
-    margin-right: 10px; } }
+  .search-container {
+    padding: 0 10px 10px; }
+    .search-container .search {
+      width: 100%; } }
 #adsylogo {
   height: 30px; }
 

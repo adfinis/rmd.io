@@ -1,13 +1,13 @@
 <table class="table table-striped">
     <thead>
         <tr>
-            <th class="col-md-5">
+            <th class="col-md-5 col-sm-4">
                 Subject
             </th>
-            <th class="col-md-3">
+            <th class="col-md-4 col-sm-3">
                 Next Due
             </th>
-            <th class="hidden-sm hidden-xs col-md-3">
+            <th class="hidden-sm hidden-xs col-md-2">
                 Sent
             </th>
             <th class="col-md-2">
@@ -17,7 +17,7 @@
     <tbody>
     {% for mail in mails %}
     <tr class="item" id="{{ mail.id }}">
-            <td class="subject">
+            <td class="subject col-md-5">
                 <span
                  title="General info"
                  class="add-popover"
@@ -28,7 +28,7 @@
                 {{ mail.subject }}
                 </span>
             </td>
-            <td>
+            <td class="due col-md-4">
                 <span
                  title="Due dates"
                  class="add-popover"
@@ -39,10 +39,10 @@
                 {{ mail.next_due.due | date:"Y-m-d H:i" }}
                 </span>
             </td>
-            <td class="hidden-xs sent">
+            <td class="sent hidden-sm hidden-xs col-md-2">
                 {{ mail.sent | date:"Y-m-d H:i" }}
             </td>
-            <td class="text-right break-none">
+            <td class="text-right break-none col-md-2">
                 <a
                  data-target="dialog"
                  data-name="mail_edit"

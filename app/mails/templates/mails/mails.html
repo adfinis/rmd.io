@@ -5,8 +5,8 @@
 {% block title %}- Mails{% endblock %}
 
 {% block content %}
-    <div class="row">
-        <input type="text" class="form-control pull-right search" placeholder="Search...">
+    <div class="row search-container">
+        <input type="text" class="form-control search" placeholder="Search...">
     </div>
     <div class="row" id="list">{%include 'mails/mails_table.html'%}</div>
 {% endblock %}
