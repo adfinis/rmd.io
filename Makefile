@@ -34,8 +34,8 @@ vagrant-reset: vagrant-destroy vagrant
 	@echo "Vagrant reset successful"
 
 migrate:
-	@vagrant ssh -c "/vagrant/app/manage.py schemamigration mails --auto"
-	@vagrant ssh -c "/vagrant/app/manage.py migrate mails"
+	@vagrant ssh -c "/vagrant/envpy /vagrant/app/manage.py schemamigration mails --auto"
+	@vagrant ssh -c "/vagrant/envpy /vagrant/app/manage.py migrate mails"
 	@echo "Successfully migrated DB structure"
 
 restart-apache:
