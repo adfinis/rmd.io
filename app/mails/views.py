@@ -21,7 +21,7 @@ import logging
 logger = logging.getLogger('mails')
 
 
-def page_not_found(request):
+def page_not_found_view(request):
     return render(request, '404.html')
 
 
@@ -39,6 +39,27 @@ class BaseView(generic.RedirectView):
                 return '/mails/'
         else:
             return '/login/'
+
+
+class TermsView(generic.TemplateView):
+    template_name = 'terms.html'
+
+
+class HelpView(generic.TemplateView):
+    template_name = 'help.html'
+
+    def get_context_data(self, **kwargs):
+        context = super(HelpView, self).get_context_data(**kwargs)
+        if self.request.user.is_authenticated():
+            account = self.request.user.get_account()
+
+            if account.anti_spam:
+                context['key'] = '.%s' % account.key
+            else:
+                context['key'] = ''
+        else:
+            context['key'] = ''
+        return context
 
 
 class LoginView(generic.TemplateView):
@@ -64,39 +85,17 @@ class MailView(generic.ListView):
 
 
 @login_required(login_url='/login/')
-def mail_info(request, id):
+def mail_info_view(request, id):
     mail = get_object_or_404(Mail.my_mails(request.user), pk=id)
     return render(request, 'mails/mail_info.html', {'mail' : mail})
 
 
-def mail_edit(request, id):
+def mail_edit_view(request, id):
     dues = Due.objects.filter(mail__id=id)
     return render(request, 'mails/mail_edit.html', {'dues' : dues, 'mail_id' : id})
 
 
-def calendar(request, secret):
-    username = base64.urlsafe_b64decode(secret.encode('utf-8'))
-    user = User.objects.get(username=username)
-    dues = Due.objects.filter(mail__in=Mail.my_mails(user))
-    cal = Calendar()
-    cal.add('prodid', '-//rmd.io Events Calendar//%s//EN' % settings.SITE_URL)
-    cal.add('version', '2.0')
-
-    for due in dues:
-        event = Event()
-        event.add('summary', '%s [rmd.io]' % tools.calendar_clean_subject(due.mail.subject))
-        event.add('description', '%s/mails/' % settings.SITE_URL)
-        event.add('dtstart', due.due)
-        event.add('dtend', due.due)
-        cal.add_component(event)
-
-    response = HttpResponse(content=cal.to_ical(), mimetype='text/calendar')
-    response['Content-Disposition'] = 'attachment; filename=maildelay.ics'
-
-    return response
-
-
-def mail_update(request):
+def mail_update_view(request):
     mail = get_object_or_404(Mail.my_mails(request.user), pk=request.POST['mail_id'])
     saved_dues = Due.objects.filter(mail=mail).values_list('id', flat=True)
     edited_dues = []
@@ -127,29 +126,49 @@ def mail_update(request):
     return HttpResponseRedirect('/mails/')
 
 
-class TermsView(generic.TemplateView):
-    template_name = 'terms.html'
-
-
-class HelpView(generic.TemplateView):
-    template_name = 'help.html'
-
-    def get_context_data(self, **kwargs):
-        context = super(HelpView, self).get_context_data(**kwargs)
-        if self.request.user.is_authenticated():
-            account = self.request.user.get_account()
-
-            if account.anti_spam:
-                context['key'] = '.%s' % account.key
-            else:
-                context['key'] = ''
-        else:
-            context['key'] = ''
-        return context
+@login_required(login_url='/login/')
+def mail_delete_confirm_view(request, id):
+    mail = get_object_or_404(Mail.my_mails(request.user), pk=id)
+    return render(request, 'mails/mail_delete_confirm.html', {'mail' : mail})
 
 
 @login_required(login_url='/login/')
-def download_vcard(request):
+def mail_delete_view(request):
+    mail_id = request.POST.get('id')
+    mail = get_object_or_404(Mail.my_mails(request.user), pk=mail_id)
+
+    imap_conn = imaphelper.get_connection()
+    imap_mail = imaphelper.IMAPMessage.from_dbid(mail_id, imap_conn)
+    mail.delete()
+    imap_mail.delete()
+
+    return HttpResponseRedirect("/")
+
+
+def download_calendar_view(request, secret):
+    username = base64.urlsafe_b64decode(secret.encode('utf-8'))
+    user = User.objects.get(username=username)
+    dues = Due.objects.filter(mail__in=Mail.my_mails(user))
+    cal = Calendar()
+    cal.add('prodid', '-//rmd.io Events Calendar//%s//EN' % settings.SITE_URL)
+    cal.add('version', '2.0')
+
+    for due in dues:
+        event = Event()
+        event.add('summary', '%s [rmd.io]' % tools.calendar_clean_subject(due.mail.subject))
+        event.add('description', '%s/mails/' % settings.SITE_URL)
+        event.add('dtstart', due.due)
+        event.add('dtend', due.due)
+        cal.add_component(event)
+
+    response = HttpResponse(content=cal.to_ical(), mimetype='text/calendar')
+    response['Content-Disposition'] = 'attachment; filename=maildelay.ics'
+
+    return response
+
+
+@login_required(login_url='/login/')
+def download_vcard_view(request):
     host = settings.EMAIL_HOST_USER.split('@')[1]
     account = request.user.get_account()
 
@@ -186,7 +205,7 @@ def download_vcard(request):
 
 
 @login_required(login_url='/login/')
-def activate(request, key):
+def user_activate_view(request, key):
     try:
         username = base64.urlsafe_b64decode(key.encode('utf-8'))
         user = User.objects.get(username=username)
@@ -201,7 +220,7 @@ def activate(request, key):
 
 
 @login_required(login_url='/login/')
-def connect_account(request, key, account_id):
+def user_connect_view(request, key, account_id):
     try:
         account = Account.objects.get(pk=account_id)
         username = base64.urlsafe_b64decode(key.encode('utf-8'))
@@ -216,6 +235,103 @@ def connect_account(request, key, account_id):
         messages.error(request, 'The user could not be connected.')
 
     return HttpResponseRedirect('/')
+
+
+@login_required(login_url='/login/')
+def user_add_view(request):
+    if request.POST:
+        email = request.POST.get('email', False)
+        try:
+            user = User.objects.get(email=email)
+            key = base64.urlsafe_b64encode(user.username)
+            tools.send_connection_mail(account=request.user.get_account(), recipient=user.email, key=key)
+        except:
+            if email != '':
+                tools.create_additional_user(
+                    email=email,
+                    user=request.user
+                )
+
+    users = tools.get_all_users_of_account(request.user)
+
+    response = render(
+        request,
+        'mails/settings/user_table.html',
+        {'users' : users}
+    )
+
+    return response
+
+
+@login_required(login_url='/login/')
+def user_delete_confirm_view(request, id):
+    users = tools.get_all_users_of_account(request.user)
+    user = get_object_or_404(User, pk=id)
+    if user in users:
+        return render(request, 'mails/settings/user_delete_confirm.html', {'user' : user})
+    else:
+        return Http404
+
+
+@login_required(login_url='/login/')
+def user_delete_view(request):
+    if request.POST:
+        users = tools.get_all_users_of_account(request.user)
+        user = User.objects.get(id=request.POST['id'])
+        if user in users:
+            user.delete()
+            tools.delete_log_entries(user.email)
+        else:
+            return Http404
+    return HttpResponseRedirect('/')
+
+
+@login_required(login_url='/login/')
+def user_send_activation_view(request):
+    if request.POST:
+        user = User.objects.get(id=request.POST['id'])
+        email = user.email
+
+        tools.send_activation_mail(
+            recipient = email,
+            key = base64.urlsafe_b64encode(user.username)
+        )
+
+    return HttpResponse('')
+
+
+@login_required(login_url='/login/')
+def settings_view(request):
+    account = request.user.get_account()
+
+    if request.method == 'POST':
+        anti_spam = request.POST.get('anti_spam', False)
+        if bool(anti_spam) != bool(account.anti_spam):
+            account.anti_spam = anti_spam
+            account.save()
+            if bool(account.anti_spam) is True:
+                messages.info(request, 'Antispam is now enabled. Please use your key for every address.')
+            else:
+                messages.info(request, 'Antispam is now disabled. You can use your normal addresses.')
+
+        return HttpResponseRedirect("/")
+
+    users = tools.get_all_users_of_account(request.user)
+
+    response = render(
+        request,
+        'mails/settings/settings.html',
+        {
+            'anti_spam_enabled' : account.anti_spam,
+            'account' : account,
+            'users' : users,
+            'domain' : settings.SITE_URL,
+            'secret' : base64.urlsafe_b64encode(request.user.username),
+        }
+    )
+
+    return response
+
 
 @login_required(login_url='/login/')
 def statistic_view(request):
@@ -258,118 +374,3 @@ def statistic_view(request):
             'sent_week' : len(sent.filter(date__gte=week))
         }
     )
-
-
-@login_required(login_url='/login/')
-def mail_delete_confirm(request, id):
-    mail = get_object_or_404(Mail.my_mails(request.user), pk=id)
-    return render(request, 'mails/mail_delete_confirm.html', {'mail' : mail})
-
-
-@login_required(login_url='/login/')
-def mail_delete(request):
-    mail_id = request.POST.get('id')
-    mail = get_object_or_404(Mail.my_mails(request.user), pk=mail_id)
-
-    imap_conn = imaphelper.get_connection()
-    imap_mail = imaphelper.IMAPMessage.from_dbid(mail_id, imap_conn)
-    mail.delete()
-    imap_mail.delete()
-
-    return HttpResponseRedirect("/")
-
-
-@login_required(login_url='/login/')
-def settings_view(request):
-    account = request.user.get_account()
-
-    if request.method == 'POST':
-        anti_spam = request.POST.get('anti_spam', False)
-        if bool(anti_spam) != bool(account.anti_spam):
-            account.anti_spam = anti_spam
-            account.save()
-            if bool(account.anti_spam) is True:
-                messages.info(request, 'Antispam is now enabled. Please use your key for every address.')
-            else:
-                messages.info(request, 'Antispam is now disabled. You can use your normal addresses.')
-
-        return HttpResponseRedirect("/")
-
-    users = tools.get_all_users_of_account(request.user)
-
-    response = render(
-        request,
-        'mails/settings/settings.html',
-        {
-            'anti_spam_enabled' : account.anti_spam,
-            'account' : account,
-            'users' : users,
-            'domain' : settings.SITE_URL,
-            'secret' : base64.urlsafe_b64encode(request.user.username),
-        }
-    )
-
-    return response
-
-
-@login_required(login_url='/login/')
-def add_user_view(request):
-    if request.POST:
-        email = request.POST.get('email', False)
-        try:
-            user = User.objects.get(email=email)
-            key = base64.urlsafe_b64encode(user.username)
-            tools.send_connection_mail(account=request.user.get_account(), recipient=user.email, key=key)
-        except:
-            if email != '':
-                tools.create_additional_user(
-                    email=email,
-                    user=request.user
-                )
-
-    users = tools.get_all_users_of_account(request.user)
-
-    response = render(
-        request,
-        'mails/settings/user_table.html',
-        {'users' : users}
-    )
-
-    return response
-
-
-@login_required(login_url='/login/')
-def user_delete_confirm(request, id):
-    users = tools.get_all_users_of_account(request.user)
-    user = get_object_or_404(User, pk=id)
-    if user in users:
-        return render(request, 'mails/settings/user_delete_confirm.html', {'user' : user})
-    else:
-        return Http404
-
-
-@login_required(login_url='/login/')
-def user_delete(request):
-    if request.POST:
-        users = tools.get_all_users_of_account(request.user)
-        user = User.objects.get(id=request.POST['id'])
-        if user in users:
-            user.delete()
-            tools.delete_log_entries(user.email)
-        else:
-            return Http404
-    return HttpResponseRedirect('/')
-
-
-@login_required(login_url='/login/')
-def send_activation(request):
-    if request.POST:
-        user = User.objects.get(id=request.POST['id'])
-        email = user.email
-
-        tools.send_activation_mail(
-            recipient = email,
-            key = base64.urlsafe_b64encode(user.username)
-        )
-
-    return HttpResponse('')
