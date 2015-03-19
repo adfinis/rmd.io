@@ -27,7 +27,7 @@ vagrant-prepare:
 	@vagrant up
 	@vagrant ssh -c 'sudo /etc/init.d/apache2 restart'
 
-vagrant: vagrant-prepare user
+vagrant: vagrant-prepare init-user
 	@vagrant ssh -c 'cd /vagrant && bash ./tools/vagrant/showinfo.sh'
 
 vagrant-reset: vagrant-destroy vagrant
