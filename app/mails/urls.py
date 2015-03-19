@@ -30,6 +30,6 @@ urlpatterns = patterns(
     url(r'^user/delete/confirm/(?P<id>\d+)/$', views.user_delete_confirm_view),
     url(r'^user/delete/$', views.user_delete_view),
     url(r'^user/activate/send/$', views.user_send_activation_view),
-    url(r'^user/activate/(?P<key>\.+)/$', views.user_activate_view),
-    url(r'^user/connect/(?P<account_id>\d+)/(?P<key>\.+)/$', views.user_connect_view),
+    url(r'^user/activate/(?P<key>.+)/$', views.user_activate_view),
+    url(r'^user/connect/(?P<account_id>\d+)/(?P<key>.+)/$', views.user_connect_view),
 )
