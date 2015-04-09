@@ -9,7 +9,8 @@
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
             </button>
-            <a class="navbar-brand" href="/"><img id="logo" alt="rmd.io" src="{% static 'images/logo_typo.svg' %}"></a>
+            <a class="navbar-brand" href="/">
+                <object id="logo" data="{% static 'images/logo_typo.svg' %}" type="image/svg+xml">rmd.io</object></a>
         </div>
         <div class="collapse navbar-collapse" id="navbar-collapse-1">
         {% if user.is_authenticated %}

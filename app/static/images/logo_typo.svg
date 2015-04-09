@@ -14,9 +14,19 @@
    id="svg2"
    version="1.1"
    inkscape:version="0.48.5 r10040"
-   sodipodi:docname="logo_typo.svg">
-  <defs
-     id="defs4" />
+   sodipodi:docname="logo_typo.svg"
+   preserveAspectRatio="xMinYMin meet"
+   viewBox="0 0 807.64386 179.53854">
+  <defs id="defs4">
+    <style>
+      <![CDATA[
+        @font-face {
+          font-family: "TimeBurner";
+          src: url("/static/timeburner.ttf");
+        }
+      ]]>
+    </style>
+  </defs>
   <sodipodi:namedview
      id="base"
      pagecolor="#dadada"
