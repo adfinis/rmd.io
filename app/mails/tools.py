@@ -1,405 +1,309 @@
-import email.utils
-import email.header
-import imaplib
-import smtplib
-import time
-import re
-import base64
-import datetime
 from django.conf import settings
-from email.mime.text import MIMEText
-from django.template.loader import get_template
+from django.contrib.auth.models import User
+from django.core.mail import EmailMessage
 from django.template import Context
+from django.template.loader import get_template
+from django.utils.encoding import smart_bytes
 from django.utils import timezone
 from hashlib import sha1
-from django.contrib.auth.models import User
-from django.utils.encoding import smart_bytes
-
-recipient_headers = [
-    'X-Original-To',
-    'To'
-]
-
-multiplicate_number_with = {
-    'd' : 1,
-    'w' : 7,
-    'm' : 30,
-}
-
-mailbox_to_days = {
-    entry[0]: entry[1]
-    for entry
-    in settings.MAILBOXES
-}
+import base64
+import datetime
+import logging
+import os
+import re
 
 
-def smtp_login():
-    # Connects to SMTP server
+logger = logging.getLogger('mails')
+host   = re.sub('https://', '', settings.SITE_URL)
+
+def get_delay_days_from_email_address(email_address):
+    '''Gets the delay days from an email address
+
+    :param  email_address: delay email address
+    :type   email_address: string
+    :rtype: integer
+    '''
     try:
-        smtp = smtplib.SMTP(settings.EMAIL_SERVER)
-        smtp.starttls()
-        smtp.login(settings.EMAIL_ADDRESS, settings.EMAIL_PASSWORD)
-        return smtp
+        match = re.findall('^(\d+)([dmw])', email_address)[0]
+        multiplicator = settings.EMAIL_SUFFIX_TO_DAY[match[1]]
+        delay = int(match[0]) * int(multiplicator)
+        return delay
     except:
-        print('Failed to login to SMTP server, aborting.')
+        raise Exception('Invalid delay')
 
+def get_delay_addresses_from_recipients(recipients):
+    '''Gets the delay addresses from a set of recipients
 
-def imap_login():
-    # Connects to IMAP server
-    try:
-        imap = imaplib.IMAP4_SSL(settings.EMAIL_SERVER)
-        imap.login(settings.EMAIL_ADDRESS, settings.EMAIL_PASSWORD)
-        imap.select(settings.FOLDER)
-        return imap
-    except:
-        print('Failed to login to IMAP server, aborting.')
-
-
-def parsedate(datestr):
-    # Parses dates to datetime objects
-    dt_tuple = email.utils.parsedate(datestr)
-    timestamp = time.mktime(dt_tuple)
-    dt = datetime.datetime.fromtimestamp(timestamp)
-    return dt
-
-
-def mails_with_id(mail_id, imap):
-    # Gets a mail by id
-    results, data = imap.search(None, '(KEYWORD "MAILDELAY-%d")' % mail_id)
-    ids = data[0]
-    return ids.split()
-
-
-def fix_subject(headerpair):
-    # Fixes encodings of subject
-    if headerpair[1] is not None:
-        return headerpair[0].decode(headerpair[1])
-    return headerpair[0]
-
-
-def fix_recipient(hdr, recipients_list):
-    # Fixes encodings of recipients
-    if hdr[0][1] is not None:
-        recipient_decoded = hdr[0][0].decode(hdr[0][1])
-        recipients_list.append(recipient_decoded)
-    else:
-        recipients_list.append(hdr[0][0])
-    return recipients_list
-
-
-def delay_days_from_message(msg):
-    # Gets the delay from the address
-    for key in recipient_headers:
-        if key in msg:
-            mailaddress = msg[key]
-            if "@" in mailaddress:
-                try:
-                    match = re.findall('^(\d+)([dmw])', mailaddress)[0]
-                    multiplicator = multiplicate_number_with[match[1]]
-                    delay = int(match[0]) * int(multiplicator)
-                except:
-                    delay = 0
-
-                return delay
-
-
-def get_delay_address(msg):
-    # Gets the delay from the address
-    for key in recipient_headers:
-        if key in msg:
-            mailaddress = msg[key]
-            if "@" in mailaddress:
-                dropped = re.sub(r'\..*@', '@', mailaddress)
-
-                return dropped
-
-
-def key_from_message(msg):
-    # Gets the key of a message
-    for key in recipient_headers:
-        if key in msg:
-            mailaddress = msg[key]
-            if "@" in mailaddress:
-                key = re.findall(
-                    '^\d+[dmw]\.([0-9a-z]{10})@',
-                    mailaddress
-                )[0]
-                return key
-
-
-def subject_from_message(msg):
-    # Gets the subjects from a message
-    subject = msg['subject']
-    subj_headers = email.header.decode_header(subject)
-
-    header_texts = [
-        fix_subject(hdr)
-        for hdr
-        in subj_headers
-    ]
-
-    subject = " ".join(header_texts)
-    subject = re.sub(r'[\r\n]+[\t]*', '', subject)
-
-    return subject
-
-
-def recipients_from_message(msg):
-    # Gets all recipients from a message
-    raw = msg['to']
-    raw = re.sub(r'( <.*>)', '', raw)
-    raw = re.sub(r'[\r\n]+[\t]*', '', raw)
-    raw = raw.split(', ')
-    recipients_list = []
-    for recipient in raw:
-        hdr = email.header.decode_header(recipient)
-        fix_recipient(hdr, recipients_list)
-
-    recipients = ', '.join(recipients_list)
-    return recipients
-
-
-def recipients_email_from_message(msg):
-    # Gets all recipients email from a message
-    raw = msg.get_all('to', [])
-    recs = []
-    recipients = email.utils.getaddresses(raw)
+    :param  recipients: list of recipients
+    :type   recipients: list
+    :rtype: list
+    '''
+    delay_addresses = []
     for recipient in recipients:
-        recs.append(recipient[1])
+        if re.search('^(\d+[dmw])', recipient['email']):
+            delay_addresses.append(recipient['email'])
+    if delay_addresses:
+        return delay_addresses
+    else:
+        raise Exception('Could not find a delay address')
 
-    return recs
+def get_key_from_email_address(email_address):
+    '''Get the key of an email address
 
+    :param  email_address: the email address with included key
+    :type   email_address: string
+    :rtype: string
+    '''
+    try:
+        return re.search(
+            '^\d+[dmw]\.([0-9a-z]{10})@',
+            email_address
+        ).group(1)
+    except AttributeError:
+        return None
 
-def delete_imap_mail(mail_id):
-    # Deletes a mail in IMAP
-    imap = imap_login()
-    results, data = imap.search(None, '(KEYWORD "MAILDELAY-{0}")'.format(mail_id))
-    for imap_mail_id in data[0].split():
-        imap.store(imap_mail_id, '+FLAGS', '\\Deleted')
-    imap.expunge()
+def send_registration_mail(recipient):
+    '''Sends an error mail to not registred users and logs it
 
-
-def send_registration_mail(subject, sender):
-    # Sends an error mail to not registred users
+    :param  recipient: the email address of the recipient
+    :type   recipient: string
+    '''
     from mails.models import AddressLog
 
-    if not AddressLog.objects.filter(email=sender, reason=1).exists():
-        smtp = smtp_login()
-        host = settings.EMAIL_ADDRESS.split('@')[1]
-        content = get_template('mails/not_registred_mail.txt')
-        parameters = Context(
-            {
-                'sender'    : sender,
-                'host'      : host
-            }
-        )
-        content = content.render(parameters)
-        text_subtype = 'plain'
-        charset = 'utf-8'
-        msg = MIMEText(content.encode(charset), text_subtype, charset)
-        msg['Subject'] = 'Register at %s!' % host
-        msg['From'] = settings.EMAIL_ADDRESS
-        msg['Date'] = email.utils.formatdate(localtime=True)
+    try:
+        AddressLog.objects.get(email=recipient, reason='NREG')
+    except:
+        tpl = get_template('mails/messages/not_registered_mail.txt')
 
-        smtp.sendmail(settings.EMAIL_ADDRESS, sender, msg.as_string())
-        smtp.quit()
+        subject = 'Register at %s!' % host
+        content = tpl.render(
+            Context({
+                'recipient' : recipient,
+                'url'       : settings.SITE_URL,
+                'host'      : host
+            })
+        )
+
+        msg = EmailMessage(
+            subject,
+            content,
+            settings.EMAIL_HOST_USER,
+            [recipient]
+        )
+
+        msg.send()
 
         log_entry = AddressLog(
-            email=sender,
-            reason=1,
-            attempt=1,
-            date=timezone.now()
+            email=recipient,
+            reason='NREG',
+            attempt=1
         )
         log_entry.save()
 
-        print('Sent registration mail to %s' % sender)
+def send_wrong_recipient_mail(recipient):
+    '''Sends an error mail to not registred users
 
-
-def send_error_mail(subject, sender):
-    # Sends an error mail to not registred users
+    :param  recipient: the email address of the recipient
+    :type   recipient: string
+    '''
     from mails.models import AddressLog
 
-    if not AddressLog.objects.filter(email=sender).exists():
-        smtp = smtp_login()
-        host = settings.EMAIL_ADDRESS.split('@')[1]
-        content = get_template('mails/wrong_recipient_mail.txt')
-        parameters = Context(
-            {
-                'sender'    : sender,
+    try:
+        AddressLog.objects.get(email=recipient)
+    except:
+        tpl     = get_template('mails/messages/wrong_recipient_mail.txt')
+
+        subject = 'Your mail on %s was deleted!' % host
+        content = tpl.render(
+            Context({
+                'recipient' : recipient,
                 'host'      : host
-            }
+            })
         )
-        content = content.render(parameters)
-        text_subtype = 'plain'
-        charset = 'utf-8'
-        msg = MIMEText(content.encode(charset), text_subtype, charset)
-        msg['Subject'] = 'Your mail on %s was deleted!' % host
-        msg['From'] = settings.EMAIL_ADDRESS
-        msg['Date'] = email.utils.formatdate(localtime=True)
+        msg = EmailMessage(
+            subject,
+            content,
+            settings.EMAIL_HOST_USER,
+            [recipient]
+        )
 
-        smtp.sendmail(settings.EMAIL_ADDRESS, sender, msg.as_string())
-        smtp.quit()
-
-        print('Sent error mail to %s') % sender
+        msg.send()
 
 
-def save_mail(
-    subject,
-    sent_to,
-    sent_from,
-    delay_address,
-    due,
-    sent,
-    imap,
-    mail,
-    recipients
-):
-    # Saves a mail in DB and logs stats
-    from mails.models import ReceivedStatistic, UserStatistic
-    from mails.models import Mail, ObliviousStatistic
+def send_activation_mail(key, recipient):
+    '''Sends an activation mail for additional addresses
 
-    m = Mail(
-        subject=subject,
-        sent=sent,
-        due=due,
-        sent_from=sent_from,
-        sent_to=sent_to
-    )
-    r = ReceivedStatistic(
-        email=delay_address,
-        date=timezone.now()
-    )
-    u = UserStatistic(
-        email=sent_from,
-        date=timezone.now()
-    )
-    for recipient in recipients:
-        if 'rmd.io' not in recipient:
-            o = ObliviousStatistic(
-                email=recipient,
-                date=timezone.now()
-            )
-            o.save()
-        else:
-            continue
-    r.save()
-    u.save()
-    m.save()
-    imap.store(mail, '+FLAGS', "MAILDELAY-%d" % m.id)
-    imap.store(mail, '+FLAGS', '\\Flagged')
-
-
-def send_activation_mail(key, address, host):
-    # Sends an activation mail for additional addresses
+    :param  key:       the activation key
+    :type   key:       string
+    :param  recipient: the email address of the recipient
+    :type   recipient: string
+    '''
     from mails.models import AddressLog
 
-    delay1 = timezone.now() + datetime.timedelta(minutes=10)
-    delay2 = timezone.now() + datetime.timedelta(hours=1)
-    delay3 = timezone.now() + datetime.timedelta(1)
-    delay4 = timezone.now() + datetime.timedelta(3)
-    delay5 = timezone.now() + datetime.timedelta(7)
-
-    smtp = smtp_login()
-    content = get_template('mails/activation_mail.txt')
-    parameters = Context(
-        {
-            'key'    : key,
-            'host'   : host
-        }
+    subject = 'Activate your address on %s' % host
+    tpl     = get_template('mails/messages/activation_mail.txt')
+    content = tpl.render(
+        Context({
+            'recipient' : recipient,
+            'key'       : key,
+            'host'      : host
+        })
     )
-    content = content.render(parameters)
-    text_subtype = 'plain'
-    charset = 'utf-8'
-    msg = MIMEText(content.encode(charset), text_subtype, charset)
-    msg['Subject'] = 'Activate your address on %s' % host
-    msg['From'] = settings.EMAIL_ADDRESS
-    msg['Date'] = email.utils.formatdate(localtime=True)
+
+    msg = EmailMessage(
+        subject,
+        content,
+        settings.EMAIL_HOST_USER,
+        [recipient]
+    )
 
     try:
         log_entry = AddressLog.objects.get(
-            email=address,
-            reason=2
+            email=recipient,
+            reason='SPAM'
         )
 
         if log_entry.date < timezone.now() or log_entry.attempt > 5:
-            print('Blocked address, no mail sent to %s' % address)
-            smtp.quit()
+            logger.warning(
+                'No registration email was sent. %s is blocked'
+                % (recipient)
+            )
             return
 
-        elif log_entry.attempt == 1:
-            log_entry.attempt = 2
-            log_entry.date = delay1
+        else:
+
+            log_entry.attempt += 1
+            log_entry.date = timezone.now() + get_block_delay(
+                log_entry.attempt
+            )
             log_entry.save()
 
-        elif log_entry.attempt == 2:
-            log_entry.attempt = 3
-            log_entry.date = delay2
-            log_entry.save()
-
-        elif log_entry.attempt == 3:
-            log_entry.attempt = 4
-            log_entry.date = delay3
-            log_entry.save()
-
-        elif log_entry.attempt == 4:
-            log_entry.attempt = 5
-            log_entry.date = delay4
-            log_entry.save()
-
-        elif log_entry.attempt == 5:
-            log_entry.attempt = 6
-            log_entry.date = delay5
-            log_entry.save()
-
-        smtp.sendmail(settings.EMAIL_ADDRESS, address, msg.as_string())
+        msg.send()
 
     except:
-        smtp.sendmail(settings.EMAIL_ADDRESS, address, msg.as_string())
+        msg.send()
 
         log_entry = AddressLog(
-            email=address,
-            reason=2,
-            attempt=1,
+            email=recipient,
+            reason='SPAM',
+            attempt=0,
             date=timezone.now()
         )
         log_entry.save()
 
-    smtp.quit()
+def send_connection_mail(key, recipient, account):
+    '''Sends a mail which confirms the connection of
+    an existing user to another existing account
 
-    print('Sent activation mail to %s' % address)
+    :param  key:       the activation key (urlsafe b64 of username)
+    :type   key:       string
+    :param  recipient: the email address of the recipient
+    :type   recipient: string
+    :param  account    the account which it should be connected to
+    :type   account    mails.models.Account
+    '''
+    from mails.models import AddressLog
+
+    subject = 'Confirm your address on %s' % host
+    tpl     = get_template('mails/messages/connection_mail.txt')
+    content = tpl.render(
+        Context({
+            'recipient'  : recipient,
+            'account_id' : account.id,
+            'key'        : key,
+            'host'       : host
+        })
+    )
+
+    msg = EmailMessage(
+        subject,
+        content,
+        settings.EMAIL_HOST_USER,
+        [recipient]
+    )
+
+    try:
+        log_entry = AddressLog.objects.get(
+            email=recipient,
+            reason='SPAM'
+        )
+
+        if log_entry.date < timezone.now() or log_entry.attempt > 5:
+            logger.warning(
+                'No connection email was sent. %s is blocked'
+                % (recipient)
+            )
+            return
+
+        else:
+
+            log_entry.attempt += 1
+            log_entry.date = timezone.now() + get_block_delay(
+                log_entry.attempt
+            )
+            log_entry.save()
+
+        msg.send()
+
+    except:
+        msg.send()
+
+        log_entry = AddressLog(
+            email=recipient,
+            reason='SPAM',
+            attempt=0,
+            date=timezone.now()
+        )
+        log_entry.save()
+
+def get_block_delay(attempt):
+    '''Gets the block delay by attempt
+
+    :param  attempt: the attempt to get the delay for
+    :type   attempt: integer
+    '''
+    return settings.BLOCK_DELAYS.get(
+        attempt,
+        datetime.timedelta(7)
+    )
+
+def get_all_users_of_account(user):
+    '''Gets all users of the current users account
+
+    :param  user: the user
+    :type   user: models.User
+    :rtype: list
+    '''
+    return User.objects.filter(
+            userprofile__account=user.get_account()
+        ).order_by('-last_login')
 
 
-def get_all_addresses(request):
-    # Gets all addresses of the users identity
-    from mails.models import UserIdentity
+def calendar_clean_subject(subj):
+    '''Cleans the subject of a mail
 
-    identity = UserIdentity.objects.get(user=request.user).identity
-    accounts = UserIdentity.objects.filter(identity=identity)
-    addresses = [account.user.email for account in accounts]
+    Removes common prefixes like Re, Fwd...
 
-    return addresses
-
-
-def get_all_users(request):
-    # Gets all addresses of the users identity
-    from mails.models import UserIdentity
-
-    identity = UserIdentity.objects.get(user=request.user).identity
-    accounts = UserIdentity.objects.filter(identity=identity)
-    addresses = [account.user for account in accounts]
-
-    return addresses
+    :param  subj: the mails subject
+    :type   subj: string
+    :rtype: string
+    '''
+    strip_re = "(%s)" % ")|(".join(settings.CALENDAR_STRIP_PREFIXES)
+    after = re.sub(strip_re, '', subj)
+    if after == subj:
+        return after
+    return calendar_clean_subject(after)
 
 
-def delete_mail_with_error(mail, reason, sent_from, imap):
-    # Deletes a mail (in IMAP) and prints out an error message
-    imap.store(mail, '+FLAGS', '\\Deleted')
-    print('Mail from %s deleted: %s' % (sent_from, reason))
+def create_additional_user(email, user):
+    '''Creates an additional user with the same password and identity
 
-
-def create_additional_user(email, request):
-    # Creates an additional user with the same password and identity
-    from mails.models import UserIdentity, AddressLog
+    :param  email:   the email address of the new user
+    :type   email:   string
+    :param  user:    the user which wants to create a new user
+    :type   email:   django.contrib.auth.models.User
+    '''
+    from mails.models import UserProfile, AddressLog
 
     new_user = User(
         email = email,
@@ -407,30 +311,52 @@ def create_additional_user(email, request):
             sha1(smart_bytes(email)).digest()
         ).rstrip(b'='),
         date_joined = timezone.now(),
-        password = request.user.password,
+        password = user.password,
         is_active = False
     )
     new_user.save()
 
-    identity = UserIdentity.objects.get(user=request.user).identity
-    user_identity = UserIdentity(
+    account = user.get_account()
+    user_profile = UserProfile(
         user=new_user,
-        identity=identity
+        account=account
     )
+
+    user_profile.save()
 
     try:
         user_log_entry = AddressLog.objects.filter(
-            email=request.user.email,
-            reason=1
+            email=user.email
         )
         user_log_entry.delete()
     except:
         pass
 
+    key = base64.urlsafe_b64encode(new_user.username)
     send_activation_mail(
-        address=email,
-        key=base64.b16encode(new_user.username),
-        host=request.get_host()
+        recipient=email,
+        key=key
     )
 
-    user_identity.save()
+def delete_log_entries(email):
+    '''Deletes all log entries of an email address
+
+    :param email: the email which should be removed from log
+    :type  email: string
+    '''
+    from mails.models import AddressLog
+
+    try:
+        user_log_entry = AddressLog.objects.filter(
+            email=email
+        )
+        user_log_entry.delete()
+    except:
+        pass
+
+def generate_key():
+    '''Generates an unique user key
+
+    :rtype: string
+    '''
+    return base64.b32encode(os.urandom(7))[:10].lower()

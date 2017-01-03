@@ -1,0 +1,128 @@
+html {
+  height: 100% !important; }
+
+body {
+  height: 100% !important;
+  padding-top: 60px; }
+
+body.nopadding {
+  padding-top: 45px; }
+
+.notification {
+  z-index: 2000;
+  position: fixed;
+  top: 10px;
+  right: 10px; }
+
+.navbar-brand {
+  padding: 0 10px 0 0 !important; }
+
+.footer, #wrapper:after {
+  height: 50px; }
+
+#wrapper:after {
+  content: "";
+  display: block; }
+
+.footer {
+  background-color: #F5F5F5;
+  padding: 10px 0; }
+  .footer .container {
+    margin-top: 0px;
+    margin-bottom: 0px;
+    vertical-align: middle;
+    line-height: 30px; }
+
+.delete_user {
+  color: #000000; }
+  .delete_user:hover {
+    color: #000000; }
+
+.popover-table {
+  width: 100%; }
+  .popover-table td {
+    padding: 10px 5px 5px; }
+    .popover-table td em {
+      font-size: 11px; }
+  .popover-table th {
+    padding: 5px;
+    border-bottom: 1px solid #DDDDDD; }
+
+.info-list {
+  padding-left: 15px; }
+  .info-list em {
+    font-size: 11px; }
+
+.search-container {
+  padding-bottom: 10px; }
+  .search-container .search {
+    width: 250px;
+    float: right; }
+
+@media (max-width: 768px) {
+  .search-container {
+    padding: 0 10px 10px; }
+    .search-container .search {
+      width: 100%; } }
+#adsylogo {
+  height: 30px; }
+
+#logo {
+  height: 35px;
+  margin: 5px 0 5px; }
+
+.wrapper {
+  min-height: 100%;
+  margin-bottom: -50px; }
+
+.footer-text {
+  color: #999999;
+  display: inline-block;
+  line-height: 30px; }
+
+.footer-link {
+  color: #999999;
+  display: inline-block;
+  line-height: 30px;
+  margin-right: 15px; }
+  .footer-link:hover, .footer-link:link, .footer-link:active, .footer-link:visited {
+    color: #999999;
+    text-decoration: none; }
+
+.navbar {
+  margin-bottom: 20px;
+  border-radius: 0px; }
+
+.fa.btn {
+  margin: 0; }
+
+address {
+  margin: 40px auto 0px 40px;
+  font-size: 12px;
+  font-style: italic; }
+
+.btn-xs {
+  height: 22px;
+  width: 22px;
+  padding: 2px 6px 6px; }
+
+#tabs {
+  margin-top: 25px; }
+
+.notification .alert:hover {
+  opacity: 0.7;
+  cursor: pointer; }
+
+.carousel-caption {
+  color: #282828; }
+  .carousel-caption p {
+    font-size: 20px; }
+
+.ghost-button {
+  width: auto;
+  border: 2px solid #282828;
+  background-color: transparent;
+  border-radius: 10px;
+  padding: 8px 16px;
+  font-size: 25px;
+  margin: 10px 0; }

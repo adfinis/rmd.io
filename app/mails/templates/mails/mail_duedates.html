@@ -1,0 +1,18 @@
+<table class='popover-table'>
+    <tr>
+        <th>
+            <strong>Due Date{% if mail.due_set.count > 1 %}s{% endif %}:</strong>
+        </th>
+        <th></th>
+    </tr>
+    {% for due in mail.due_set.all %}
+    <tr>
+        <td>
+            {{ due.due | date:"D\, d\. F Y" }}
+        </td>
+        <td>
+            <em>{{ due.due | date:"H:i" }}</em>
+        </td>
+    </tr>
+    {% endfor %}
+</table>

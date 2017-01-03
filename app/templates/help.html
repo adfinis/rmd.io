@@ -1,0 +1,152 @@
+{% extends 'index.html' %}
+
+{% block title %}- Help{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="panel-group" id="accordion">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title"><a data-toggle="collapse" data-parent="#accordion" href="#whatis">What is rmd.io?</a></h3>
+            </div>
+            <div id="whatis" class="panel-collapse collapse in">
+                <div class="panel-body">
+                    <p>
+                        <strong>rmd.io</strong> is a service, which reminds you of unanswered e-mails and helps you to manage delegated tasks.<br>
+                        For example: If you send an e-mail to '5d@rmd.io', then we'll send you the e-mail back 5 days later. This also works by using 'w' for weeks and 'm' for months.
+                    </p>
+                </div>
+            </div>
+        </div>
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title"><a data-toggle="collapse" data-parent="#accordion" href="#delayaddresses">Delay Addresses</a></h3>
+            </div>
+            <div id="delayaddresses" class="panel-collapse collapse">
+                <div class="panel-body">
+                    <p>Here are some possible delay addresses to use <small>(<a href="/download/maildelay.vcf">download them here</a>)</small>:</p>
+                    <table class="table table-striped">
+                        <thead>
+                            <th>d for days</th>
+                            <th>w for weeks</th>
+                            <th>m for months</th>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td title="Delay for 1 day">1d{{ key }}@rmd.io</td>
+                                <td title="Delay for 1 week">1w{{ key }}@rmd.io</td>
+                                <td title="Delay for 1 month">1m{{ key }}@rmd.io</td>
+                            </tr>
+                            <tr>
+                                <td title="Delay for 2 days">2d{{ key }}@rmd.io</td>
+                                <td title="Delay for 2 weeks">2w{{ key }}@rmd.io</td>
+                                <td title="Delay for 2 months">2m{{ key }}@rmd.io</td>
+                            </tr>
+                            <tr>
+                                <td title="Delay for 3 days">3d{{ key }}@rmd.io</td>
+                                <td title="Delay for 3 weeks">3w{{ key }}@rmd.io</td>
+                                <td title="Delay for 3 months">3m{{ key }}@rmd.io</td>
+                            </tr>
+                            <tr>
+                                <td title="Delay for 4 days">4d{{ key }}@rmd.io</td>
+                                <td title="Delay for 4 weeks">4w{{ key }}@rmd.io</td>
+                                <td title="Delay for 4 months">4m{{ key }}@rmd.io</td>
+                            </tr>
+                            <tr>
+                                <td title="Delay for 5 days">5d{{ key }}@rmd.io</td>
+                                <td>...</td>
+                                <td>...</td>
+                            </tr>
+                            <tr>
+                                <td title="Delay for 6 days">6d{{ key }}@rmd.io</td>
+                                <td></td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>...</td>
+                                <td></td>
+                                <td></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <p>
+                    <strong>Only 'd', 'w' and 'm' are possible!</strong><br>
+                    <br>
+                    These addresses are <strong>not</strong> possible:</p>
+                    <table class="table table-striped">
+                        <thead>
+                            <th>s for seconds</th>
+                            <th>m for minutes</th>
+                            <th>y for years</th>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td title="Delay for 1 second">1s{{ key }}@rmd.io</td>
+                                <td title="Delay for 1 minute">1m{{ key }}@rmd.io</td>
+                                <td title="Delay for 1 year">1y{{ key }}@rmd.io</td>
+                            </tr>
+                            <tr>
+                                <td title="Delay for 2 seconds">2s{{ key }}@rmd.io</td>
+                                <td title="Delay for 2 minutes">2m{{ key }}@rmd.io</td>
+                                <td title="Delay for 2 years">2y{{ key }}@rmd.io</td>
+                            </tr>
+                            <tr>
+                                <td title="Delay for 3 seconds">3s{{ key }}@rmd.io</td>
+                                <td title="Delay for 3 minutes">3m{{ key }}@rmd.io</td>
+                                <td title="Delay for 3 years">3y{{ key }}@rmd.io</td>
+                            </tr>
+                            <tr>
+                                <td>...</td>
+                                <td>...</td>
+                                <td>...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title"><a data-toggle="collapse" data-parent="#accordion" href="#antispam">Anti-Spam</a></h3>
+            </div>
+            <div id="antispam" class="panel-collapse collapse">
+                <div class="panel-body">
+                    <h4>Why should I use the anti-spam measure?</h4>
+                    <p>
+                        The anti-spam measure feature protects you from receiving spam mails. If you enable it, you won't get any e-mails from faked senders.
+                    </p>
+                    <h4>What does it do?</h4>
+                    <p>
+                        The anti-spam measure generates a personal anti-spam key. It checks whether the key from the e-mails sender is equal to the user key. If that isn't the case, the e-mail is dropped.
+                    </p>
+                    <h4>How can I use it?</h4>
+                    <p>
+                        At first, you have to enable the anti-spam measure feature in your settings. The settings can be found at the drop-down navigation in the upper right corner.<br>
+                        After enabling it, you can download a custom vCard file with a subset of all possible addresses.<br>
+                        If you don't use an address from the address book, then you have to manually include the key into the rmd.io e-mail address (e.g. 2d.jszelaigdj@rmd.io).
+                    </p>
+                </div>
+            </div>
+        </div>
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title"><a data-toggle="collapse" data-parent="#accordion" href="#additionaladdresses">Additional Addresses</a></h3>
+            </div>
+            <div id="additionaladdresses" class="panel-collapse collapse">
+                <div class="panel-body">
+                    <h4>What is the additional addresses feature for?</h4>
+                    <p>
+                        Additional addresses allow you, to add more than one address, from where you can send e-mails to rmd.io.<br>
+                        No need to register multiple times, but still use rmd.io for all your e-mail addresses.
+                    </p>
+                    <h4>How can I use it?</h4>
+                    <p>
+                        Go to your settings and type an additional address into the form and click save. You will receive a confirmation e-mail with a confirmation link.
+                        Please click the link to finally enable the additional address.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

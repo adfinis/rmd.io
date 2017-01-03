@@ -1,0 +1,8 @@
+Hello {{ recipient }}
+
+Please activate your address with the following link:
+
+https://{{ host }}/user/activate/{{ key }}
+
+Greetings
+{{ host }} - your friendly mail reminder

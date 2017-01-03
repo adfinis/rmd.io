@@ -1,0 +1,57 @@
+<div class="modal-dialog">
+    <div class="modal-content">
+        <form action="/settings/" method="post">
+            {% csrf_token %}
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h3 class="modal-title">Settings</h3>
+            </div>
+            <div class="modal-body" id="settings">
+                <div class="panel panel-default">
+                    <div class="panel-heading"><strong>Anti-Spam</strong></div>
+                    <div class="panel-body">
+                        <small><p>Anti-Spam measure modifies your delay addresses from
+                        <em style="white-space:nowrap">1d@rmd.io</em> to <em style="white-space:nowrap">1d.&lt;secret-key&gt;@rmd.io</em>, so other
+                        people cannot generate reminders on your behalf by
+                        spoofing the sender address.</p></small>
+                        <label for="anti_spam">
+                            <input type="checkbox" id="anti_spam" name="anti_spam" {% if account.anti_spam %}checked{% endif %}> Enable anti-spam measure
+                        </label>
+                        {% if account.anti_spam %}
+                        <br><br><div class="well well-sm" style="margin:0;">Your key: <strong>{{ account.key }}</strong></div>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="panel panel-default">
+                    <div class="panel-heading"><strong>E-Mail-Addresses</strong></div>
+                    <div class="panel-body">
+                        {% include 'mails/settings/user_table.html' %}
+                        <div class="input-group">
+                            <input class="form-control" type="email" id="email" name="email" placeholder="example@example.com">
+                            <span class="input-group-btn">
+                                <button class="btn btn-default" id="add_user" type="button">Add email</button>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+                <div class="panel panel-default">
+                    <div class="panel-heading"><strong>Calendar</strong></div>
+                    <div class="panel-body">
+                        <small><p>You can insert this into any application that
+                            supports the iCal format. Please copy the following
+                            address into your calendar application to have all
+                            your reminders visible at all times:</p>
+                        <p><a href="/calendar/{{secret}}/">{{domain}}/calendar/{{secret}}/</a></p>
+                        <p>Keep this link to yourself, as it enables everyone who knows it to see your reminders!</p></small>
+                    </div>
+                </div>
+                <a href="/user/delete/confirm/{{user.id}}" class="pull-right" data-target="dialog">delete my account</a>
+                <br>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                <input type="submit" class="btn btn-primary" value="Save" />
+            </div>
+        </form>
+    </div>
+</div>

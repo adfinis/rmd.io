@@ -1,9 +1,9 @@
-lib/
-local/
-bin/
-include/
-share/
+/bin/
+/include/
+/local/
+/lib/
+/share/
+/.vagrant/
 *.pyc
-.*.swp
-.*.swo
-*.db
+*.swo
+*.swp

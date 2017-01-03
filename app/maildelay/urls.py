@@ -3,8 +3,9 @@ from django.contrib import admin
 
 admin.autodiscover()
 
-urlpatterns = patterns('',
-    url(r'^browserid/', include('django_browserid.urls')),
+urlpatterns = patterns(
+    '',
     url(r'^admin/', include(admin.site.urls)),
-    url(r'^', include('mails.urls', namespace='mails')),
+    url(r'^browserid/', include('django_browserid.urls')),
+    url(r'^', include('mails.urls')),
 )

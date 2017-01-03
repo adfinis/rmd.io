@@ -1,0 +1,40 @@
+{% load staticfiles %}
+{% load browserid %}
+
+<!DOCTYPE HTML>
+<html lang="en">
+    <head>
+        <link rel="stylesheet" media="screen" href="{% static 'lib/bootstrap/css/bootstrap.min.css' %}" />
+        <link rel="stylesheet" media="screen" href="{% static 'lib/bootstrap-datetimepicker/build/css/bootstrap-datetimepicker.min.css' %}" />
+        <link rel="stylesheet" media="screen" href="{% static 'lib/font-awesome/css/font-awesome.min.css' %}">
+        <link rel="stylesheet" media="screen" href="{% static 'style.css' %}" />
+        <link rel="shortcut icon" href="{% static 'images/logo_titlebar.png' %}" type="image/png">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta charset="UTF-8">
+        <title>rmd.io {% block title %}{% endblock %}</title>
+    </head>
+    <body{%block bodyclass%}{%endblock%}>
+        {% browserid_info %}
+        {% include 'messages.html' %}
+        <div class="wrapper">
+            {% include 'navbar.html' %}
+            {% block header %}
+            <div class="container">
+                {% block content %}{% endblock %}
+            </div>
+            {% endblock %}
+        </div>
+        {% include 'footer.html' %}
+        <script src="{% static 'lib/jquery/jquery-1.11.1.min.js' %}"></script>
+        <script src="{% static 'lib/bootstrap/js/bootstrap.min.js' %}"></script>
+        <script src="{% static 'lib/bootstrap-notify/js/bootstrap-notify.js' %}"></script>
+        <script src="{% static 'lib/spin/spin.min.js' %}"></script>
+        <script src="{% static 'js/popups.js' %}"></script>
+        <script src="{% static 'js/notify.js' %}"></script>
+        {% if user.is_authenticated  %}
+            <script src="{% static 'js/settings.js' %}"></script>
+        {% endif %}
+        {% block bottomscripts %}{% endblock %}
+        {% browserid_js %}
+    </body>
+</html>

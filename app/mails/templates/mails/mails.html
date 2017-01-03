@@ -1,0 +1,18 @@
+{% extends 'index.html' %}
+
+{% load staticfiles %}
+
+{% block title %}- Mails{% endblock %}
+
+{% block content %}
+    <div class="row search-container">
+        <input type="text" class="form-control search" placeholder="Search...">
+    </div>
+    <div class="row" id="list">{%include 'mails/mails_table.html'%}</div>
+{% endblock %}
+
+{%block bottomscripts%}
+    <script src="{% static 'lib/moment/moment.js' %}"></script>
+    <script src="{% static 'lib/bootstrap-datetimepicker/build/js/bootstrap-datetimepicker.min.js' %}"></script>
+    <script src="{% static 'js/mailtable.js' %}"></script>
+{%endblock%}

@@ -1,0 +1,24 @@
+<table class="table table-condensed" id="users">
+    <tr>
+        <th>Email</th>
+        <th></th>
+    </tr>
+    {% for u in users %}
+        <tr>
+            <td>{{ u.email }}
+                {% if not u.is_active %}
+                <small>
+                    (needs <a href="#" title="Send Activation E-Mail" data-user-id="{{ u.id }}" class="send_activation">activation</a>)
+                </small>
+                {% endif %}
+            </td>
+            <td class="text-right">
+                {% if u == user %}
+                    <em>(current user)</em>
+                {% else %}
+                    <a href="/user/delete/confirm/{{u.id}}" data-target="dialog" title="Delete User"><i class="fa fa-times"></i></a>
+                {% endif %}
+            </td>
+        </tr>
+    {% endfor %}
+</table>

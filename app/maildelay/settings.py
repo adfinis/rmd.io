@@ -1,5 +1,6 @@
 # Django settings for maildelay project.
-import os
+
+import datetime
 
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
@@ -14,8 +15,8 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
         'NAME': 'maildelay',
-        'USER': 'jonas',
-        'PASSWORD': '',
+        'USER': 'maildelay',
+        'PASSWORD': 'vagrant',
         'HOST': '127.0.0.1',
         'PORT': '',
     }
@@ -23,7 +24,7 @@ DATABASES = {
 
 # Hosts/domain names that are valid for this site; required if DEBUG is False
 # See https://docs.djangoproject.com/en/1.5/ref/settings/#allowed-hosts
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 # Local time zone for this installation. Choices can be found here:
 # http://en.wikipedia.org/wiki/List_of_tz_zones_by_name
@@ -35,9 +36,9 @@ TIME_ZONE = 'Europe/Zurich'
 # http://www.i18nguy.com/unicode/language-identifiers.html
 LANGUAGE_CODE = 'en-us'
 
-SITE_ID = 1
+SITE_URL = 'https://maildelay.vm'
 
-SITE_URL = 'http://127.0.0.1:8000'
+SITE_ID = 1
 
 # If you set this to False, Django will make some optimizations so as not
 # to load the internationalization machinery.
@@ -63,7 +64,7 @@ MEDIA_URL = ''
 # Don't put anything in this directory yourself; store your static files
 # in apps' "static/" subdirectories and in STATICFILES_DIRS.
 # Example: "/var/www/example.com/static/"
-STATIC_ROOT = os.getcwd()
+STATIC_ROOT = '/vagrant/app/static'
 
 # URL prefix for static files.
 # Example: "http://example.com/static/", "http://static.example.com/"
@@ -74,7 +75,8 @@ STATICFILES_DIRS = (
     # Put strings here, like "/home/html/static" or "C:/www/django/static".
     # Always use forward slashes, even on Windows.
     # Don'ys use forward slashes, even on Windows.
-    os.path.join(os.getcwd(), 'static'),
+    # os.path.join(os.getcwd(), "static"),
+    # '/vagrant/app/static'
 )
 
 # List of finder classes that know how to find static files in
@@ -82,7 +84,7 @@ STATICFILES_DIRS = (
 STATICFILES_FINDERS = (
     'django.contrib.staticfiles.finders.FileSystemFinder',
     'django.contrib.staticfiles.finders.AppDirectoriesFinder',
-    #'django.contrib.staticfiles.finders.DefaultStorageFinder',
+    # 'django.contrib.staticfiles.finders.DefaultStorageFinder',
 )
 
 # Make this unique, and don't share it with anybody.
@@ -92,7 +94,7 @@ SECRET_KEY = 'qkk)_bi42*bikzfakx3)vqlr$7o3vn92z*or66c@8z2)$o767d'
 TEMPLATE_LOADERS = (
     'django.template.loaders.filesystem.Loader',
     'django.template.loaders.app_directories.Loader',
-    #'django.template.loaders.eggs.Loader',
+    # 'django.template.loaders.eggs.Loader',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -114,23 +116,20 @@ TEMPLATE_DIRS = (
     # Put strings here, like "/home/html/django_templates".
     # Always use forward slashes, even on Windows.
     # Don't forget to use absolute paths, not relative paths.
-    os.path.join(os.getcwd(), 'templates'),
+    '/vagrant/app/templates',
 )
 
 INSTALLED_APPS = (
     'django.contrib.auth',
-    'django_browserid',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
-    'django.contrib.sites',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'django_extensions',
-    # Uncomment the next line to enable the admin:
     'django.contrib.admin',
-    # Uncomment the next line to enable admin documentation:
-    # 'django.contrib.admindocs',
+    'django_browserid',
+    'django_extensions',
     'mails',
+    'south',
 )
 
 AUTHENTICATION_BACKENDS = (
@@ -146,16 +145,19 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     'django.core.context_processors.media',
     'django.core.context_processors.static',
     'django.core.context_processors.tz',
+    'django.core.context_processors.request',
     'django.contrib.messages.context_processors.messages',
 )
 
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+CSRF_COOKIE_SECURE = True
 SESSION_COOKIE_SECURE = False
 
-LOGIN_REDIRECT_URL = '/'
+LOGIN_REDIRECT_URL = '/mails/'
 
-LOGIN_REDIRECT_URL_FAILURE = '/login_failed/'
+LOGIN_REDIRECT_URL_FAILURE = '/login/'
 
-LOGOUT_REDIRECT_URL = '/'
+LOGOUT_REDIRECT_URL = '/login/'
 
 CACHES = {
     'default': {
@@ -171,15 +173,33 @@ CACHES = {
 # more details on how to customize your logging configuration.
 LOGGING = {
     'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'verbose': {
+            'format'  : ("[%(asctime)s] %(levelname)s "
+                         "[%(name)s:%(lineno)s] %(message)s"),
+            'datefmt' : "%d/%b/%Y %H:%M:%S"
+        },
+        'simple': {
+            'format'  : '%(levelname)s %(message)s'
+        },
+    },
     'handlers': {
-        'console': {
-            'level': 'DEBUG',
-            'class': 'logging.StreamHandler'
+        'file': {
+            'level'     : 'DEBUG',
+            'class'     : 'logging.FileHandler',
+            'filename'  : '/var/log/django/error.log',
+            'formatter' : 'verbose',
         }
     },
     'loggers': {
         'django_browserid': {
-            'handlers': ['console'],
+            'handlers': ['file'],
+            'level'   : 'DEBUG',
+            'filename': '/var/log/browserid-debug.log',
+        },
+        'mails': {
+            'handlers': ['file'],
             'level': 'DEBUG',
         },
     }
@@ -191,10 +211,10 @@ CSP_FRAME_SRC = ("'self'", 'https://login.persona.org')
 
 # Mailserver login settings
 
-EMAIL_ADDRESS = 'maildelay@maildelay.tk'
-EMAIL_PASSWORD = '3p7KDn4FugQQ'
-EMAIL_SERVER = 'maildelay.tk'
-FOLDER = 'INBOX'
+EMAIL_HOST_USER = 'maildelay@maildelay.ml'
+EMAIL_HOST_PASSWORD = '3p7KDn4FugQQ'
+EMAIL_HOST = 'maildelay.ml'
+EMAIL_FOLDER = 'INBOX'
 
 MAILBOXES = [
     ('1d', 'Mail Delay for 1 day'),
@@ -231,3 +251,25 @@ MAILBOXES = [
     ('10m', 'Mail Delay for 10 months'),
     ('11m', 'Mail Delay for 11 months'),
 ]
+
+BLOCK_DELAYS = {
+    1 : datetime.timedelta(minutes = 10),
+    2 : datetime.timedelta(hours   =  1),
+    3 : datetime.timedelta(days    =  1),
+    4 : datetime.timedelta(days    =  3),
+    5 : datetime.timedelta(days    =  7)
+}
+
+EMAIL_SUFFIX_TO_DAY = {
+    'd' : 1,
+    'w' : 7,
+    'm' : 30,
+}
+
+
+CALENDAR_STRIP_PREFIXES = (
+    r'^Re:\s*',
+    r'^Ant:\s*',
+    r'^Fwd:\s*',
+    r'^Wg:\s*',
+)

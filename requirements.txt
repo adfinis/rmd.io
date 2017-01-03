@@ -1,5 +1,8 @@
-Django
-django-browserid
-django_extensions
+Django==1.6
+django-browserid==0.9
+django_extensions==1.2.5
+icalendar
+psycopg2
 pytz
 lockfile
+South

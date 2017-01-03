@@ -1,0 +1,77 @@
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th class="col-md-5 col-sm-4">
+                Subject
+            </th>
+            <th class="col-md-4 col-sm-3">
+                Next Due
+            </th>
+            <th class="hidden-sm hidden-xs col-md-2">
+                Sent
+            </th>
+            <th class="col-md-2">
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+    {% for mail in mails %}
+    <tr class="item" id="{{ mail.id }}">
+            <td class="subject col-md-5">
+                <span
+                 title="General info"
+                 class="add-popover"
+                 data-toggle="popover"
+                 data-placement="right"
+                 data-content="{% include 'mails/mail_recipients.html' %}"
+                >
+                {{ mail.subject }}
+                </span>
+            </td>
+            <td class="due col-md-4">
+                <span
+                 title="Due dates"
+                 class="add-popover"
+                 data-toggle="popover"
+                 data-placement="right"
+                 data-content="{% include 'mails/mail_duedates.html' %}"
+                >
+                {{ mail.next_due.due | date:"Y-m-d H:i" }}
+                </span>
+            </td>
+            <td class="sent hidden-sm hidden-xs col-md-2">
+                {{ mail.sent | date:"Y-m-d H:i" }}
+            </td>
+            <td class="text-right break-none col-md-2">
+                <a
+                 data-target="dialog"
+                 data-name="mail_edit"
+                 class="btn btn-default btn-xs"
+                 href="/mails/edit/{{ mail.id }}/"
+                 title="Edit due dates"
+                ><i class="fa fa-pencil"></i></a>
+                <a
+                 data-target="dialog"
+                 data-name="mail_info"
+                 class="btn btn-default btn-xs"
+                 href="/mails/info/{{ mail.id }}/"
+                 title="Show info about this mail"
+                ><i class="fa fa-info"></i></a>
+                <a
+                 data-target="dialog"
+                 data-name="mail_delete"
+                 class="btn btn-default btn-xs"
+                 href="/mails/delete/confirm/{{ mail.id }}/"
+                 title="Delete this mail"
+                ><i class="fa fa-trash-o"></i></a>
+            </td>
+        </tr>
+    {% empty %}
+        <tr>
+            <td colspan="5" style="text-align:center;">
+                There aren't any mails!
+            </td>
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>
