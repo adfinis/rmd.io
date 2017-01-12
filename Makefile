@@ -38,6 +38,20 @@ migrate:
 	@vagrant ssh -c "/vagrant/envpy /vagrant/app/manage.py migrate mails"
 	@echo "Successfully migrated DB structure"
 
+docker-start:
+	docker-compose start
+
+docker-stop:
+	docker-compose stop
+
+docker-init:
+	docker-compose up -d
+
+docker-db-init:
+	psql -h 127.0.0.1 -U rmdio -d maildelay -f tools/vagrant/database.sql
+	python app/manage.py syncdb --noinput
+	python app/manage.py migrate
+
 restart-apache:
 	@vagrant ssh -c "sudo service apache2 restart"
 

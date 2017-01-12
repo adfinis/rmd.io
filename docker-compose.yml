@@ -1,0 +1,21 @@
+version: "2"
+services:
+  postgres:
+    image: postgres:9.6
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_DB=maildelay
+      - POSTGRES_USER=rmdio
+      - POSTGRES_PASSWORD=rmdio
+  phppgadmin:
+    image: zhajor/docker-phppgadmin
+    depends_on:
+      - postgres
+    links:
+      - postgres
+    ports:
+        - "8080:80"
+    environment:
+      - DB_HOST=postgres
+      - DB_PORT=5432
