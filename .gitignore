@@ -1,9 +1,3 @@
-/bin/
-/include/
-/local/
-/lib/
-/share/
-/.vagrant/
 *.pyc
 *.swo
 *.swp
