@@ -40,7 +40,7 @@ TIME_ZONE = 'Europe/Zurich'
 # http://www.i18nguy.com/unicode/language-identifiers.html
 LANGUAGE_CODE = 'en-us'
 
-SITE_URL = 'https://maildelay.vm'
+SITE_URL = 'http://localhost'
 
 SITE_ID = 1
 
@@ -76,11 +76,11 @@ STATIC_URL = '/static/'
 
 # Additional locations of static files
 STATICFILES_DIRS = [os.path.join(BASE_DIR, "static")]
-    # Put strings here, like "/home/html/static" or "C:/www/django/static".
-    # Always use forward slashes, even on Windows.
-    # Don'ys use forward slashes, even on Windows.
-    # os.path.join(os.getcwd(), "static"),
-    # '/vagrant/app/static'
+# Put strings here, like "/home/html/static" or "C:/www/django/static".
+# Always use forward slashes, even on Windows.
+# Don'ys use forward slashes, even on Windows.
+# os.path.join(os.getcwd(), "static"),
+# '/vagrant/app/static'
 
 
 # List of finder classes that know how to find static files in
@@ -130,19 +130,21 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django.contrib.admin',
-    'django_browserid',
     'django_extensions',
     'mails',
     'south',
+    'widget_tweaks',
 )
 
 AUTHENTICATION_BACKENDS = (
     'django.contrib.auth.backends.ModelBackend',
-    'django_browserid.auth.BrowserIDBackend'
+)
+
+AUTH_PROFILE_MODULE = (
+    'mails.UserProfile',
 )
 
 TEMPLATE_CONTEXT_PROCESSORS = (
-    'django_browserid.context_processors.browserid',
     'django.contrib.auth.context_processors.auth',
     'django.core.context_processors.debug',
     'django.core.context_processors.i18n',
@@ -154,64 +156,14 @@ TEMPLATE_CONTEXT_PROCESSORS = (
 )
 
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
-CSRF_COOKIE_SECURE = True
+CSRF_COOKIE_SECURE = False
 SESSION_COOKIE_SECURE = False
 
 LOGIN_REDIRECT_URL = '/mails/'
 
 LOGIN_REDIRECT_URL_FAILURE = '/login/'
 
-LOGOUT_REDIRECT_URL = '/login/'
-
-CACHES = {
-    'default': {
-        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
-        'LOCATION': 'unique-snowflake'
-    }
-}
-
-# A sample logging configuration. The only tangible logging
-# performed by this configuration is to send an email to
-# the site admins on every HTTP 500 error when DEBUG=False.
-# See http://docs.djangoproject.com/en/dev/topics/logging for
-# more details on how to customize your logging configuration.
-# LOGGING = {
-#     'version': 1,
-#     'disable_existing_loggers': False,
-#     'formatters': {
-#         'verbose': {
-#             'format'  : ("[%(asctime)s] %(levelname)s "
-#                          "[%(name)s:%(lineno)s] %(message)s"),
-#             'datefmt' : "%d/%b/%Y %H:%M:%S"
-#         },
-#         'simple': {
-#             'format'  : '%(levelname)s %(message)s'
-#         },
-#     },
-#     'handlers': {
-#         'file': {
-#             'level'     : 'DEBUG',
-#             'class'     : 'logging.FileHandler',
-#             'filename'  : 'log/django/error.log',
-#             'formatter' : 'verbose',
-#         }
-#     },
-#     'loggers': {
-#         'django_browserid': {
-#             'handlers': ['file'],
-#             'level'   : 'DEBUG',
-#             'filename': 'log/browserid-debug.log',
-#         },
-#         'mails': {
-#             'handlers': ['file'],
-#             'level': 'DEBUG',
-#         },
-#     }
-# }
-
-CSP_SCRIPT_SRC = ("'self'", 'https://login.persona.org')
-CSP_FRAME_SRC = ("'self'", 'https://login.persona.org')
-
+LOGOUT_REDIRECT_URL = '/home/'
 
 # Mailserver login settings
 
@@ -257,17 +209,17 @@ MAILBOXES = [
 ]
 
 BLOCK_DELAYS = {
-    1 : datetime.timedelta(minutes = 10),
-    2 : datetime.timedelta(hours   =  1),
-    3 : datetime.timedelta(days    =  1),
-    4 : datetime.timedelta(days    =  3),
-    5 : datetime.timedelta(days    =  7)
+    1: datetime.timedelta(minutes=10),
+    2: datetime.timedelta(hours=1),
+    3: datetime.timedelta(days=1),
+    4: datetime.timedelta(days=3),
+    5: datetime.timedelta(days=7)
 }
 
 EMAIL_SUFFIX_TO_DAY = {
-    'd' : 1,
-    'w' : 7,
-    'm' : 30,
+    'd': 1,
+    'w': 7,
+    'm': 30,
 }
 
 

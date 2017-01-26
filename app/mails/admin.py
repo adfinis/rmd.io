@@ -1,10 +1,11 @@
 from django.contrib import admin
 from mails.models import Mail
 
+
 class MailAdmin(admin.ModelAdmin):
     fieldsets = (
-        (None,                {'fields' : ['subject', 'user']}),
-        ('Date Informations', {'fields' : ['sent'],
+        (None,                {'fields': ['subject', 'user']}),
+        ('Date Informations', {'fields': ['sent'],
                                'classes': ['collapse']
                               }
         ),

@@ -8,6 +8,12 @@ body {
 body.nopadding {
   padding-top: 45px; }
 
+h3 {
+  margin-bottom: 18px; }
+
+p {
+  margin-bottom: 10px; }
+
 .notification {
   z-index: 2000;
   position: fixed;
@@ -93,18 +99,10 @@ body.nopadding {
   margin-bottom: 20px;
   border-radius: 0px; }
 
-.fa.btn {
-  margin: 0; }
-
 address {
   margin: 40px auto 0px 40px;
   font-size: 12px;
   font-style: italic; }
-
-.btn-xs {
-  height: 22px;
-  width: 22px;
-  padding: 2px 6px 6px; }
 
 #tabs {
   margin-top: 25px; }
@@ -118,11 +116,13 @@ address {
   .carousel-caption p {
     font-size: 20px; }
 
-.ghost-button {
-  width: auto;
-  border: 2px solid #282828;
-  background-color: transparent;
-  border-radius: 10px;
-  padding: 8px 16px;
-  font-size: 25px;
-  margin: 10px 0; }
+.fa.btn {
+  margin: 0; }
+
+.btn-xs {
+  height: 22px;
+  width: 22px;
+  padding: 2px 6px 6px; }
+
+.form-control {
+  width: 300px; }
