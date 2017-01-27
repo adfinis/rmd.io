@@ -126,3 +126,12 @@ address {
 
 .form-control {
   width: 300px; }
+
+.ghost-button {
+  width: auto;
+  border: 2px solid #282828;
+  background-color: transparent;
+  border-radius: 10px;
+  padding: 8px 16px;
+  font-size: 25px;
+  margin: 10px 0; }
