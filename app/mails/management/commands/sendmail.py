@@ -14,6 +14,7 @@ from django.template.loader import get_template
 
 logger = logging.getLogger('mails')
 
+
 class Command(BaseCommand):
 
     def handle(self, *args, **kwargs):
@@ -37,7 +38,7 @@ class Command(BaseCommand):
             tpl = get_template('mails/messages/mail_attachment.txt')
             text = tpl.render(
                 Context({
-                    'recipients' : recipients
+                    'recipients': recipients
                 })
             )
 
