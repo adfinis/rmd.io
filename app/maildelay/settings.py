@@ -136,9 +136,10 @@ INSTALLED_APPS = (
     'widget_tweaks',
 )
 
-AUTHENTICATION_BACKENDS = (
+AUTHENTICATION_BACKENDS = [
     'django.contrib.auth.backends.ModelBackend',
-)
+    'mails.auth.EmailBackend'
+]
 
 AUTH_PROFILE_MODULE = (
     'mails.UserProfile',

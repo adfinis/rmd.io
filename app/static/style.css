@@ -135,3 +135,9 @@ address {
   padding: 8px 16px;
   font-size: 25px;
   margin: 10px 0; }
+
+.login li {
+  color: red; }
+
+.registration li {
+  color: red; }
