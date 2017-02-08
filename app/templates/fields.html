@@ -1,8 +1,15 @@
 {% load widget_tweaks %}
 
+{% if form.non_field_errors %}
+    <div class="non-field-errors has-error">
+        {% for err in form.non_field_errors %}
+            <span class="help-block">{{ err }}</span>
+        {% endfor %}
+     </div>
+{% endif %}
 {% for field in form %}
     <div class="form-group {% if field.errors %}has-error{% endif %}">
         {{ field.label_tag }} {{ field | add_class:'form-control' }}
-        {{ field.errors }}
+        <span class="help-block">{{ field.errors }}</span>
     </div>
 {% endfor %}
