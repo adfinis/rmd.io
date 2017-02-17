@@ -7,11 +7,15 @@ class EmailBackend(object):
         UserModel = get_user_model()
         try:
             user = UserModel.objects.get(email=username)
+
+            if user.is_active and user.check_password(password):
+                return user
+            else:
+                return None
+
         except UserModel.DoesNotExist:
             return None
-        else:
-            if getattr(user, 'is_active', False) and user.check_password(password):
-                return user
+
         return None
 
     def get_user(self, user_id):
