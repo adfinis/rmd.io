@@ -10,15 +10,22 @@ from django.http import HttpResponseRedirect, HttpResponse, Http404
 from django.shortcuts import render, get_object_or_404, redirect
 from django.utils.decorators import method_decorator
 from django.views import generic
-from .forms import RegistrationForm
+from mails.forms import RegistrationForm
 from mails.models import Mail, Statistic, Due, Account, UserProfile
 from mails import tools, imaphelper
 from icalendar import Calendar, Event
 from django.views.generic import FormView
+from django.core.mail import send_mail
 import re
 import base64
 import datetime
 import logging
+import hashlib
+
+try:
+    from django.utils.encoding import smart_bytes
+except ImportError:
+    from django.utils.encoding import smart_str as smart_bytes
 
 logger = logging.getLogger('mails')
 
@@ -71,12 +78,18 @@ class HomeView(generic.TemplateView):
 class RegistrationView(FormView):
     template_name = 'registration.html'
     form_class = RegistrationForm
-    success_url = '/login'
+    success_url = '/registration_send_mail'
 
     def form_valid(self, form):
-        user = User.objects.create_user(form.data['username'],
-                                        form.data['email'],
-                                        form.data['password1'])
+        email = form.data.get('email')
+        password = form.data.get('password1')
+        username = base64.urlsafe_b64encode(
+            hashlib.sha1(smart_bytes(email)).digest()
+        ).rstrip(b'=')
+
+        user = User.objects.create_user(username, email, password)
+        user.is_active = False
+        user.save()
 
         if user is not None:
             self.generate_account(user)
@@ -91,6 +104,42 @@ class RegistrationView(FormView):
             account=account
         )
         user_profile.save()
+        send_mail(
+            'Rmd.io account confirmation',
+            """
+            Hello,
+
+            please click this link to activate your rmd.io account:
+            http://127.0.0.1:8000/registration_done/{}
+
+            Sincerely,
+            The rmd.io Team
+            """.format(account.key),
+            'maildelay@maildelay.ml',
+            [user.email],
+            fail_silently=False,
+        )
+
+
+class RegistrationDoneView(generic.TemplateView):
+    template_name = 'registration_done.html'
+
+    def get_context_data(request, key):
+            matches = Account.objects.filter(key=key)
+            if matches.exists():
+                account = matches.first()
+                user_profile = UserProfile.objects.get(account=account)
+                if user_profile.user.is_active:
+                    request.template_name = 'user_is_already_active.html'
+                else:
+                    user_profile.user.is_active = True
+                    user_profile.user.save()
+            else:
+                request.template_name = 'registration_failed.html'
+
+
+class RegistrationSendMailView(generic.TemplateView):
+    template_name = 'registration_send_mail.html'
 
 
 class MailView(generic.ListView):

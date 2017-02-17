@@ -1,0 +1,25 @@
+<h2>{% Send an activation link %}</h2>
+<form method="post" action="{% url "email_registration_form" %}"
+    class="well" id="registration">
+  {% csrf_token %}
+  <div class="controls">
+    <input id="id_email" type="text" name="email" maxlength="30"
+      placeholder="{% Email address %}">
+  </div>
+  <button type="submit" class="btn btn-primary">
+    {% Register %}</button>
+</form>
+
+<script>
+function init_registration($) {
+  $('#registration').on('submit', function() {
+    var $form = $(this);
+    $.post(this.action, $form.serialize(), function(data) {
+      $('#registration').replaceWith(data);
+      init_registration($);
+    });
+    return false;
+  });
+}
+$(init_registration);
+</script>
