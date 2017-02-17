@@ -5,22 +5,7 @@
 {% block content %}
     <form class="registration" action="/registration/" method="POST">
         {% csrf_token %}
-        <div class="form-group">
-            <label>Username:</label>
-            {{ form.username | add_class:'form-control' }}
-        </div>
-        <div class="form-group">
-            <label>Email:</label>
-            {{ form.email | add_class:'form-control' }}
-        </div>
-        <div class="form-group">
-            <label>Password:</label>
-            {{ form.password1 | add_class:'form-control' }}
-        </div>
-        <div class="form-group">
-            <label>Password (again):</label>
-            {{ form.password2 | add_class:'form-control' }}
-        </div>
+        {% include "fields.html" %}
         <input type="submit" class="btn btn-default" value="Register">
     </form>
 {% endblock content %}

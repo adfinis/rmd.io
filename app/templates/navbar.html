@@ -10,7 +10,7 @@
                 <span class="icon-bar"></span>
             </button>
             <a class="navbar-brand" href="/">
-                <object id="logo" data="{% static 'images/logo_typo.svg' %}" type="image/svg+xml">rmd.io</object>
+                <object style="pointer-events:none;" id="logo" data="{% static 'images/logo_typo.svg' %}" type="image/svg+xml">rmd.io</object>
             </a>
         </div>
         <div class="collapse navbar-collapse" id="navbar-collapse-1">
@@ -23,7 +23,7 @@
             {% endif %}
             <ul class="nav navbar-nav navbar-right">
                 <li class="dropdown">
-                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">{{ user.username }} <i class="fa fa-caret-down"></i></a>
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">{{ user.email }} <i class="fa fa-caret-down"></i></a>
                     <ul class="dropdown-menu" role="menu">
                         <li><a href="/download/maildelay.vcf"><i class="fa fa-download"></i> Delay Addresses (vCard)</a></li>
                         <li><a data-name="settings" data-target="dialog" href="/settings/"><i class="fa fa-gears"></i> Settings</a></li>
@@ -35,9 +35,8 @@
             </ul>
         {% else %}
             <ul class="nav navbar-nav navbar-right">
-                <li><a href="/">Home</a></li>
                 <li><a href="/login">Login</a></li>
-                <li><a href="/password_reset">Forgot Password?</a></li>
+            </ul>
         {% endif %}
         </div>
     </div>

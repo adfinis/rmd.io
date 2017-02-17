@@ -1,7 +1,7 @@
 from django import forms
 from django.contrib.auth.models import User
+from django.contrib.auth.forms import AuthenticationForm
 from django.core.exceptions import ObjectDoesNotExist
-import re
 
 
 class BootstrapForm(forms.Form):
@@ -13,13 +13,20 @@ class BootstrapForm(forms.Form):
             })
 
 
-class LoginForm(BootstrapForm):
-    username = forms.CharField(label='Username', max_length=30)
-    password1 = forms.CharField(label='Password', widget=forms.PasswordInput())
+class LoginForm(AuthenticationForm):
+    def __init__(self, *args, **kwargs):
+        super(LoginForm, self).__init__(*args, **kwargs)
+        self.fields['username'].label = 'Email'
+
+    def clean(self):
+        try:
+            self.cleaned_data["username"] = User.objects.get(email=self.data["username"])
+        except ObjectDoesNotExist:
+            self.cleaned_data["username"] = "a_username_that_do_not_exists_anywhere_in_the_site"
+        return super(LoginForm, self).clean()
 
 
 class RegistrationForm(BootstrapForm):
-    username = forms.CharField(label='Username', max_length=30)
     email = forms.EmailField(label='Email')
     password1 = forms.CharField(label='Password', widget=forms.PasswordInput())
     password2 = forms.CharField(label='Password (Again)',
@@ -33,14 +40,11 @@ class RegistrationForm(BootstrapForm):
                 return password2
             raise forms.ValidationError('Passwords do not match.')
 
-    def clean_username(self):
-        username = self.cleaned_data['username']
-        if not re.search(r'^\w+$', username):
-            raise forms.ValidationError('''Username can only contain
-                        alphanumeric characters and the underscore.''')
+    def clean_email(self):
+        email = self.cleaned_data['email']
 
         try:
-            User.objects.get(username=username)
-        except ObjectDoesNotExist:
-            return username
-        raise forms.ValidationError('Username is already taken.')
+            User.objects.get(email=email)
+        except User.DoesNotExist:
+            return email
+        raise forms.ValidationError('Email is already taken.')

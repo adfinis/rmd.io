@@ -2,3 +2,4 @@
 *.swo
 *.swp
 .python-version
+/static/admin
