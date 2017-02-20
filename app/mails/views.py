@@ -110,7 +110,7 @@ class RegistrationView(FormView):
             Hello,
 
             please click this link to activate your rmd.io account:
-            http://127.0.0.1:8000/registration_done/{}
+            http://rmd.io/registration_done/{}
 
             Sincerely,
             The rmd.io Team
