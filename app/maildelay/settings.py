@@ -156,6 +156,35 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     'django.contrib.messages.context_processors.messages',
 )
 
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'verbose': {
+            'format': ("[%(asctime)s] %(levelname)s "
+                       "[%(name)s:%(lineno)s] %(message)s"),
+            'datefmt': "%d/%b/%Y %H:%M:%S"
+        },
+        'simple': {
+            'format': '%(levelname)s %(message)s'
+        },
+    },
+    'handlers': {
+        'file': {
+            'level': 'DEBUG',
+            'class': 'logging.FileHandler',
+            'filename': 'log/django/error.log',
+            'formatter': 'verbose',
+        }
+    },
+    'loggers': {
+        'mails': {
+            'handlers': ['file'],
+            'level': 'DEBUG',
+        },
+    }
+}
+
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 CSRF_COOKIE_SECURE = False
 SESSION_COOKIE_SECURE = False
