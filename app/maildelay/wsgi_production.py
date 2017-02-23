@@ -14,8 +14,6 @@ framework.
 
 """
 
-execfile('/var/www/bin/activate_this.py', dict(__file__='/var/www/bin/activate_this.py'))
-
 import os
 
 # Django production settings
