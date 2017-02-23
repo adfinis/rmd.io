@@ -170,6 +170,11 @@ LOGGING = {
         },
     },
     'handlers': {
+        'console': {
+            'level': 'DEBUG',
+            'class': 'logging.StreamHandler',
+            'formatter': 'verbose',
+        },
         'file': {
             'level': 'DEBUG',
             'class': 'logging.FileHandler',
@@ -179,7 +184,7 @@ LOGGING = {
     },
     'loggers': {
         'mails': {
-            'handlers': ['file'],
+            'handlers': ['console'],
             'level': 'DEBUG',
         },
     }
