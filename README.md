@@ -17,7 +17,7 @@ $ ./manage.py migrate                          # Run Django migrations
 $ ./manage.py createsuperuser                  # Create a new Django superuser
 ```
 
-You can now access the API at http://localhost:8000 and the admin interface at http://localhost:8000/admin/
+You can now access the application at http://localhost:8000 and the admin interface at http://localhost:8000/admin/
 
 ## License
 Code released under the [GNU Affero General Public License v3.0](LICENSE).
