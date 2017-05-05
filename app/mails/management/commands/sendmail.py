@@ -31,7 +31,16 @@ class Command(BaseCommand):
             mail = due.mail
 
             imap_conn = imaphelper.get_connection()
-            message = imaphelper.IMAPMessage.from_dbid(mail.id, imap_conn)
+            try:
+                message = imaphelper.IMAPMessage.from_dbid(mail.id, imap_conn)
+            except IndexError:
+                mail.delete()
+                logger.warning(
+                    'Imap message of mail {} could not be found'
+                    .format(mail.id)
+                )
+
+                return
 
             charset = message.msg.get_content_charset()
             recipients = mail.recipient_set
