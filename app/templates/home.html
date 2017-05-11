@@ -5,54 +5,110 @@
 {% block bodyclass %} class="nopadding"{%endblock%}
 
 {% block header %}
-    <div id="carousel" class="carousel slide" data-ride="carousel" data-interval="9000">
-        <ol class="carousel-indicators">
-            <li data-target="#carousel" data-slide-to="0" class="active"></li>
-            <li data-target="#carousel" data-slide-to="1"></li>
-            <li data-target="#carousel" data-slide-to="2"></li>
-            <li data-target="#carousel" data-slide-to="3"></li>
-        </ol>
-        <div class="carousel-inner">
-            <div class="item active">
-                <img class="img-responsive" src="{% static 'images/c1.png' %}" alt="First steps">
-                <div class="carousel-caption">
-                    <button class="ghost-button" onclick="location.href='/registration'" type="button">Sign up now!</button>
-                </div>
-            </div>
-            <div class="item">
-                <img class="img-responsive" src="{% static 'images/c2.png' %}" alt="Email configuration">
-                <div class="carousel-caption">
-                    <h1>What is it for?</h1>
-                    <p>rmd.io reminds you about unanswered mails and helps you to manage delegated tasks.</p>
-                    <p>3d@rmd.io means to remind me again in 3 days.</p>
-                    <button class="ghost-button" onclick="location.href='/registration'" type="button">Sign up now!</button>
-                </div>
-            </div>
-            <div class="item">
-                <img class="img-responsive" src="{% static 'images/c3.png' %}" alt="Web GUI">
-                <div class="carousel-caption">
-                    <p>Of course you can manage your mails<br>
-                    in the web GUI. You're able to change<br>
-                    the due date and time easily by clicking the pen icon.</p>
-                    <button class="ghost-button" onclick="location.href='/registration'" type="button">Sign up now!</button>
-                </div>
-            </div>
-            <div class="item">
-                <img class="img-responsive" src="{% static 'images/c4.png' %}" alt="Reminder">
-                <div class="carousel-caption">
-                    <p>After the due date expired, rmd.io will<br>
-                    send your mail back to you to remind you about it.<br>
-                    Incidentally, attachments are fully supported.</p>
-                    <button class="ghost-button" onclick="location.href='/registration'" type="button">Sign up now!</button>
-                </div>
-            </div>
+    <div class="row">
+        <div class="col-xs-12 col-lg-12 front-page">
+            <h1 class="text-center">
+                Never forget to answer<br>
+                to an email again!<br>
+            </h1>
+            <p class="text-center">
+            rmd.io reminds you about unanswered E-Mails<br>
+            and helps you to manage delegated tasks.<br>
+            <button class="ghost-button" onclick="location.href='/registration'" type="button">Sign up now!</button>
+            </p>
+        </div>
+    </div>
+    <div class="container">
+        <p class ="text-center how-it-works">How it works</p>
+        <div class="col-xs-12 col-md-4">
+            <p>
+            Add reminders to your emails.<br>
+            Send them to rmd.io.<br>
+            3d@rmd.io means you get<br>
+            reminded in 3 days.
+            </p>
+        </div>
+        <div class="col-xs-12 col-md-8">
+            <img class="img-responsive c2" src="{% static 'images/c2.png' %}" alt="Email Configuration">
+        </div>
+        <div class="col-xs-12">
+            <hr>
+        </div>
+        <div class="col-xs-12 col-md-4 col-md-push-8">
+            <p>
+            After the due date expired,<br>
+            rmd.io will send your mail<br>
+            back to you to remind you<br>
+            about it.
+            </p>
+        </div>
+        <div class="col-xs-12 col-md-8 col-md-pull-4">
+            <img class="img-responsive c4" src="{% static 'images/c4.png' %}" alt="Reminder">
         </div>
 
-        <a class="left carousel-control" href="#carousel" role="button" data-slide="prev">
-            <span class="glyphicon glyphicon-chevron-left"></span>
-        </a>
-        <a class="right carousel-control" href="#carousel" role="button" data-slide="next">
-            <span class="glyphicon glyphicon-chevron-right"></span>
-        </a>
+        <div class="col-xs-12">
+            <hr>
+        </div>
+        <div class="col-xs-12 col-md-4">
+            <p>
+            Of course you can manage<br>
+            your mails in the web GUI.<br>
+            You're able to change the<br>
+            due date and time easily.
+            </p>
+        </div>
+        <div class="col-xs-12 col-md-8">
+            <img class="img-responsive c3" src="{% static 'images/c3.png' %}" alt="Web GUI">
+        </div>
     </div>
+    <!--<div id="carousel" class="carousel slide" data-ride="carousel" data-interval="9000">-->
+        <!--<ol class="carousel-indicators">-->
+            <!--<li data-target="#carousel" data-slide-to="0" class="active"></li>-->
+            <!--<li data-target="#carousel" data-slide-to="1"></li>-->
+            <!--<li data-target="#carousel" data-slide-to="2"></li>-->
+            <!--<li data-target="#carousel" data-slide-to="3"></li>-->
+        <!--</ol>-->
+        <!--<div class="carousel-inner">-->
+            <!--<div class="item active">-->
+                <!--<img class="img-responsive" src="{% static 'images/c1.png' %}" alt="First steps">-->
+                <!--<div class="carousel-caption">-->
+                    <!--<button class="ghost-button" onclick="location.href='/registration'" type="button">Sign up now!</button>-->
+                <!--</div>-->
+            <!--</div>-->
+            <!--<div class="item">-->
+                <!--<img class="img-responsive" src="{% static 'images/c2.png' %}" alt="Email configuration">-->
+                <!--<div class="carousel-caption">-->
+                    <!--<h1>What is it for?</h1>-->
+                    <!--<p>rmd.io reminds you about unanswered mails and helps you to manage delegated tasks.</p>-->
+                    <!--<p>3d@rmd.io means to remind me again in 3 days.</p>-->
+                    <!--<button class="ghost-button" onclick="location.href='/registration'" type="button">Sign up now!</button>-->
+                <!--</div>-->
+            <!--</div>-->
+            <!--<div class="item">-->
+                <!--<img class="img-responsive" src="{% static 'images/c3.png' %}" alt="Web GUI">-->
+                <!--<div class="carousel-caption">-->
+                    <!--<p>Of course you can manage your mails<br>-->
+                    <!--in the web GUI. You're able to change<br>-->
+                    <!--the due date and time easily by clicking the pen icon.</p>-->
+                    <!--<button class="ghost-button" onclick="location.href='/registration'" type="button">Sign up now!</button>-->
+                <!--</div>-->
+            <!--</div>-->
+            <!--<div class="item">-->
+                <!--<img class="img-responsive" src="{% static 'images/c4.png' %}" alt="Reminder">-->
+                <!--<div class="carousel-caption">-->
+                    <!--<p>After the due date expired, rmd.io will<br>-->
+                    <!--send your mail back to you to remind you about it.<br>-->
+                    <!--Incidentally, attachments are fully supported.</p>-->
+                    <!--<button class="ghost-button" onclick="location.href='/registration'" type="button">Sign up now!</button>-->
+                <!--</div>-->
+            <!--</div>-->
+        <!--</div>-->
+
+        <!--<a class="left carousel-control" href="#carousel" role="button" data-slide="prev">-->
+            <!--<span class="glyphicon glyphicon-chevron-left"></span>-->
+        <!--</a>-->
+        <!--<a class="right carousel-control" href="#carousel" role="button" data-slide="next">-->
+            <!--<span class="glyphicon glyphicon-chevron-right"></span>-->
+        <!--</a>-->
+    <!--</div>-->
 {% endblock %}
