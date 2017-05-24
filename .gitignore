@@ -3,3 +3,5 @@
 *.swp
 .python-version
 /static/admin
+*.css.map
+app/error.log

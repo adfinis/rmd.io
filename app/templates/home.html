@@ -7,19 +7,30 @@
 {% block header %}
     <div class="row">
         <div class="col-xs-12 col-md-12 front-page">
+            <div class="logo-front-page">
+                <object class="l1" style="pointer-events:none;" id="logo1" data="{% static 'images/logo_typo.svg' %}" type="image/svg+xml">rmd.io</object>
+            </div>
             <h1 class="text-center">
                 Never forget to answer<br>
-                to an email again!<br>
+                to an email again<br>
             </h1>
             <p class="text-center">
             rmd.io reminds you about unanswered E-Mails<br>
             and helps you to manage delegated tasks.<br>
-            <button class="ghost-button" onclick="location.href='/registration'" type="button">Sign up now!</button>
             </p>
+            <div class="ghost-button-div">
+                <button class="ghost-button" onclick="location.href='/registration'" type="button">Sign up now!</button>
+            </div>
+
+            <a class="arrow-wrap" href="javascript:void(0)">
+                <span class="arrow"></span>
+            </a>
+
+
         </div>
     </div>
     <div class="container">
-        <h1 class ="text-center">How it works</h1>
+        <h1 class="how-it-works">How it works</h1>
         <div class="col-xs-12 col-md-4">
             <p>
             <strong>Create reminders</strong><br>
@@ -63,6 +74,9 @@
         <div class="col-xs-12 col-md-8">
             <img class="img-responsive c3" src="{% static 'images/c3.png' %}" alt="Web GUI">
         </div>
+    </div>
+    <div class="ghost-button-div">
+        <button class="ghost-button" onclick="location.href='/registration'" type="button">Sign up now!</button>
     </div>
     <!--<div id="carousel" class="carousel slide" data-ride="carousel" data-interval="9000">-->
         <!--<ol class="carousel-indicators">-->
