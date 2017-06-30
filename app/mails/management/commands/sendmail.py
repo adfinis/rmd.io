@@ -1,6 +1,4 @@
-import email
-import smtplib
-import logging
+import email, smtplib, logging, traceback, sys
 from django.utils import timezone
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
@@ -10,6 +8,8 @@ from django.core.management.base import BaseCommand
 from django.conf import settings
 from django.template import Context
 from django.template.loader import get_template
+from django.core.mail import EmailMessage
+
 
 
 logger = logging.getLogger('mails')
@@ -72,24 +72,38 @@ class Command(BaseCommand):
                 )
 
             try:
-                msg['Subject'] = "Reminder from %s: %s" % (
-                    mail.sent.strftime('%b %d %H:%M'),
-                    mail.subject
+                for i in message.msg.walk():
+                    if i.get_content_maintype() == 'text':
+                        content = i.get_payload(decode=True)
+                        break
+
+                attachments = []  
+                for part in msg.walk():
+                    if part.get_content_maintype() == 'multipart':
+                        continue
+                    if part.get('Content-Disposition') is None:
+                        continue
+                    attachments.append(part)
+
+                email = EmailMessage(
+                    "Reminder from {}: {}".format(mail.sent.strftime('%b %d %H:%M'), mail.subject),
+                    content.decode("utf-8") + text ,
+                    settings.EMAIL_HOST_USER,
+                    [mail.user.email],
                 )
-                msg['From'] = settings.EMAIL_HOST_USER
-                msg['To'] = mail.user.email
-                msg['Date'] = email.utils.formatdate(localtime=True)
-                msg['References'] = message.msg['Message-ID']
+                for attachment in attachments:
+                    email.attach(
+                        attachment.get_filename(),
+                        attachment.get_payload(decode=True),
+                        attachment.get_content_type()
+                    )
+                email.send(fail_silently=False)
+
             except:
                 message.delete()
                 print('Failed to write new header')
                 break
 
-            smtp.sendmail(
-                settings.EMAIL_HOST_USER,
-                mail.user.email,
-                str(msg)
-            )
             l = Statistic(
                 type='SENT',
                 email=mail.user.email,

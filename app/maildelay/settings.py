@@ -202,10 +202,10 @@ LOGOUT_REDIRECT_URL = '/home/'
 
 # Mailserver login settings
 
-EMAIL_HOST_USER = 'maildelay@maildelay.ml'
-DEFAULT_FROM_EMAIL = 'maildelay@maildelay.ml'
-EMAIL_HOST_PASSWORD = '3p7KDn4FugQQ'
-EMAIL_HOST = 'maildelay.ml'
+EMAIL_HOST_USER = 'maildelay@dev.rmd.io'
+DEFAULT_FROM_EMAIL = 'maildelay@dev.rmd.io'
+EMAIL_HOST_PASSWORD = 'password'
+EMAIL_HOST = 'host'
 EMAIL_FOLDER = 'INBOX'
 
 MAILBOXES = [

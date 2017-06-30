@@ -1,3 +1,4 @@
+
 This mail was originally sent to:
 {% for rec in recipients.all %}
 {% if rec.email != '' and rec.name != '' %}{{ rec.name }} <{{ rec.email }}>{%endif%}{% if rec.email != '' and rec.name == '' %}<{{ rec.email }}>{%endif%}{% if rec.email == '' and rec.name != '' %}{{ rec.name }}{%endif%}

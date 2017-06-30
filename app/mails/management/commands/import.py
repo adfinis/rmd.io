@@ -11,6 +11,7 @@ import re
 
 logger = logging.getLogger('mails')
 
+
 class Command(BaseCommand):
 
     def __init__(self, *args, **kwargs):

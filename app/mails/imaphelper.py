@@ -34,6 +34,7 @@ def get_unflagged(imap_conn):
 
     return iter(msgs)
 
+
 class IMAPMessage(object):
     recipient_headers = [
         'To',
@@ -46,7 +47,6 @@ class IMAPMessage(object):
         self.imapuid   = imapuid
         self.dbid      = dbid
         self.msg       = self._get_msg_from_imap()
-
 
     @classmethod
     def from_dbid(cls, dbid, imap_conn):
