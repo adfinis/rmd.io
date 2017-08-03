@@ -1,4 +1,5 @@
-import email, smtplib, logging, traceback, sys
+import smtplib
+import logging
 from django.utils import timezone
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
@@ -9,7 +10,6 @@ from django.conf import settings
 from django.template import Context
 from django.template.loader import get_template
 from django.core.mail import EmailMessage
-
 
 
 logger = logging.getLogger('mails')
@@ -77,7 +77,7 @@ class Command(BaseCommand):
                         content = i.get_payload(decode=True)
                         break
 
-                attachments = []  
+                attachments = []
                 for part in msg.walk():
                     if part.get_content_maintype() == 'multipart':
                         continue
