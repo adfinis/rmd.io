@@ -419,7 +419,7 @@ def settings_view(request):
             'account': account,
             'users': users,
             'domain': settings.SITE_URL,
-            'secret': base64.urlsafe_b64encode(request.user.username),
+            'secret': base64.urlsafe_b64encode(request.user.username.encode()),
         }
     )
 

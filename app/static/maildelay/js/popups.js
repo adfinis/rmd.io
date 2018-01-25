@@ -1,5 +1,4 @@
 (function (){
-    "use strict";
 
     function ajaxPopup(evt) {
         evt.preventDefault()

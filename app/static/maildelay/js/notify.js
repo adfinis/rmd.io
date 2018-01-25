@@ -1,5 +1,4 @@
 $(function() {
-    "use strict";
 
     window.addNotification = function(options) {
         var icons = {
