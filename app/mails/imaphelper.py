@@ -84,7 +84,7 @@ class IMAPMessage(object):
         :rtype  email.message.Message
         '''
         results, data = self.imap_conn.uid('fetch', self.imapuid, 'RFC822')
-        msg           = email.message_from_string(data[0][1])
+        msg           = email.message_from_string(data[0][1].decode())
 
         return msg
 
