@@ -143,11 +143,11 @@ def send_activation_mail(key, recipient):
     subject = 'Activate your address on %s' % host
     tpl     = get_template('mails/messages/activation_mail.txt')
     content = tpl.render(
-        Context({
+        {
             'recipient' : recipient,
             'key'       : key,
             'host'      : host
-        })
+        }
     )
 
     msg = EmailMessage(

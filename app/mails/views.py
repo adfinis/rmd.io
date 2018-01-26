@@ -394,7 +394,7 @@ def settings_view(request):
     if request.method == 'POST':
         anti_spam = request.POST.get('anti_spam', False)
         if bool(anti_spam) != bool(account.anti_spam):
-            account.anti_spam = anti_spam
+            account.anti_spam = bool(anti_spam)
             account.save()
             if bool(account.anti_spam) is True:
                 messages.info(
