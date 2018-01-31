@@ -16,6 +16,7 @@ import re
 logger = logging.getLogger('mails')
 host   = re.sub('https://', '', settings.SITE_URL)
 
+
 def get_delay_days_from_email_address(email_address):
     '''Gets the delay days from an email address
 
@@ -30,6 +31,7 @@ def get_delay_days_from_email_address(email_address):
         return delay
     except:
         raise Exception('Invalid delay')
+
 
 def get_delay_addresses_from_recipients(recipients):
     '''Gets the delay addresses from a set of recipients
@@ -47,6 +49,7 @@ def get_delay_addresses_from_recipients(recipients):
     else:
         raise Exception('Could not find a delay address')
 
+
 def get_key_from_email_address(email_address):
     '''Get the key of an email address
 
@@ -61,6 +64,7 @@ def get_key_from_email_address(email_address):
         ).group(1)
     except AttributeError:
         return None
+
 
 def send_registration_mail(recipient):
     '''Sends an error mail to not registred users and logs it
@@ -99,6 +103,7 @@ def send_registration_mail(recipient):
             attempt=1
         )
         log_entry.save()
+
 
 def send_wrong_recipient_mail(recipient):
     '''Sends an error mail to not registred users
@@ -191,6 +196,7 @@ def send_activation_mail(key, recipient):
         )
         log_entry.save()
 
+
 def send_connection_mail(key, recipient, account):
     '''Sends a mail which confirms the connection of
     an existing user to another existing account
@@ -256,6 +262,7 @@ def send_connection_mail(key, recipient, account):
         )
         log_entry.save()
 
+
 def get_block_delay(attempt):
     '''Gets the block delay by attempt
 
@@ -267,6 +274,7 @@ def get_block_delay(attempt):
         datetime.timedelta(7)
     )
 
+
 def get_all_users_of_account(user):
     '''Gets all users of the current users account
 
@@ -275,8 +283,8 @@ def get_all_users_of_account(user):
     :rtype: list
     '''
     return User.objects.filter(
-            userprofile__account=user.get_account()
-        ).order_by('-last_login')
+        userprofile__account=user.get_account()
+    ).order_by('-last_login')
 
 
 def calendar_clean_subject(subj):
@@ -338,6 +346,7 @@ def create_additional_user(email, user):
         key=key
     )
 
+
 def delete_log_entries(email):
     '''Deletes all log entries of an email address
 
@@ -353,6 +362,7 @@ def delete_log_entries(email):
         user_log_entry.delete()
     except:
         pass
+
 
 def generate_key():
     '''Generates an unique user key
