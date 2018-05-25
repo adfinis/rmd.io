@@ -45,11 +45,7 @@ class Command(BaseCommand):
             charset = message.msg.get_content_charset()
             recipients = mail.recipient_set
             tpl = get_template('mails/messages/mail_attachment.txt')
-            text = tpl.render(
-                Context({
-                    'recipients': recipients
-                })
-            )
+            text = tpl.render({'recipients': recipients})
 
             if message.msg.is_multipart():
                 add_text = MIMEText(text, 'plain', 'utf-8')
@@ -97,19 +93,19 @@ class Command(BaseCommand):
                         attachment.get_payload(decode=True),
                         attachment.get_content_type()
                     )
-                email.send(fail_silently=False)
+                email.send()
 
             except:
                 message.delete()
                 print('Failed to write new header')
                 break
 
-            l = Statistic(
+            stats = Statistic(
                 type='SENT',
                 email=mail.user.email,
                 date=timezone.now()
             )
-            l.save()
+            stats.save()
 
             due.delete()
 

@@ -1,5 +1,4 @@
 (function (){
-    "use strict";
 
     $.ajaxSetup({
          beforeSend: function(xhr, settings) {

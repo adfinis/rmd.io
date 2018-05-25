@@ -84,7 +84,7 @@ class IMAPMessage(object):
         :rtype  email.message.Message
         '''
         results, data = self.imap_conn.uid('fetch', self.imapuid, 'RFC822')
-        msg           = email.message_from_string(data[0][1])
+        msg           = email.message_from_string(data[0][1].decode())
 
         return msg
 
@@ -120,7 +120,12 @@ class IMAPMessage(object):
         :param  dbid: the mail id from the database
         :type   dbid: int
         '''
-        self.imap_conn.uid('store', self.imapuid, '+FLAGS', "(MAILDELAY-%d)" % dbid)
+        self.imap_conn.uid(
+            'store',
+            self.imapuid,
+            '+FLAGS',
+            "(MAILDELAY-%d)" % dbid
+        )
         self.imap_conn.uid('store', self.imapuid, '+FLAGS', '(\\Flagged)')
 
         self.dbid = dbid
@@ -176,13 +181,15 @@ class IMAPMessage(object):
 
         for key in self.recipient_headers:
             try:
-                recipient_list = email.utils.getaddresses(self.msg.get_all(key, []))
+                recipient_list = email.utils.getaddresses(
+                    self.msg.get_all(key, [])
+                )
                 for recipient in recipient_list:
                     r = {
                         'name'  : recipient[0],
                         'email' : recipient[1]
                     }
-                    if not r in recipients:
+                    if r not in recipients:
                         recipients.append(r)
                     else:
                         continue

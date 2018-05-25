@@ -73,7 +73,11 @@ class Command(BaseCommand):
             for delay_address in delay_addresses:
                 rec_stat = Statistic(
                     type='REC',
-                    email=re.sub(r'(^\d+[dmw])(\.[0-9a-z]{10})', r'\1', delay_address)
+                    email=re.sub(
+                        r'(^\d+[dmw])(\.[0-9a-z]{10})',
+                        r'\1',
+                        delay_address
+                    )
                 )
                 due = Due(
                     mail=mail,

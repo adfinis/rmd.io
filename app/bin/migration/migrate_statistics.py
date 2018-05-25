@@ -9,7 +9,7 @@ try:
     conn1 = psycopg2.connect("dbname='maildelay_old' user='maildelay' host='localhost' password='vagrant'")
     conn2 = psycopg2.connect("dbname='maildelay' user='maildelay' host='localhost' password='vagrant'")
 except:
-    print "I am unable to connect to the database"
+    print("I am unable to connect to the database")
 
 # <codecell>
 
@@ -85,5 +85,3 @@ conn2.close()
 
 
 # <codecell>
-
-

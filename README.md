@@ -4,7 +4,7 @@ A mail reminder service written in django
 ## Installation
 
 **Requirements**
-* python 2.7
+* python 3.6
 * docker
 * docker-compose
 
@@ -12,7 +12,7 @@ After installing and configuring those requirements, you should be able to run t
 commands to complete the installation:
 ```bash
 $ make install                                 # Install Python requirements
-$ docker-compose up -d                         # Start the containers
+$ docker-compose up -d                         # Start the containers in the background
 $ ./manage.py migrate                          # Run Django migrations
 $ ./manage.py createsuperuser                  # Create a new Django superuser
 ```

@@ -394,7 +394,7 @@ def settings_view(request):
     if request.method == 'POST':
         anti_spam = request.POST.get('anti_spam', False)
         if bool(anti_spam) != bool(account.anti_spam):
-            account.anti_spam = anti_spam
+            account.anti_spam = bool(anti_spam)
             account.save()
             if bool(account.anti_spam) is True:
                 messages.info(
@@ -419,7 +419,7 @@ def settings_view(request):
             'account': account,
             'users': users,
             'domain': settings.SITE_URL,
-            'secret': base64.urlsafe_b64encode(request.user.username),
+            'secret': base64.urlsafe_b64encode(request.user.username.encode()),
         }
     )
 

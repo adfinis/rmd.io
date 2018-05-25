@@ -23,7 +23,6 @@ docker-init:
 
 docker-db-init:
 	@psql -h 127.0.0.1 -U rmdio -d maildelay -f tools/vagrant/database.sql
-	@python app/manage.py syncdb --noinput
 	@python app/manage.py migrate
 
 css:

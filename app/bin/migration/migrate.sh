@@ -18,6 +18,6 @@ pg_dump -t django_admin_log maildelay_old | psql maildelay
 pg_dump -t django_content_type maildelay_old | psql maildelay
 pg_dump -t django_session maildelay_old | psql maildelay
 
-python2.7 /vagrant/app/bin/migration/migrate_users.py
-python2.7 /vagrant/app/bin/migration/migrate_mails.py
-python2.7 /vagrant/app/bin/migration/migrate_statistics.py
+python3 /vagrant/app/bin/migration/migrate_users.py
+python3 /vagrant/app/bin/migration/migrate_mails.py
+python3 /vagrant/app/bin/migration/migrate_statistics.py
