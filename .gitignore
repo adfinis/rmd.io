@@ -5,3 +5,4 @@
 /static/admin
 *.css.map
 app/error.log
+.vscode
