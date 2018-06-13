@@ -184,9 +184,12 @@ def mail_update_view(request):
     for due in dues:
         if due[0] == 'due-new':
             for dt in due[1]:
-                d = Due(mail=mail, due=dt)
-                d.save()
-                edited_dues.append(d.id)
+                if dt:
+                    d = Due(mail=mail, due=dt)
+                    d.save()
+                    edited_dues.append(d.id)
+                else:
+                    messages.error(request, 'Please fill out the due date.')
         else:
             try:
                 due_id = int(re.sub(r'due-', '', due[0]))
