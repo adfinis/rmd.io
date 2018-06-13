@@ -189,7 +189,7 @@ def mail_update_view(request):
                     d.save()
                     edited_dues.append(d.id)
                 else:
-                    messages.error(request, 'Please fill out the due.')
+                    messages.error(request, 'Please fill out the due date.')
         else:
             try:
                 due_id = int(re.sub(r'due-', '', due[0]))
