@@ -95,7 +95,7 @@ TIME_ZONE = 'Europe/Zurich'
 
 LANGUAGE_CODE = 'en-us'
 
-SITE_URL = 'http://localhost'
+SITE_URL = 'http://localhost:8000'
 
 SITE_ID = 1
 
