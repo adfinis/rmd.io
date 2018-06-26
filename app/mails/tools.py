@@ -14,7 +14,7 @@ import re
 
 
 logger = logging.getLogger('mails')
-host   = re.sub('https://', '', settings.SITE_URL)
+host   = re.sub('http(s)?://', '', settings.SITE_URL)
 
 
 def get_delay_days_from_email_address(email_address):

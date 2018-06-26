@@ -110,12 +110,15 @@ class RegistrationView(FormView):
             Hello,
 
             please click this link to activate your rmd.io account:
-            http://rmd.io/registration_done/{}
+            {0}/registration_done/{1}
 
             Sincerely,
             The rmd.io Team
-            """.format(account.key),
-            'maildelay@maildelay.ml',
+            """.format(
+              settings.SITE_URL,
+              str(account.key, 'utf-8')
+            ),
+            settings.EMAIL_HOST_USER,
             [user.email],
             fail_silently=False,
         )
@@ -244,7 +247,7 @@ def download_calendar_view(request, secret):
         event.add('dtend', due.due)
         cal.add_component(event)
 
-    response = HttpResponse(content=cal.to_ical(), mimetype='text/calendar')
+    response = HttpResponse(content=cal.to_ical(), content_type='text/calendar')
     response['Content-Disposition'] = 'attachment; filename=maildelay.ics'
 
     return response
