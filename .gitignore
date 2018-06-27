@@ -2,7 +2,7 @@
 *.swo
 *.swp
 .python-version
-/static/admin
+app/static
 *.css.map
 app/error.log
 .vscode
