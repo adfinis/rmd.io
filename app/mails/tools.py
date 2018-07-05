@@ -1,7 +1,6 @@
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.core.mail import EmailMessage
-from django.template import Context
 from django.template.loader import get_template
 from django.utils.encoding import smart_bytes
 from django.utils import timezone
@@ -81,11 +80,11 @@ def send_registration_mail(recipient):
 
         subject = 'Register at %s!' % host
         content = tpl.render(
-            Context({
+            {
                 'recipient' : recipient,
                 'url'       : settings.SITE_URL,
                 'host'      : host
-            })
+            }
         )
 
         msg = EmailMessage(
@@ -120,10 +119,10 @@ def send_wrong_recipient_mail(recipient):
 
         subject = 'Your mail on %s was deleted!' % host
         content = tpl.render(
-            Context({
+            {
                 'recipient' : recipient,
                 'host'      : host
-            })
+            }
         )
         msg = EmailMessage(
             subject,
@@ -213,12 +212,12 @@ def send_connection_mail(key, recipient, account):
     subject = 'Confirm your address on %s' % host
     tpl     = get_template('mails/messages/connection_mail.txt')
     content = tpl.render(
-        Context({
+        {
             'recipient'  : recipient,
             'account_id' : account.id,
             'key'        : key,
             'host'       : host
-        })
+        }
     )
 
     msg = EmailMessage(
