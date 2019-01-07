@@ -4,4 +4,4 @@ django-widget-tweaks
 icalendar
 psycopg2-binary
 pytz
-lockfile
+lockfile==0.12.2
