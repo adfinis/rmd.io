@@ -3,5 +3,5 @@ django_extensions==1.9.9
 django-widget-tweaks
 icalendar
 psycopg2-binary
-pytz
+pytz==2018.9
 lockfile
