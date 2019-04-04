@@ -2,6 +2,6 @@ Django==1.11.18 # pyup: >=1.11,<1.12
 django_extensions==2.1.4
 django-widget-tweaks==1.4.3
 icalendar==4.0.3
-psycopg2-binary==2.7.6.1
+psycopg2-binary==2.8
 pytz==2018.9
 lockfile==0.12.2
