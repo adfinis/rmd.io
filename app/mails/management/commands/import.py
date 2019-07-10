@@ -24,16 +24,21 @@ class Command(BaseCommand):
             message.delete()
             return
 
+        sender = "<unknown>"
+
         try:
-            sender          = message.get_sender()
-            recipients      = message.get_recipients()
-            subject         = message.get_subject()
-            sent_date       = message.get_sent_date()
-            delay_addresses = tools.get_delay_addresses_from_recipients(recipients)
-            keys            = [tools.get_key_from_email_address(x) for x in delay_addresses]
+            sender = message.get_sender()
+            recipients = message.get_recipients()
+            subject = message.get_subject()
+            sent_date = message.get_sent_date()
+            delay_addresses = tools.get_delay_addresses_from_recipients(
+                recipients)
+            keys = [tools.get_key_from_email_address(
+                x) for x in delay_addresses]
         except Exception as e:
             message.delete()
-            logger.error('Mail from %s deleted: Failed to parse header, %s' % (sender, e.args[0]))
+            logger.error(
+                'Mail from %s deleted: Failed to parse header, %s' % (sender, e.args[0]))
 
             return
 
