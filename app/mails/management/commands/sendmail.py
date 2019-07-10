@@ -82,8 +82,9 @@ class Command(BaseCommand):
                     attachments.append(part)
 
                 email = EmailMessage(
-                    "Reminder from {}: {}".format(mail.sent.strftime('%b %d %H:%M'), mail.subject),
-                    content.decode("utf-8") + text ,
+                    "Reminder from {}: {}".format(
+                        mail.sent.strftime('%b %d %H:%M'), mail.subject),
+                    content.decode("utf-8") + text,
                     settings.EMAIL_HOST_USER,
                     [mail.user.email],
                 )

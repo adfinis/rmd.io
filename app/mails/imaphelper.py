@@ -44,9 +44,9 @@ class IMAPMessage(object):
 
     def __init__(self, imap_conn, imapuid, dbid=None):
         self.imap_conn = imap_conn
-        self.imapuid   = imapuid
-        self.dbid      = dbid
-        self.msg       = self._get_msg_from_imap()
+        self.imapuid = imapuid
+        self.dbid = dbid
+        self.msg = self._get_msg_from_imap()
 
     @classmethod
     def from_dbid(cls, dbid, imap_conn):
@@ -84,7 +84,13 @@ class IMAPMessage(object):
         :rtype  email.message.Message
         '''
         results, data = self.imap_conn.uid('fetch', self.imapuid, 'RFC822')
-        msg           = email.message_from_string(data[0][1].decode())
+        import ipdb
+        ipdb.set_trace()
+        msg = email.message_from_string(
+            str(
+                data[0][1].decode("latin-1").encode("utf-8")
+            )
+        )
 
         return msg
 
@@ -107,9 +113,9 @@ class IMAPMessage(object):
         :type   datestr: str
         :rtype: datetime.datetime
         '''
-        dt_tuple  = email.utils.parsedate_tz(datestr)
+        dt_tuple = email.utils.parsedate_tz(datestr)
         timestamp = email.utils.mktime_tz(dt_tuple)
-        dt        = datetime.datetime.utcfromtimestamp(timestamp)
+        dt = datetime.datetime.utcfromtimestamp(timestamp)
 
         return dt.replace(tzinfo=pytz.utc)
 
@@ -186,8 +192,8 @@ class IMAPMessage(object):
                 )
                 for recipient in recipient_list:
                     r = {
-                        'name'  : recipient[0],
-                        'email' : recipient[1]
+                        'name': recipient[0],
+                        'email': recipient[1]
                     }
                     if r not in recipients:
                         recipients.append(r)
