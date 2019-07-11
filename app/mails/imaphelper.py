@@ -84,14 +84,15 @@ class IMAPMessage(object):
         :rtype  email.message.Message
         '''
         results, data = self.imap_conn.uid('fetch', self.imapuid, 'RFC822')
-        import ipdb
-        ipdb.set_trace()
         msg = email.message_from_string(
-            str(
-                data[0][1].decode("latin-1").encode("utf-8")
-            )
+            data[0][1].decode()
         )
-
+        if 'utf-8' not in msg.get_charsets():
+            msg = email.message_from_string(
+                str(
+                    data[0][1].decode(msg.get_charsets()[0]).encode("utf-8")
+                )
+            )
         return msg
 
     def _fix_header_encoding(self, headerpair):
