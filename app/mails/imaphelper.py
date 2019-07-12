@@ -87,7 +87,7 @@ class IMAPMessage(object):
         msg = email.message_from_string(
             data[0][1].decode()
         )
-        if 'utf-8' not in msg.get_charsets():
+        if 'utf-8' not in msg.get_charsets() and msg.get_charsets()[0]:
             msg = email.message_from_string(
                 str(
                     data[0][1].decode(msg.get_charsets()[0]).encode("utf-8")
