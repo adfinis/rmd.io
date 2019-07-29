@@ -1,4 +1,4 @@
-Django==1.11.22 # pyup: >=1.11,<1.12
+Django==2.2.3 # pyup: >=1.11,<1.12
 django_extensions==2.2.1
 django-widget-tweaks==1.4.5
 icalendar==4.0.3
