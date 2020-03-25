@@ -82,7 +82,7 @@ DATABASES = {
         'NAME': 'maildelay',
         'USER': 'rmdio',
         'PASSWORD': 'rmdio',
-        'HOST': '127.0.0.1',
+        'HOST': 'postgres',
         'PORT': '5432',
     }
 }
