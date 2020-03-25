@@ -15,12 +15,27 @@ services:
     links:
       - postgres
     ports:
-        - "8080:80"
+      - "8080:80"
     environment:
       - DB_HOST=postgres
       - DB_PORT=5432
   mailcatcher:
     image: schickling/mailcatcher
     ports:
-        - "1080:1080"
-        - "1025:1025"
+      - "1080:1080"
+      - "1025:1025"
+  rmd:
+    build:
+      context: .
+    depends_on:
+      - "postgres"
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./:/app
+    command:
+      [
+        "/bin/sh",
+        "-c",
+        "wait-for-it.sh postgres:5432 -- app/manage.py migrate && app/manage.py runserver 0.0.0.0:8000",
+      ]
