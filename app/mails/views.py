@@ -30,7 +30,7 @@ except ImportError:
 logger = logging.getLogger('mails')
 
 
-def page_not_found_view(request):
+def page_not_found_view(request, exception):
     return render(request, '404.html')
 
 
