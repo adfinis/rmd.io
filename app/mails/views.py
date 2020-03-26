@@ -41,7 +41,7 @@ def staff_required(login_url=None):
 class BaseView(generic.RedirectView):
     def get_redirect_url(self, **kwargs):
         next_url = self.request.GET.get('next', None)
-        if self.request.user.is_authenticated():
+        if self.request.user.is_authenticated:
             if next_url:
                 return next_url
             else:
@@ -59,7 +59,7 @@ class HelpView(generic.TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super(HelpView, self).get_context_data(**kwargs)
-        if self.request.user.is_authenticated():
+        if self.request.user.is_authenticated:
             account = self.request.user.get_account()
 
             if account.anti_spam:
@@ -154,7 +154,7 @@ class MailView(generic.ListView):
         management.call_command('import', verbosity=1)
 
     def get_queryset(self):
-        if self.request.user.is_authenticated():
+        if self.request.user.is_authenticated:
             mails = Mail.my_mails(self.request.user)
             return sorted(mails, key=lambda m: m.next_due().due)
 

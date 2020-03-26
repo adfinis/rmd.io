@@ -4,7 +4,7 @@ from mails import tools
 
 
 class Mail(models.Model):
-    user = models.ForeignKey(User)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
     subject = models.CharField(max_length=200)
     sent = models.DateTimeField()
 
@@ -23,18 +23,18 @@ class Account(models.Model):
 
 
 class UserProfile(models.Model):
-    user = models.OneToOneField(User)
-    account = models.ForeignKey(Account)
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    account = models.ForeignKey(Account, on_delete=models.CASCADE)
 
 
 class Recipient(models.Model):
-    mail = models.ForeignKey(Mail)
+    mail = models.ForeignKey(Mail, on_delete=models.CASCADE)
     name = models.CharField(max_length=200, blank=True)
     email = models.EmailField(max_length=75, blank=True)
 
 
 class Due(models.Model):
-    mail = models.ForeignKey(Mail)
+    mail = models.ForeignKey(Mail, on_delete=models.CASCADE)
     due = models.DateTimeField()
 
 
