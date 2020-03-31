@@ -17,75 +17,180 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.CreateModel(
-            name='Account',
+            name="Account",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('key', models.CharField(max_length=10, unique=True)),
-                ('anti_spam', models.BooleanField(default=False)),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("key", models.CharField(max_length=10, unique=True)),
+                ("anti_spam", models.BooleanField(default=False)),
             ],
         ),
         migrations.CreateModel(
-            name='AddressLog',
+            name="AddressLog",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('email', models.EmailField(max_length=75)),
-                ('reason', models.CharField(choices=[('SPAM', 'Spam'), ('NREG', 'Not Registered')], max_length=4)),
-                ('attempt', models.IntegerField()),
-                ('date', models.DateTimeField(auto_now_add=True)),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("email", models.EmailField(max_length=75)),
+                (
+                    "reason",
+                    models.CharField(
+                        choices=[("SPAM", "Spam"), ("NREG", "Not Registered")],
+                        max_length=4,
+                    ),
+                ),
+                ("attempt", models.IntegerField()),
+                ("date", models.DateTimeField(auto_now_add=True)),
             ],
         ),
         migrations.CreateModel(
-            name='Due',
+            name="Due",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('due', models.DateTimeField()),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("due", models.DateTimeField()),
             ],
         ),
         migrations.CreateModel(
-            name='ImportLog',
+            name="ImportLog",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('date', models.DateTimeField(auto_now=True)),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("date", models.DateTimeField(auto_now=True)),
             ],
         ),
         migrations.CreateModel(
-            name='Mail',
+            name="Mail",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('subject', models.CharField(max_length=200)),
-                ('sent', models.DateTimeField()),
-                ('user', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL)),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("subject", models.CharField(max_length=200)),
+                ("sent", models.DateTimeField()),
+                (
+                    "user",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
             ],
         ),
         migrations.CreateModel(
-            name='Recipient',
+            name="Recipient",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(blank=True, max_length=200)),
-                ('email', models.EmailField(blank=True, max_length=75)),
-                ('mail', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='mails.Mail')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("name", models.CharField(blank=True, max_length=200)),
+                ("email", models.EmailField(blank=True, max_length=75)),
+                (
+                    "mail",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE, to="mails.Mail"
+                    ),
+                ),
             ],
         ),
         migrations.CreateModel(
-            name='Statistic',
+            name="Statistic",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('type', models.CharField(choices=[('SENT', 'Sent'), ('REC', 'Received'), ('USER', 'User'), ('OBL', 'Oblivious')], max_length=4)),
-                ('email', models.EmailField(blank=True, max_length=75)),
-                ('date', models.DateField(auto_now_add=True)),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "type",
+                    models.CharField(
+                        choices=[
+                            ("SENT", "Sent"),
+                            ("REC", "Received"),
+                            ("USER", "User"),
+                            ("OBL", "Oblivious"),
+                        ],
+                        max_length=4,
+                    ),
+                ),
+                ("email", models.EmailField(blank=True, max_length=75)),
+                ("date", models.DateField(auto_now_add=True)),
             ],
         ),
         migrations.CreateModel(
-            name='UserProfile',
+            name="UserProfile",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('account', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='mails.Account')),
-                ('user', models.OneToOneField(on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL)),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "account",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE, to="mails.Account"
+                    ),
+                ),
+                (
+                    "user",
+                    models.OneToOneField(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
             ],
         ),
         migrations.AddField(
-            model_name='due',
-            name='mail',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='mails.Mail'),
+            model_name="due",
+            name="mail",
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE, to="mails.Mail"
+            ),
         ),
     ]

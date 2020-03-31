@@ -14,7 +14,7 @@ class Mail(models.Model):
         return cls.objects.filter(user__in=users)
 
     def next_due(self):
-        return Due.objects.filter(mail=self).order_by('due')[0]
+        return Due.objects.filter(mail=self).order_by("due")[0]
 
 
 class Account(models.Model):
@@ -40,10 +40,10 @@ class Due(models.Model):
 
 class Statistic(models.Model):
     types = (
-        ('SENT', 'Sent'),
-        ('REC',  'Received'),
-        ('USER', 'User'),
-        ('OBL',  'Oblivious'),
+        ("SENT", "Sent"),
+        ("REC", "Received"),
+        ("USER", "User"),
+        ("OBL", "Oblivious"),
     )
 
     type = models.CharField(max_length=4, choices=types)
@@ -52,10 +52,7 @@ class Statistic(models.Model):
 
 
 class AddressLog(models.Model):
-    reasons = (
-        ('SPAM', 'Spam'),
-        ('NREG', 'Not Registered')
-    )
+    reasons = (("SPAM", "Spam"), ("NREG", "Not Registered"))
 
     email = models.EmailField(max_length=75)
     reason = models.CharField(max_length=4, choices=reasons)
@@ -71,4 +68,4 @@ def get_account(self):
     return self.userprofile.account
 
 
-User.add_to_class('get_account', get_account)
+User.add_to_class("get_account", get_account)
