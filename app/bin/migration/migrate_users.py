@@ -6,8 +6,12 @@
 import psycopg2
 
 try:
-    conn1 = psycopg2.connect("dbname='maildelay_old' user='maildelay' host='localhost' password='vagrant'")
-    conn2 = psycopg2.connect("dbname='maildelay' user='maildelay' host='localhost' password='vagrant'")
+    conn1 = psycopg2.connect(
+        "dbname='maildelay_old' user='maildelay' host='localhost' password='vagrant'"
+    )
+    conn2 = psycopg2.connect(
+        "dbname='maildelay' user='maildelay' host='localhost' password='vagrant'"
+    )
 except:
     print("I am unable to connect to the database")
 
@@ -24,7 +28,10 @@ identities = cur1.fetchall()
 # <codecell>
 
 for i in identities:
-    cur2.execute("""INSERT INTO mails_account (id, key, anti_spam) VALUES (%s, %s, %s);""", (i[0], i[1], i[2]))
+    cur2.execute(
+        """INSERT INTO mails_account (id, key, anti_spam) VALUES (%s, %s, %s);""",
+        (i[0], i[1], i[2]),
+    )
 
 # <codecell>
 
@@ -37,7 +44,10 @@ results = cur1.fetchall()
 # <codecell>
 
 for res in results:
-    cur2.execute("INSERT INTO mails_userprofile (user_id, account_id) VALUES (%s, %s)" % (res[0], res[1]))
+    cur2.execute(
+        "INSERT INTO mails_userprofile (user_id, account_id) VALUES (%s, %s)"
+        % (res[0], res[1])
+    )
 
 # <codecell>
 

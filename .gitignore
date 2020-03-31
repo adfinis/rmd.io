@@ -6,3 +6,4 @@ app/static
 *.css.map
 app/error.log
 .vscode
+env/
