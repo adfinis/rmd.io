@@ -112,7 +112,7 @@ class RegistrationView(FormView):
             Sincerely,
             The rmd.io Team
             """.format(
-                settings.SITE_URL, str(account.key, "utf-8")
+                settings.SITE_URL, account.key
             ),
             settings.EMAIL_HOST_USER,
             [user.email],
@@ -147,7 +147,10 @@ class MailView(generic.ListView):
 
     @receiver(request_started)
     def import_mail(**kwargs):
-        management.call_command("import", verbosity=1)
+        try:
+            management.call_command("import", verbosity=1)
+        except Exception as exc:
+            print(exc)
 
     def get_queryset(self):
         if self.request.user.is_authenticated:

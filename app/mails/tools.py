@@ -288,4 +288,4 @@ def generate_key():
 
     :rtype: string
     """
-    return base64.b32encode(os.urandom(7))[:10].lower()
+    return base64.b32encode(os.urandom(7))[:10].lower().decode("utf-8")
