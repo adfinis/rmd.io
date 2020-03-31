@@ -14,30 +14,30 @@ urlpatterns = [
 
     re_path(r'^home/$', views.HomeView.as_view()),
 
-    re_path(r'^login/$', auth_views.LoginView, {'authentication_form': forms.LoginForm},
+    re_path(r'^login/$', auth_views.LoginView.as_view(), {'authentication_form': forms.LoginForm},
         name='login'),
 
-    re_path(r'^logout/$', auth_views.LogoutView, {'next_page': '/'}, name='logout'),
+    re_path(r'^logout/$', auth_views.LogoutView.as_view(), {'next_page': '/'}, name='logout'),
 
     re_path(r'^admin/', admin.site.urls),
 
-    re_path(r'^password_reset/$', auth_views.PasswordResetView,
+    re_path(r'^password_reset/$', auth_views.PasswordResetView.as_view(),
         name='password_reset'),
 
-    re_path(r'^password_reset/done/$', auth_views.PasswordResetDoneView,
+    re_path(r'^password_reset/done/$', auth_views.PasswordResetDoneView.as_view(),
         name='password_reset_done'),
 
     re_path(r'^reset/(?P<uidb64>[0-9A-Za-z_\-]+)/(?P<token>[0-9A-Za-z]{1,13}-[0-9A-Za-z]{1,20})/$',
-        auth_views.PasswordResetConfirmView, name='password_reset_confirm'),
+        auth_views.PasswordResetConfirmView.as_view(), name='password_reset_confirm'),
 
-    re_path(r'^reset/done/$', auth_views.PasswordResetCompleteView,
+    re_path(r'^reset/done/$', auth_views.PasswordResetCompleteView.as_view(),
         name='password_reset_complete'),
 
-    re_path(r'^password_change/$', auth_views.PasswordChangeView,
+    re_path(r'^password_change/$', auth_views.PasswordChangeView.as_view(),
         name='password_change'),
 
     re_path(r'^password_change_done/$',
-        auth_views.PasswordChangeDoneView, name='password_change_done'),
+        auth_views.PasswordChangeDoneView.as_view(), name='password_change_done'),
 
     re_path(r'^registration/$', views.RegistrationView.as_view()),
 
