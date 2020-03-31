@@ -12,11 +12,10 @@ from django.template.loader import get_template
 from django.core.mail import EmailMessage
 
 
-logger = logging.getLogger('mails')
+logger = logging.getLogger("mails")
 
 
 class Command(BaseCommand):
-
     def handle(self, *args, **kwargs):
         try:
             smtp = smtplib.SMTP(settings.EMAIL_HOST)
@@ -36,20 +35,19 @@ class Command(BaseCommand):
             except IndexError:
                 mail.delete()
                 logger.warning(
-                    'Imap message of mail {} could not be found'
-                    .format(mail.id)
+                    "Imap message of mail {} could not be found".format(mail.id)
                 )
 
                 return
 
             charset = message.msg.get_content_charset()
             recipients = mail.recipient_set
-            tpl = get_template('mails/messages/mail_attachment.txt')
-            text = tpl.render({'recipients': recipients})
+            tpl = get_template("mails/messages/mail_attachment.txt")
+            text = tpl.render({"recipients": recipients})
 
             if message.msg.is_multipart():
-                add_text = MIMEText(text, 'plain', 'utf-8')
-                if message.msg.get_content_maintype == 'multipart/signed':
+                add_text = MIMEText(text, "plain", "utf-8")
+                if message.msg.get_content_maintype == "multipart/signed":
                     # If it's a signed message, only take first payload
                     msg = MIMEMultipart()
                     orig = message.msg.get_payload(0)
@@ -62,28 +60,29 @@ class Command(BaseCommand):
 
             else:
                 msg = MIMEText(
-                    '\n\n'.join((message.msg.get_payload(), str(text))),
-                    'plain',
-                    charset
+                    "\n\n".join((message.msg.get_payload(), str(text))),
+                    "plain",
+                    charset,
                 )
 
             try:
                 for i in message.msg.walk():
-                    if i.get_content_maintype() == 'text':
+                    if i.get_content_maintype() == "text":
                         content = i.get_payload(decode=True)
                         break
 
                 attachments = []
                 for part in msg.walk():
-                    if part.get_content_maintype() == 'multipart':
+                    if part.get_content_maintype() == "multipart":
                         continue
-                    if part.get('Content-Disposition') is None:
+                    if part.get("Content-Disposition") is None:
                         continue
                     attachments.append(part)
 
                 email = EmailMessage(
                     "Reminder from {}: {}".format(
-                        mail.sent.strftime('%b %d %H:%M'), mail.subject),
+                        mail.sent.strftime("%b %d %H:%M"), mail.subject
+                    ),
                     content.decode("utf-8") + text,
                     settings.EMAIL_HOST_USER,
                     [mail.user.email],
@@ -92,20 +91,16 @@ class Command(BaseCommand):
                     email.attach(
                         attachment.get_filename(),
                         attachment.get_payload(decode=True),
-                        attachment.get_content_type()
+                        attachment.get_content_type(),
                     )
                 email.send()
 
             except:
                 message.delete()
-                print('Failed to write new header')
+                print("Failed to write new header")
                 break
 
-            stats = Statistic(
-                type='SENT',
-                email=mail.user.email,
-                date=timezone.now()
-            )
+            stats = Statistic(type="SENT", email=mail.user.email, date=timezone.now())
             stats.save()
 
             due.delete()
