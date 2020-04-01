@@ -170,8 +170,9 @@ LOGGING = {
 
 EMAIL_HOST_USER = "maildelay@dev.rmd.io"
 DEFAULT_FROM_EMAIL = "maildelay@dev.rmd.io"
-EMAIL_HOST_PASSWORD = "password"
-EMAIL_HOST = "localhost"
+# EMAIL_HOST_PASSWORD = "password"
+EMAIL_HOST = "mailcatcher"
+EMAIL_PORT = 1025
 EMAIL_FOLDER = "INBOX"
 
 MAILBOXES = [
