@@ -13,8 +13,7 @@ urlpatterns = [
     re_path(r"^home/$", views.HomeView.as_view()),
     re_path(
         r"^login/$",
-        auth_views.LoginView.as_view(),
-        {"authentication_form": forms.LoginForm},
+        auth_views.LoginView.as_view(authentication_form=forms.LoginForm),
         name="login",
     ),
     re_path(
