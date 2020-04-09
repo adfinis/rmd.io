@@ -7,7 +7,6 @@ from mails.models import Statistic, Due
 from mails import imaphelper
 from django.core.management.base import BaseCommand
 from django.conf import settings
-from django.template import Context
 from django.template.loader import get_template
 from django.core.mail import EmailMessage
 
