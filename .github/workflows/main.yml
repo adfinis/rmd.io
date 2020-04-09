@@ -1,4 +1,4 @@
-name: Check Black Formatting
+name: Run Checks
 
 on:
   push:
@@ -7,7 +7,29 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-
     steps:
     - uses: actions/checkout@v2
-    - uses: jpetrucciani/black-check@19.10b0
+    - name: Build docker-compose
+      run: |
+        docker-compose build
+        docker-compose up -d
+    - name: Check container status
+      run: docker-compose ps
+    - name: Check black formatting
+      uses: jpetrucciani/black-check@19.10b0
+    - name: Lint with flake8
+      run: |
+        docker-compose exec -T rmd flake8 app/ --count --ignore=E231,E402,E501,E722,W503 --max-complexity=18 --show-source --statistics
+  test:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Build docker-compose
+      run: |
+        docker-compose build rmd
+        docker-compose up -d
+    - name: Check container status
+      run: docker-compose ps
+    - name: Test with pytest
+      run: |
+        docker-compose exec -T rmd pytest app/ -v
