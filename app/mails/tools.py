@@ -244,9 +244,9 @@ def create_additional_user(email, user):
 
     new_user = User(
         email=email,
-        username=base64.urlsafe_b64encode(sha1(smart_bytes(email)).digest()).rstrip(
-            b"="
-        ),
+        username=base64.urlsafe_b64encode(sha1(smart_bytes(email)).digest())
+        .decode("utf-8")
+        .rstrip("="),
         date_joined=timezone.now(),
         password=user.password,
         is_active=False,
@@ -264,7 +264,7 @@ def create_additional_user(email, user):
     except:
         pass
 
-    key = base64.urlsafe_b64encode(new_user.username)
+    key = base64.urlsafe_b64encode(new_user.username.encode("utf-8")).decode("utf-8")
     send_activation_mail(recipient=email, key=key)
 
 
