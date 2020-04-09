@@ -83,9 +83,11 @@ class RegistrationView(FormView):
     def form_valid(self, form):
         email = form.data.get("email")
         password = form.data.get("password1")
-        username = base64.urlsafe_b64encode(
-            hashlib.sha1(smart_bytes(email)).digest()
-        ).rstrip(b"=")
+        username = (
+            base64.urlsafe_b64encode(hashlib.sha1(smart_bytes(email)).digest())
+            .decode("utf-8")
+            .rstrip("=")
+        )
 
         user = User.objects.create_user(username, email, password)
         user.is_active = False
@@ -227,7 +229,7 @@ def mail_delete_view(request):
 
 
 def download_calendar_view(request, secret):
-    username = base64.urlsafe_b64decode(secret.encode("utf-8"))
+    username = base64.urlsafe_b64decode(secret).decode("utf-8")
     user = User.objects.get(username=username)
     dues = Due.objects.filter(mail__in=Mail.my_mails(user))
     cal = Calendar()
@@ -284,7 +286,7 @@ def download_vcard_view(request):
 @login_required(login_url="/login/")
 def user_activate_view(request, key):
     try:
-        username = base64.urlsafe_b64decode(key.encode("utf-8"))
+        username = base64.urlsafe_b64decode(key)
         user = User.objects.get(username=username)
         user.is_active = True
         user.save()
@@ -302,7 +304,7 @@ def user_activate_view(request, key):
 def user_connect_view(request, key, account_id):
     try:
         account = Account.objects.get(pk=account_id)
-        username = base64.urlsafe_b64decode(key.encode("utf-8"))
+        username = base64.urlsafe_b64decode(key).decode("utf-8")
         user = User.objects.get(username=username)
         old_account = user.userprofile.account
         user.userprofile.account = account
@@ -325,7 +327,9 @@ def user_add_view(request):
         email = request.POST.get("email", False)
         try:
             user = User.objects.get(email=email)
-            key = base64.urlsafe_b64encode(user.username)
+            key = base64.urlsafe_b64encode(user.username.encode("utf-8")).decode(
+                "utf-8"
+            )
             tools.send_connection_mail(
                 account=request.user.get_account(), recipient=user.email, key=key
             )
@@ -370,10 +374,9 @@ def user_send_activation_view(request):
     if request.POST:
         user = User.objects.get(id=request.POST["id"])
         email = user.email
+        key = base64.urlsafe_b64encode(user.username.encode("utf-8")).decode("utf-8")
 
-        tools.send_activation_mail(
-            recipient=email, key=base64.urlsafe_b64encode(user.username)
-        )
+        tools.send_activation_mail(recipient=email, key=key)
 
     return HttpResponse("")
 
@@ -412,7 +415,9 @@ def settings_view(request):
             "account": account,
             "users": users,
             "domain": settings.SITE_URL,
-            "secret": base64.urlsafe_b64encode(request.user.username.encode()),
+            "secret": base64.urlsafe_b64encode(
+                request.user.username.encode("utf-8")
+            ).decode("utf-8"),
         },
     )
 
