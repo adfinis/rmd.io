@@ -1,4 +1,4 @@
-name: Check Black Formatting
+name: Run Checks
 
 on:
   push:
@@ -10,5 +10,8 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
-    - uses: jpetrucciani/black-check@19.10b0
-    - uses: cclauss/GitHub-Action-for-pytest@0.5.0
+    - name: Check black formatting
+      uses: jpetrucciani/black-check@19.10b0
+    - name: Run pytest
+      uses: cclauss/GitHub-Action-for-pytest@0.5.0
+      run: pytest -v
