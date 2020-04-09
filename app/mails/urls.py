@@ -1,6 +1,7 @@
 from django.urls import re_path
 from django.contrib import admin
 from django.contrib.auth import views as auth_views
+from django.contrib.auth.decorators import login_required
 from mails import views
 from . import forms
 
@@ -42,7 +43,7 @@ urlpatterns = [
     ),
     re_path(
         r"^password_change/$",
-        auth_views.PasswordChangeView.as_view(),
+        login_required(login_url="/login/")(auth_views.PasswordChangeView.as_view()),
         name="password_change",
     ),
     re_path(
@@ -56,7 +57,7 @@ urlpatterns = [
     ),
     re_path(r"^registration_send_mail/$", views.RegistrationSendMailView.as_view()),
     re_path(r"^terms/$", views.TermsView.as_view()),
-    re_path(r"^mails/$", views.MailView.as_view()),
+    re_path(r"^mails/$", login_required(login_url="/login/")(views.MailView.as_view())),
     re_path(r"^mails/delete/$", views.mail_delete_view),
     re_path(r"^mails/delete/confirm/(?P<id>\d+)/$", views.mail_delete_confirm_view),
     re_path(
