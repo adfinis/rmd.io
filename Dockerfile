@@ -12,8 +12,10 @@ ENV PYTHONDONTWRITEBYTECODE 1
 ENV PYTHONUNBUFFERED 1
 
 # Install pip requirements
-ADD requirements.txt .
-RUN pip install -r requirements.txt
+ARG REQUIREMENTS=requirements.txt
+COPY requirements.txt requirements-dev.txt /app/
+
+RUN pip install -r $REQUIREMENTS --disable-pip-version-check
 
 ADD . /app
 
