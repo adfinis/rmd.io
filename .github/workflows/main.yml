@@ -19,7 +19,7 @@ jobs:
       uses: jpetrucciani/black-check@19.10b0
     - name: Lint with flake8
       run: |
-        docker-compose exec -T rmd flake8 app/ --count --ignore=E231,E402,E501,E722,W503 --max-complexity=18 --show-source --statistics
+        docker-compose exec -T rmd flake8 app/ --count --ignore=E231,E402,E501,E722,W503 --max-complexity=10 --show-source --statistics
   test:
     runs-on: ubuntu-latest
     steps:
