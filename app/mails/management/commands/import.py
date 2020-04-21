@@ -50,47 +50,24 @@ class Command(BaseCommand):
 
             return
 
-        if account.anti_spam:
-            if not len(keys):
-                message.delete()
-                logger.error("Mail from %s deleted: No key" % sender)
-                tools.send_wrong_recipient_mail(sender)
-
-                return
-            elif not any(key == account.key for key in keys):
-                message.delete()
-                logger.error("Mail from %s deleted: Wrong key" % sender)
-
-                return
+        handle_anti_spam_account(
+            keys=keys, sender=sender, message=message, account=account
+        )
 
         try:
             mail = Mail(subject=subject, sent=sent_date, user=user)
             mail.save()
-            for delay_address in delay_addresses:
-                rec_stat = Statistic(
-                    type="REC",
-                    email=re.sub(r"(^\d+[dmw])(\.[0-9a-z]{10})", r"\1", delay_address),
-                )
-                due = Due(
-                    mail=mail,
-                    due=sent_date
-                    + datetime.timedelta(
-                        tools.get_delay_days_from_email_address(delay_address)
-                    ),
-                )
-                due.save()
-                rec_stat.save()
+
+            save_received_statistic(
+                delay_addresses=delay_addresses, mail=mail, sent_date=sent_date
+            )
+
             user_stat = Statistic(type="USER", email=user.email,)
             user_stat.save()
 
-            for rec in recipients:
-                recipient = Recipient(mail=mail, email=rec["email"], name=rec["name"])
-                recipient.save()
-                if rec["email"] not in delay_addresses:
-                    obl_stat = Statistic(type="OBL", email=rec["email"])
-                    obl_stat.save()
-                else:
-                    continue
+            save_oblivious_statistic(
+                recipients=recipients, mail=mail, delay_addresses=delay_addresses
+            )
 
             message.flag(mail.id)
             self.imported_mail_ids.append(message.msg["Message-ID"])
@@ -120,3 +97,45 @@ class Command(BaseCommand):
                 self.import_mail(message)
 
             imap_conn.expunge()
+
+
+def handle_anti_spam_account(keys, sender, message, account):
+    if account.anti_spam:
+        if not len(keys):
+            message.delete()
+            logger.error("Mail from %s deleted: No key" % sender)
+            tools.send_wrong_recipient_mail(sender)
+
+        return
+    elif not any(key == account.key for key in keys):
+        message.delete()
+        logger.error("Mail from %s deleted: Wrong key" % sender)
+        return
+
+
+def save_received_statistic(delay_addresses, mail, sent_date):
+    for delay_address in delay_addresses:
+        rec_stat = Statistic(
+            type="REC",
+            email=re.sub(r"(^\d+[dmw])(\.[0-9a-z]{10})", r"\1", delay_address),
+        )
+        due = Due(
+            mail=mail,
+            due=sent_date
+            + datetime.timedelta(
+                tools.get_delay_days_from_email_address(delay_address)
+            ),
+        )
+        due.save()
+        rec_stat.save()
+
+
+def save_oblivious_statistic(recipients, mail, delay_addresses):
+    for rec in recipients:
+        recipient = Recipient(mail=mail, email=rec["email"], name=rec["name"])
+        recipient.save()
+        if rec["email"] not in delay_addresses:
+            obl_stat = Statistic(type="OBL", email=rec["email"])
+            obl_stat.save()
+        else:
+            continue
