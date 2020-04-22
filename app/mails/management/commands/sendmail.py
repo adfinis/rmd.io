@@ -36,9 +36,7 @@ class Command(BaseCommand):
             text = tpl.render({"recipients": recipients})
             msg = None
 
-            send_email_with_attachments(
-                message=message, mail=mail, text=text, msg=msg
-            )
+            send_email_with_attachments(message=message, mail=mail, text=text, msg=msg)
 
             try:
                 send_email_with_attachments(
