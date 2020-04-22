@@ -50,7 +50,7 @@ class Command(BaseCommand):
 
             return
 
-        handle_anti_spam_account(
+        delete_message_for_wrong_keys(
             keys=keys, sender=sender, message=message, account=account
         )
 
@@ -99,14 +99,13 @@ class Command(BaseCommand):
             imap_conn.expunge()
 
 
-def handle_anti_spam_account(keys, sender, message, account):
+def delete_message_for_wrong_keys(keys, sender, message, account):
     if account.anti_spam:
         if not len(keys):
             message.delete()
             logger.error("Mail from %s deleted: No key" % sender)
             tools.send_wrong_recipient_mail(sender)
-
-        return
+            return
     elif not any(key == account.key for key in keys):
         message.delete()
         logger.error("Mail from %s deleted: Wrong key" % sender)
@@ -137,5 +136,3 @@ def save_oblivious_statistic(recipients, mail, delay_addresses):
         if rec["email"] not in delay_addresses:
             obl_stat = Statistic(type="OBL", email=rec["email"])
             obl_stat.save()
-        else:
-            continue

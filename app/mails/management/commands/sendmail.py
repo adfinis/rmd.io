@@ -1,4 +1,3 @@
-import smtplib
 import logging
 from django.utils import timezone
 from email.mime.text import MIMEText
@@ -16,8 +15,6 @@ logger = logging.getLogger("mails")
 
 class Command(BaseCommand):
     def handle(self, *args, **kwargs):
-        smtp = connect_to_smtp()
-
         dues = Due.objects.filter(due__lte=timezone.now())
 
         for due in dues:
@@ -39,10 +36,14 @@ class Command(BaseCommand):
             text = tpl.render({"recipients": recipients})
             msg = None
 
-            handle_mulitpart_message(message=message, mail=mail, text=text, msg=msg)
+            attach_text_to_mulitpart_messages(
+                message=message, mail=mail, text=text, msg=msg
+            )
 
             try:
-                handle_attachment(message=message, mail=mail, text=text, msg=msg)
+                send_email_with_attachments(
+                    message=message, mail=mail, text=text, msg=msg
+                )
             except:
                 message.delete()
                 print("Failed to write new header")
@@ -57,19 +58,8 @@ class Command(BaseCommand):
                 message.delete()
                 mail.delete()
 
-        smtp.quit()
 
-
-def connect_to_smtp():
-    try:
-        smtp = smtplib.SMTP(settings.EMAIL_HOST)
-        smtp.starttls()
-        smtp.login(settings.EMAIL_HOST_USER, settings.EMAIL_HOST_PASSWORD)
-    except:
-        return
-
-
-def handle_mulitpart_message(message, mail, text, msg):
+def attach_MIMEText_to_mulitpart_messages(message, mail, text, msg):
     charset = message.msg.get_content_charset()
 
     if message.msg.is_multipart():
@@ -91,7 +81,7 @@ def handle_mulitpart_message(message, mail, text, msg):
         )
 
 
-def handle_attachment(message, mail, text, msg):
+def send_email_with_attachments(message, mail, text, msg):
     for i in message.msg.walk():
         if i.get_content_maintype() == "text":
             content = i.get_payload(decode=True)
