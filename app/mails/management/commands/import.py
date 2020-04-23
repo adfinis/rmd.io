@@ -50,9 +50,10 @@ class Command(BaseCommand):
 
             return
 
-        delete_message_for_wrong_keys(
+        if message_deleted_due_to_invalid_keys(
             keys=keys, sender=sender, message=message, account=account
-        )
+        ):
+            return
 
         try:
             mail = Mail(subject=subject, sent=sent_date, user=user)
@@ -71,9 +72,10 @@ class Command(BaseCommand):
 
             message.flag(mail.id)
             self.imported_mail_ids.append(message.msg["Message-ID"])
-        except:
+        except Exception as e:
             message.delete()
             logger.error("Mail from %s deleted: Could not save mail" % sender)
+            logger.error(e)
 
             return
 
@@ -99,7 +101,7 @@ class Command(BaseCommand):
             imap_conn.expunge()
 
 
-def delete_message_for_wrong_keys(keys, sender, message, account):
+def message_deleted_due_to_invalid_keys(keys, sender, message, account):
     if account.anti_spam:
         if not len(keys):
             message.delete()

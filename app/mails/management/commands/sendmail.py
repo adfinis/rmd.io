@@ -34,14 +34,11 @@ class Command(BaseCommand):
             recipients = mail.recipient_set
             tpl = get_template("mails/messages/mail_attachment.txt")
             text = tpl.render({"recipients": recipients})
-            msg = None
 
-            send_email_with_attachments(message=message, mail=mail, text=text, msg=msg)
+            attach_MIMEText_to_mulitpart_messages(message=message, mail=mail, text=text)
 
             try:
-                send_email_with_attachments(
-                    message=message, mail=mail, text=text, msg=msg
-                )
+                send_email_with_attachments(message=message, mail=mail, text=text)
             except:
                 message.delete()
                 print("Failed to write new header")
@@ -57,7 +54,7 @@ class Command(BaseCommand):
                 mail.delete()
 
 
-def attach_MIMEText_to_mulitpart_messages(message, mail, text, msg):
+def attach_MIMEText_to_mulitpart_messages(message, mail, text):
     charset = message.msg.get_content_charset()
 
     if message.msg.is_multipart():
@@ -77,15 +74,17 @@ def attach_MIMEText_to_mulitpart_messages(message, mail, text, msg):
         msg = MIMEText(
             "\n\n".join((message.msg.get_payload(), str(text))), "plain", charset,
         )
+    return msg
 
 
-def send_email_with_attachments(message, mail, text, msg):
+def send_email_with_attachments(message, mail, text):
     for i in message.msg.walk():
         if i.get_content_maintype() == "text":
             content = i.get_payload(decode=True)
             break
 
     attachments = []
+    msg = attach_MIMEText_to_mulitpart_messages()
     for part in msg.walk():
         if part.get_content_maintype() == "multipart":
             continue
