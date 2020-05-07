@@ -24,9 +24,15 @@ def get_delay_days_from_email_address(email_address):
     :rtype: integer
     """
     try:
-        match = re.findall(r"^(\d+)([dmw])", email_address)[0]
-        multiplicator = settings.EMAIL_SUFFIX_TO_DAY[match[1]]
-        delay = int(match[0]) * int(multiplicator)
+        if re.match(r"^(\d+)([dmw])", email_address):
+            match = re.findall(r"^(\d+)([dmw])", email_address)[0]
+            multiplicator = settings.EMAIL_SUFFIX_TO_DAY[match[1]]
+            delay = int(match[0]) * int(multiplicator)
+        elif re.match(r"^\d{2}\-\d{2}\-\d{4}", email_address):
+            match = re.findall(r"^\d{2}\-\d{2}\-\d{4}", email_address)[0]
+            match_datetime = datetime.datetime.strptime(match, "%d-%m-%Y")
+            delay_datetime = match_datetime - datetime.datetime.now()
+            delay = delay_datetime.days
         return delay
     except:
         raise Exception("Invalid delay")
@@ -43,6 +49,8 @@ def get_delay_addresses_from_recipients(recipients):
     for recipient in recipients:
         if re.search(r"^(\d+[dmw])", recipient["email"]):
             delay_addresses.append(recipient["email"])
+        elif re.search(r"^\d{1,2}\-\d{1,2}\-\d{4}", recipient["email"]):
+            delay_addresses.append(recipient["email"])
     if delay_addresses:
         return delay_addresses
     else:
@@ -57,7 +65,11 @@ def get_key_from_email_address(email_address):
     :rtype: string
     """
     try:
-        return re.search(r"^\d+[dmw]\.([0-9a-z]{10})@", email_address).group(1)
+        if re.match(r"^(\d+)([dmw])", email_address):
+            return re.search(r"^\d+[dmw]\.([0-9a-z]{10})@", email_address).group(1)
+        return re.search(r"^\d{2}\-\d{2}\-\d{4}\.([0-9a-z]{10})@", email_address).group(
+            1
+        )
     except AttributeError:
         return None
 
