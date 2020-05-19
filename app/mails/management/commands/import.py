@@ -107,11 +107,12 @@ def message_deleted_due_to_invalid_keys(keys, sender, message, account):
             message.delete()
             logger.error("Mail from %s deleted: No key" % sender)
             tools.send_wrong_recipient_mail(sender)
-            return
-    elif not any(key == account.key for key in keys):
-        message.delete()
-        logger.error("Mail from %s deleted: Wrong key" % sender)
-        return
+            return True
+        elif not any(key == account.key for key in keys):
+            message.delete()
+            logger.error("Mail from %s deleted: Wrong key" % sender)
+            return True
+    return False
 
 
 def save_received_statistic(delay_addresses, mail, sent_date):

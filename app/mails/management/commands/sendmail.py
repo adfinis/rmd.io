@@ -24,18 +24,16 @@ class Command(BaseCommand):
             try:
                 message = imaphelper.IMAPMessage.from_dbid(mail.id, imap_conn)
             except IndexError:
-                mail.delete()
                 logger.warning(
                     "Imap message of mail {} could not be found".format(mail.id)
                 )
+                mail.delete()
 
                 return
 
             recipients = mail.recipient_set
             tpl = get_template("mails/messages/mail_attachment.txt")
             text = tpl.render({"recipients": recipients})
-
-            attach_MIMEText_to_mulitpart_messages(message=message, mail=mail, text=text)
 
             try:
                 send_email_with_attachments(message=message, mail=mail, text=text)
@@ -54,7 +52,7 @@ class Command(BaseCommand):
                 mail.delete()
 
 
-def attach_MIMEText_to_mulitpart_messages(message, mail, text):
+def attach_MIMEText_to_mulitpart_messages(message, text):
     charset = message.msg.get_content_charset()
 
     if message.msg.is_multipart():
@@ -84,7 +82,7 @@ def send_email_with_attachments(message, mail, text):
             break
 
     attachments = []
-    msg = attach_MIMEText_to_mulitpart_messages()
+    msg = attach_MIMEText_to_mulitpart_messages(message, text)
     for part in msg.walk():
         if part.get_content_maintype() == "multipart":
             continue
