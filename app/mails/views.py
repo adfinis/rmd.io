@@ -8,6 +8,7 @@ from django.db.models import Count
 from django.dispatch import receiver
 from django.http import HttpResponseRedirect, HttpResponse, Http404
 from django.shortcuts import render, get_object_or_404, redirect
+from django.utils import timezone
 from django.utils.decorators import method_decorator
 from django.views import generic
 from mails.forms import RegistrationForm
@@ -195,7 +196,8 @@ def mail_update_view(request):
             try:
                 due_id = int(re.sub(r"due-", "", due[0]))
                 d = Due.objects.get(mail=mail, pk=due_id)
-                d.due = due[1][0]
+                due_date = datetime.datetime.strptime(due[1][0], "%Y-%m-%d %H:%M")
+                d.due = timezone.make_aware(due_date, timezone.get_current_timezone())
                 d.save()
                 edited_dues.append(due_id)
             except:
