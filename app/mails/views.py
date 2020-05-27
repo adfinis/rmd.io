@@ -8,7 +8,6 @@ from django.db.models import Count
 from django.dispatch import receiver
 from django.http import HttpResponseRedirect, HttpResponse, Http404
 from django.shortcuts import render, get_object_or_404, redirect
-from django.utils import timezone
 from django.utils.decorators import method_decorator
 from django.views import generic
 from mails.forms import RegistrationForm
@@ -20,6 +19,7 @@ from django.core.mail import send_mail
 import re
 import base64
 import datetime
+import dateparser
 import logging
 import hashlib
 
@@ -187,7 +187,10 @@ def mail_update_view(request):
         if due[0] == "due-new":
             for dt in due[1]:
                 if dt:
-                    d = Due(mail=mail, due=dt)
+                    parsed_due_date = dateparser.parse(
+                        dt, settings=settings.DATEPARSER_SETTINGS
+                    )
+                    d = Due(mail=mail, due=parsed_due_date)
                     d.save()
                     edited_dues.append(d.id)
                 else:
@@ -196,8 +199,9 @@ def mail_update_view(request):
             try:
                 due_id = int(re.sub(r"due-", "", due[0]))
                 d = Due.objects.get(mail=mail, pk=due_id)
-                due_date = datetime.datetime.strptime(due[1][0], "%Y-%m-%d %H:%M")
-                d.due = timezone.make_aware(due_date, timezone.get_current_timezone())
+                d.due = dateparser.parse(
+                    due[1][0], settings=settings.DATEPARSER_SETTINGS
+                )
                 d.save()
                 edited_dues.append(due_id)
             except:
