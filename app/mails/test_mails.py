@@ -74,7 +74,7 @@ def test_correct_get_delay_days_from_emai_address():
 
 
 def test_wrong_get_delay_days_from_email_address():
-    email = "12t@rmd.io"
+    email = "29.02.2001t@rmd.io"
     with pytest.raises(Exception):
         tools.get_delay_days_from_email_address(email)
 

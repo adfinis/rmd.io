@@ -29,10 +29,20 @@ def get_delay_days_from_email_address(email_address):
             match = re.findall(r"^(\d+)([dmw])", email_address)[0]
             multiplicator = settings.EMAIL_SUFFIX_TO_DAY[match[1]]
             delay = int(match[0]) * int(multiplicator)
-        delay_datetime = dateparser.parse(
-            email_address.split("@")[0], settings=settings.DATEPARSER_SETTINGS
-        )
-        delay = (delay_datetime - timezone.now()).days
+        elif re.match(r"(\.[0-9a-z]{10})@", email_address):
+            key = re.search(r"(\.[0-9a-z]{10})@", email_address).group(1)
+            email_without_key = email_address.replace(key, "")
+            delay_datetime = dateparser.parse(
+                email_without_key.split("@")[0], settings=settings.DATEPARSER_SETTINGS
+            )
+            delay = (delay_datetime.date() - timezone.now().date()).days
+        else:
+            delay_datetime = dateparser.parse(
+                email_address.split("@")[0], settings=settings.DATEPARSER_SETTINGS
+            )
+            delay = (delay_datetime.date() - timezone.now().date()).days
+        if delay < 0:
+            raise Exception("Invalid delay")
         return delay
     except:
         raise Exception("Invalid delay")
@@ -47,8 +57,10 @@ def get_delay_addresses_from_recipients(recipients):
     """
     delay_addresses = []
     for recipient in recipients:
+        key = re.search(r"(\.[0-9a-z]{10})@", recipient["email"]).group(1)
+        email_without_key = recipient["email"].replace(key, "")
         if dateparser.parse(
-            recipient["email"].split("@")[0], settings=settings.DATEPARSER_SETTINGS
+            email_without_key.split("@")[0], settings=settings.DATEPARSER_SETTINGS
         ):
             delay_addresses.append(recipient["email"])
     if delay_addresses:
