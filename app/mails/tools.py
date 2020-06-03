@@ -25,11 +25,7 @@ def get_delay_days_from_email_address(email_address):
     :rtype: integer
     """
     try:
-        if re.match(r"^(\d+)([dmw])", email_address):
-            match = re.findall(r"^(\d+)([dmw])", email_address)[0]
-            multiplicator = settings.EMAIL_SUFFIX_TO_DAY[match[1]]
-            delay = int(match[0]) * int(multiplicator)
-        elif re.match(r"(\.[0-9a-z]{10})@", email_address):
+        if re.match(r"(\.[0-9a-z]{10})@", email_address):
             key = re.search(r"(\.[0-9a-z]{10})@", email_address).group(1)
             email_without_key = email_address.replace(key, "")
             delay_datetime = dateparser.parse(

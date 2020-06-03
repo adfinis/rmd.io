@@ -175,6 +175,8 @@ EMAIL_HOST = "mailcatcher"
 EMAIL_PORT = 1025
 EMAIL_FOLDER = "INBOX"
 
+# Dateparser uses "m" as minutes. Because of that
+# you'll have to use "3months@rmd.io" instead of "3m@rmd.io"
 MAILBOXES = [
     ("1d", "Mail Delay for 1 day"),
     ("2d", "Mail Delay for 2 days"),
@@ -198,17 +200,17 @@ MAILBOXES = [
     ("9w", "Mail Delay for 9 weeks"),
     ("10w", "Mail Delay for 10 weeks"),
     ("11w", "Mail Delay for 11 weeks"),
-    ("1m", "Mail Delay for 1 month"),
-    ("2m", "Mail Delay for 2 months"),
-    ("3m", "Mail Delay for 3 months"),
-    ("4m", "Mail Delay for 4 months"),
-    ("5m", "Mail Delay for 5 months"),
-    ("6m", "Mail Delay for 6 months"),
-    ("7m", "Mail Delay for 7 months"),
-    ("8m", "Mail Delay for 8 months"),
-    ("9m", "Mail Delay for 9 months"),
-    ("10m", "Mail Delay for 10 months"),
-    ("11m", "Mail Delay for 11 months"),
+    ("1month", "Mail Delay for 1 month"),
+    ("2months", "Mail Delay for 2 months"),
+    ("3months", "Mail Delay for 3 months"),
+    ("4months", "Mail Delay for 4 months"),
+    ("5months", "Mail Delay for 5 months"),
+    ("6months", "Mail Delay for 6 months"),
+    ("7months", "Mail Delay for 7 months"),
+    ("8months", "Mail Delay for 8 months"),
+    ("9months", "Mail Delay for 9 months"),
+    ("10months", "Mail Delay for 10 months"),
+    ("11months", "Mail Delay for 11 months"),
 ]
 
 BLOCK_DELAYS = {
@@ -218,13 +220,6 @@ BLOCK_DELAYS = {
     4: datetime.timedelta(days=3),
     5: datetime.timedelta(days=7),
 }
-
-EMAIL_SUFFIX_TO_DAY = {
-    "d": 1,
-    "w": 7,
-    "m": 30,
-}
-
 
 CALENDAR_STRIP_PREFIXES = (
     r"^Re:\s*",
