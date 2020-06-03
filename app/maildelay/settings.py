@@ -232,3 +232,10 @@ CALENDAR_STRIP_PREFIXES = (
     r"^Fwd:\s*",
     r"^Wg:\s*",
 )
+
+DATEPARSER_SETTINGS = {
+    "PREFER_DATES_FROM": "future",
+    "TIMEZONE": "UTC",
+    "DATE_ORDER": "DMY",
+    "RETURN_AS_TIMEZONE_AWARE": True,
+}
