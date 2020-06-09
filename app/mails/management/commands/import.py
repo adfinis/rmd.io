@@ -73,8 +73,7 @@ class Command(BaseCommand):
                 )
                 due = Due(
                     mail=mail,
-                    due=tools.get_reminder_date_from_email_address(delay_address)
-                    ),
+                    due=tools.get_reminder_date_from_email_address(delay_address),
                 )
                 due.save()
                 rec_stat.save()

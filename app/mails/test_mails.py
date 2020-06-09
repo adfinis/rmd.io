@@ -1,6 +1,7 @@
 from django.utils.encoding import smart_bytes
 from django.core.mail import send_mail
 from mails import tools
+import datetime
 import hashlib
 import base64
 import pytest
@@ -67,16 +68,17 @@ def test_type_of_key_generator_output():
     assert type(key) is str
 
 
-def test_correct_get_delay_days_from_emai_address():
-    delay = tools.get_delay_days_from_email_address("2w@rmd.io")
-    expected = 14
-    assert delay == expected
+def test_correct_get_reminder_date_from_emai_address():
+    delay = tools.get_reminder_date_from_email_address("2w@rmd.io")
+    now = datetime.datetime.now()
+    expected = now + datetime.timedelta(days=14)
+    assert delay.date() == expected.date()
 
 
-def test_wrong_get_delay_days_from_email_address():
+def test_wrong_get_reminder_date_from_email_address():
     email = "29.02.2001t@rmd.io"
     with pytest.raises(Exception):
-        tools.get_delay_days_from_email_address(email)
+        tools.get_reminder_date_from_email_address(email)
 
 
 def test_send_mail(mailoutbox):

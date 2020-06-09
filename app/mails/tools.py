@@ -26,10 +26,8 @@ def get_reminder_date_from_email_address(email_address):
     """
     try:
         date_part = re.sub(r"(\.[0-9a-z]{10})?@.*", "", email_address)
-        delay = dateparser.parse(
-            date_part, settings=settings.DATEPARSER_SETTINGS
-        )
-        days_until_reminder = (delay.date() - timezone.now().date())
+        delay = dateparser.parse(date_part, settings=settings.DATEPARSER_SETTINGS)
+        days_until_reminder = (delay.date() - timezone.now().date()).days
         if days_until_reminder < 0:
             raise Exception("Invalid delay")
         return delay
