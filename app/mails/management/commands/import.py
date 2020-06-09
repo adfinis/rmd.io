@@ -73,9 +73,7 @@ class Command(BaseCommand):
                 )
                 due = Due(
                     mail=mail,
-                    due=sent_date
-                    + datetime.timedelta(
-                        tools.get_delay_days_from_email_address(delay_address)
+                    due=tools.get_reminder_date_from_email_address(delay_address)
                     ),
                 )
                 due.save()

@@ -17,27 +17,20 @@ logger = logging.getLogger("mails")
 host = re.sub("http(s)?://", "", settings.SITE_URL)
 
 
-def get_delay_days_from_email_address(email_address):
+def get_reminder_date_from_email_address(email_address):
     """Gets the delay days from an email address
 
     :param  email_address: delay email address
     :type   email_address: string
-    :rtype: integer
+    :rtype: datetime
     """
     try:
-        if re.match(r"(\.[0-9a-z]{10})@", email_address):
-            key = re.search(r"(\.[0-9a-z]{10})@", email_address).group(1)
-            email_without_key = email_address.replace(key, "")
-            delay_datetime = dateparser.parse(
-                email_without_key.split("@")[0], settings=settings.DATEPARSER_SETTINGS
-            )
-            delay = (delay_datetime.date() - timezone.now().date()).days
-        else:
-            delay_datetime = dateparser.parse(
-                email_address.split("@")[0], settings=settings.DATEPARSER_SETTINGS
-            )
-            delay = (delay_datetime.date() - timezone.now().date()).days
-        if delay < 0:
+        date_part = re.sub(r"(\.[0-9a-z]{10})?@.*", "", email_address)
+        delay = dateparser.parse(
+            date_part, settings=settings.DATEPARSER_SETTINGS
+        )
+        days_until_reminder = (delay.date() - timezone.now().date())
+        if days_until_reminder < 0:
             raise Exception("Invalid delay")
         return delay
     except:
