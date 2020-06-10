@@ -122,11 +122,7 @@ def save_received_statistic(delay_addresses, mail, sent_date):
             email=re.sub(r"(^\d+[dmw])(\.[0-9a-z]{10})", r"\1", delay_address),
         )
         due = Due(
-            mail=mail,
-            due=sent_date
-            + datetime.timedelta(
-                tools.get_delay_days_from_email_address(delay_address)
-            ),
+            mail=mail, due=tools.get_reminder_date_from_email_address(delay_address),
         )
         due.save()
         rec_stat.save()

@@ -6,6 +6,7 @@ from django.utils.encoding import smart_bytes
 from django.utils import timezone
 from hashlib import sha1
 import base64
+import dateparser
 import datetime
 import logging
 import os
@@ -16,17 +17,19 @@ logger = logging.getLogger("mails")
 host = re.sub("http(s)?://", "", settings.SITE_URL)
 
 
-def get_delay_days_from_email_address(email_address):
+def get_reminder_date_from_email_address(email_address):
     """Gets the delay days from an email address
 
     :param  email_address: delay email address
     :type   email_address: string
-    :rtype: integer
+    :rtype: datetime
     """
     try:
-        match = re.findall(r"^(\d+)([dmw])", email_address)[0]
-        multiplicator = settings.EMAIL_SUFFIX_TO_DAY[match[1]]
-        delay = int(match[0]) * int(multiplicator)
+        date_part = re.sub(r"(\.[0-9a-z]{10})?@.*", "", email_address)
+        delay = dateparser.parse(date_part, settings=settings.DATEPARSER_SETTINGS)
+        days_until_reminder = (delay.date() - timezone.now().date()).days
+        if days_until_reminder < 0:
+            raise Exception("Invalid delay")
         return delay
     except:
         raise Exception("Invalid delay")
@@ -41,7 +44,11 @@ def get_delay_addresses_from_recipients(recipients):
     """
     delay_addresses = []
     for recipient in recipients:
-        if re.search(r"^(\d+[dmw])", recipient["email"]):
+        key = re.search(r"(\.[0-9a-z]{10})@", recipient["email"]).group(1)
+        email_without_key = recipient["email"].replace(key, "")
+        if dateparser.parse(
+            email_without_key.split("@")[0], settings=settings.DATEPARSER_SETTINGS
+        ):
             delay_addresses.append(recipient["email"])
     if delay_addresses:
         return delay_addresses
@@ -57,7 +64,7 @@ def get_key_from_email_address(email_address):
     :rtype: string
     """
     try:
-        return re.search(r"^\d+[dmw]\.([0-9a-z]{10})@", email_address).group(1)
+        return re.search(r"\.([0-9a-z]{10})@", email_address).group(1)
     except AttributeError:
         return None
 
