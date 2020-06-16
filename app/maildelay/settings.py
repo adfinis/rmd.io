@@ -16,8 +16,20 @@ import os
 import sentry_sdk
 from sentry_sdk.integrations.django import DjangoIntegration
 
+import environ
+
+
+env = environ.Env()
+ROOT_DIR = environ.Path(__file__) - 3
+
+
+ENV_FILE = env.str("ENV_FILE", default=ROOT_DIR(".env"))
+if os.path.exists(ENV_FILE):
+    environ.Env.read_env(ENV_FILE)
+
+
 sentry_sdk.init(
-    dsn="",
+    dsn=env.str("SENTRY_DSN", default=""),
     integrations=[DjangoIntegration()],
     # If you wish to associate users to errors (assuming you are using
     # django.contrib.auth) you may enable sending PII data.
@@ -31,10 +43,10 @@ BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 # See https://docs.djangoproject.com/en/1.11/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = "qkk)_bi42*bikzfakx3)vqlr$7o3vn92z*or66c@8z2)$o767d"
+SECRET_KEY = env.str("SECRET_KEY", default="default")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = env.bool("DEBUG", default=True)
 
 ALLOWED_HOSTS = []
 
@@ -88,11 +100,11 @@ WSGI_APPLICATION = "maildelay.wsgi.application"
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.postgresql_psycopg2",
-        "NAME": "maildelay",
-        "USER": "rmdio",
-        "PASSWORD": "rmdio",
-        "HOST": "postgres",
-        "PORT": "5432",
+        "NAME": env.str("DATABASE_NAME", default="maildelay"),
+        "USER": env.str("DATABASE_USER", default="rmdio"),
+        "PASSWORD": env.str("DATABASE_PASSWORD", default="rmdio"),
+        "HOST": env.str("DATABASE_HOST", default="postgres"),
+        "PORT": env.str("DATABASE_PORT", default="5432"),
     }
 }
 
@@ -179,12 +191,12 @@ LOGGING = {
 
 # Mailserver login settings
 
-EMAIL_HOST_USER = "maildelay@dev.rmd.io"
-DEFAULT_FROM_EMAIL = "maildelay@dev.rmd.io"
-# EMAIL_HOST_PASSWORD = "password"
-EMAIL_HOST = "mailcatcher"
-EMAIL_PORT = 1025
-EMAIL_FOLDER = "INBOX"
+EMAIL_HOST_USER = env.str("EMAIL_HOST_USER", default="maildelay@dev.rmd.io")
+DEFAULT_FROM_EMAIL = env.str("DEFAULT_FROM_EMAIL", default="maildelay@dev.rmd.io")
+EMAIL_HOST_PASSWORD = env.str("EMAIL_HOST_PASSWORD", default="")
+EMAIL_HOST = env.str("EMAIL_HOST", default="mailcatcher")
+EMAIL_PORT = env.int("EMAIL_PORT", default=1025)
+EMAIL_FOLDER = env.int("EMAIL_FOLDER", default="INBOX")
 
 MAILBOXES = [
     ("1d", "Mail Delay for 1 day"),

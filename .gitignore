@@ -10,3 +10,4 @@ env/
 .pytest_cache
 .coverage
 .flake8
+.env
