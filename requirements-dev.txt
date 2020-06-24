@@ -1,7 +1,7 @@
 -r requirements.txt
 black==19.10b0
 ipdb==0.13.2
-flake8==3.7.9
+flake8==3.8.3
 pytest==5.4.1
 pytest-django==3.9.0
 pytest-cov==2.8.1
