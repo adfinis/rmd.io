@@ -20,3 +20,5 @@ RUN pip install -r $REQUIREMENTS --disable-pip-version-check
 ADD . /app
 
 EXPOSE 8000
+
+CMD /bin/sh -c "./wait-for-it.sh -t $WAIT_FOR_IT_TIMER $DATABASE_HOST:$DATABASE_PORT -- app/manage.py migrate && uwsgi"
