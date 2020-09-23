@@ -5,7 +5,7 @@ on:
     branches: master
 
 jobs:
-  goreleaser:
+  container:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
