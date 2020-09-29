@@ -3,6 +3,7 @@ name: Release Container
 on:
   push:
     branches: master
+  pull_request:
 
 jobs:
   container:
