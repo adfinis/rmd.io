@@ -28,3 +28,7 @@ services:
       - "postgres"
     ports:
       - "8000:8000"
+    environment:
+      - WAIT_FOR_IT_TIMER=$WAIT_FOR_IT_TIMER
+      - DATABASE_HOST=$DATABASE_HOST
+      - DATABASE_PORT=$DATABASE_PORT
