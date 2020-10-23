@@ -14,7 +14,10 @@ class Mail(models.Model):
         return cls.objects.filter(user__in=users)
 
     def next_due(self):
-        return Due.objects.filter(mail=self).order_by("due")[0]
+        next_due = self.dues.order_by("due").first()
+        if next_due is None:
+            return None
+        return next_due.due
 
 
 class Account(models.Model):
@@ -34,7 +37,7 @@ class Recipient(models.Model):
 
 
 class Due(models.Model):
-    mail = models.ForeignKey(Mail, on_delete=models.CASCADE)
+    mail = models.ForeignKey(Mail, on_delete=models.CASCADE, related_name="dues")
     due = models.DateTimeField()
 
 
