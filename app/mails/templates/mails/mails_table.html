@@ -36,7 +36,7 @@
                  data-placement="right"
                  data-content="{% include 'mails/mail_duedates.html' %}"
                 >
-                {{ mail.next_due.due | date:"Y-m-d H:i" }}
+                {{ mail.next_due | date:"Y-m-d H:i" }}
                 </span>
             </td>
             <td class="sent hidden-sm hidden-xs col-md-2">

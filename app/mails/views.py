@@ -158,7 +158,7 @@ class MailView(generic.ListView):
     def get_queryset(self):
         if self.request.user.is_authenticated:
             mails = Mail.my_mails(self.request.user)
-            return sorted(mails, key=lambda m: m.next_due().due)
+            return sorted(mails, key=lambda m: m.next_due())
 
     @method_decorator(login_required)
     def dispatch(self, *args, **kwargs):
@@ -198,14 +198,12 @@ def mail_update_view(request):
         else:
             try:
                 due_id = int(re.sub(r"due-", "", due[0]))
-                d = Due.objects.get(mail=mail, pk=due_id)
-                d.due = dateparser.parse(
-                    due[1][0], settings=settings.DATEPARSER_SETTINGS
-                )
-                d.save()
-                edited_dues.append(due_id)
-            except:
-                pass
+            except ValueError:
+                continue
+            d = mail.dues.get(pk=due_id)
+            d.due = dateparser.parse(due[1][0], settings=settings.DATEPARSER_SETTINGS)
+            d.save()
+            edited_dues.append(due_id)
 
     for saved_due in saved_dues:
         if saved_due not in edited_dues:
