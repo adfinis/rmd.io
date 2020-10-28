@@ -44,12 +44,18 @@ def get_delay_addresses_from_recipients(recipients):
     """
     delay_addresses = []
     for recipient in recipients:
-        key = re.search(r"(\.[0-9a-z]{10})@", recipient["email"]).group(1)
-        email_without_key = recipient["email"].replace(key, "")
-        if dateparser.parse(
-            email_without_key.split("@")[0], settings=settings.DATEPARSER_SETTINGS
-        ):
-            delay_addresses.append(recipient["email"])
+        key = re.search(r"(\.[0-9a-z]{10})@", recipient["email"])
+        if key is None:
+            if dateparser.parse(
+                recipient["email"].split("@")[0], settings=settings.DATEPARSER_SETTINGS
+            ):
+                delay_addresses.append(recipient["email"])
+        else:
+            email_without_key = recipient["email"].replace(key.group(1), "")
+            if dateparser.parse(
+                email_without_key.split("@")[0], settings=settings.DATEPARSER_SETTINGS
+            ):
+                delay_addresses.append(recipient["email"])
     if delay_addresses:
         return delay_addresses
     else:
