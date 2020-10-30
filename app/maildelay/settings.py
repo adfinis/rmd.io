@@ -115,7 +115,7 @@ TIME_ZONE = "Europe/Zurich"
 
 LANGUAGE_CODE = "en-us"
 
-SITE_URL = "http://localhost:8000"
+SITE_URL = env.str("SITE_URL", default="http://localhost:8000")
 
 SITE_ID = 1
 
