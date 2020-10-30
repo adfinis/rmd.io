@@ -89,3 +89,19 @@ def test_send_mail(mailoutbox):
     assert mail.body == "body"
     assert mail.from_email == "from@example.com"
     assert list(mail.to) == ["to@example.com"]
+
+
+def test_get_delay_addresses_from_recipients():
+    email_address_1 = "1d@rmd.io"
+    email_address_2 = "2d.123asd456x@rmd.io"
+    email_address_3 = "3d.123@rmd.io"
+    email_address_4 = "hello@rmd.io"
+    recipients = [
+        {"email": email_address_1},
+        {"email": email_address_2},
+        {"email": email_address_3},
+        {"email": email_address_4},
+    ]
+    delay_addresses = tools.get_delay_addresses_from_recipients(recipients)
+    expected = ["1d@rmd.io", "2d.123asd456x@rmd.io", "3d.123@rmd.io"]
+    assert delay_addresses == expected
