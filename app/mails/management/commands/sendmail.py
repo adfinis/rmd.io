@@ -93,7 +93,7 @@ def send_email_with_attachments(message, mail, text):
 
     email = EmailMessage(
         "Reminder from {}: {}".format(mail.sent.strftime("%b %d %H:%M"), mail.subject),
-        content + text.encode(),
+        content.decode() + text,
         settings.EMAIL_HOST_USER,
         [mail.user.email],
     )
