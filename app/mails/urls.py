@@ -1,8 +1,9 @@
-from django.urls import re_path
 from django.contrib import admin
 from django.contrib.auth import views as auth_views
 from django.contrib.auth.decorators import login_required
+from django.urls import re_path
 from mails import views
+
 from . import forms
 
 handler404 = "mails.views.page_not_found_view"

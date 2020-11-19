@@ -1,17 +1,17 @@
-from django.conf import settings
-from django.contrib.auth.models import User
-from django.core.mail import EmailMessage
-from django.template.loader import get_template
-from django.utils.encoding import smart_bytes
-from django.utils import timezone
-from hashlib import sha1
 import base64
-import dateparser
 import datetime
 import logging
 import os
 import re
+from hashlib import sha1
 
+import dateparser
+from django.conf import settings
+from django.contrib.auth.models import User
+from django.core.mail import EmailMessage
+from django.template.loader import get_template
+from django.utils import timezone
+from django.utils.encoding import smart_bytes
 
 logger = logging.getLogger("mails")
 host = re.sub("http(s)?://", "", settings.SITE_URL)
@@ -253,7 +253,7 @@ def create_additional_user(email, user):
     :param  user:    the user which wants to create a new user
     :type   email:   django.contrib.auth.models.User
     """
-    from mails.models import UserProfile, AddressLog
+    from mails.models import AddressLog, UserProfile
 
     new_user = User(
         email=email,

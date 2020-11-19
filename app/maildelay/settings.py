@@ -13,11 +13,9 @@ https://docs.djangoproject.com/en/1.11/ref/settings/
 import datetime
 import os
 
+import environ
 import sentry_sdk
 from sentry_sdk.integrations.django import DjangoIntegration
-
-import environ
-
 
 env = environ.Env()
 ROOT_DIR = environ.Path(__file__) - 3
