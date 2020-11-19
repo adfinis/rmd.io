@@ -1,27 +1,25 @@
-from django.conf import settings
-from django.contrib.auth.decorators import login_required, user_passes_test
-from django.contrib.auth.models import User
-from django.contrib import messages
-from django.core import management
-from django.core.signals import request_started
-from django.db.models import Count
-from django.dispatch import receiver
-from django.http import HttpResponseRedirect, HttpResponse, Http404
-from django.shortcuts import render, get_object_or_404, redirect
-from django.utils.decorators import method_decorator
-from django.views import generic
-from mails.forms import RegistrationForm
-from mails.models import Mail, Statistic, Due, Account, UserProfile
-from mails import tools, imaphelper
-from icalendar import Calendar, Event
-from django.views.generic import FormView
-from django.core.mail import send_mail
-import re
 import base64
 import datetime
-import dateparser
-import logging
 import hashlib
+import logging
+import re
+
+import dateparser
+from django.conf import settings
+from django.contrib import messages
+from django.contrib.auth.decorators import login_required, user_passes_test
+from django.contrib.auth.models import User
+from django.core.mail import send_mail
+from django.db.models import Count
+from django.http import Http404, HttpResponse, HttpResponseRedirect
+from django.shortcuts import get_object_or_404, redirect, render
+from django.utils.decorators import method_decorator
+from django.views import generic
+from django.views.generic import FormView
+from icalendar import Calendar, Event
+from mails import imaphelper, tools
+from mails.forms import RegistrationForm
+from mails.models import Account, Due, Mail, Statistic, UserProfile
 
 try:
     from django.utils.encoding import smart_bytes
@@ -147,13 +145,6 @@ class RegistrationSendMailView(generic.TemplateView):
 class MailView(generic.ListView):
     template_name = "mails/mails.html"
     context_object_name = "mails"
-
-    @receiver(request_started)
-    def import_mail(**kwargs):
-        try:
-            management.call_command("import", verbosity=1)
-        except Exception as exc:
-            print(exc)
 
     def get_queryset(self):
         if self.request.user.is_authenticated:
