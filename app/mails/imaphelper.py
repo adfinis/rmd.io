@@ -1,9 +1,13 @@
-from django.conf import settings
 import datetime
 import email
 import imaplib
-import pytz
 import re
+from logging import getLogger
+
+import pytz
+from django.conf import settings
+
+log = getLogger()
 
 
 def get_connection():
@@ -30,7 +34,10 @@ def get_unflagged(imap_conn):
     msgs = []
 
     for uid in uids:
-        msgs.append(IMAPMessage.from_imapuid(imap_conn, uid))
+        try:
+            msgs.append(IMAPMessage.from_imapuid(imap_conn, uid))
+        except Exception as exc:
+            log.exception(exc)
 
     return iter(msgs)
 
