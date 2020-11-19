@@ -9,11 +9,8 @@ from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib.auth.models import User
-from django.core import management
 from django.core.mail import send_mail
-from django.core.signals import request_started
 from django.db.models import Count
-from django.dispatch import receiver
 from django.http import Http404, HttpResponse, HttpResponseRedirect
 from django.shortcuts import get_object_or_404, redirect, render
 from django.utils.decorators import method_decorator
@@ -148,13 +145,6 @@ class RegistrationSendMailView(generic.TemplateView):
 class MailView(generic.ListView):
     template_name = "mails/mails.html"
     context_object_name = "mails"
-
-    @receiver(request_started)
-    def import_mail(**kwargs):
-        try:
-            management.call_command("import", verbosity=1)
-        except Exception as exc:
-            print(exc)
 
     def get_queryset(self):
         if self.request.user.is_authenticated:
