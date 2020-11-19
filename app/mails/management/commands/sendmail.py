@@ -48,7 +48,7 @@ class Command(BaseCommand):
 
             due.delete()
 
-            if not mail.due_set.count():
+            if not mail.dues.count():
                 message.delete()
                 mail.delete()
 
