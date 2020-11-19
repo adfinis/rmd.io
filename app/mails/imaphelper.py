@@ -38,6 +38,9 @@ def get_unflagged(imap_conn):
             msgs.append(IMAPMessage.from_imapuid(imap_conn, uid))
         except Exception as exc:
             log.exception(exc)
+            log.warn(f"Unable to parse message with IMAP UID={uid} - deleting")
+            broken_msg = IMAPMessage(imap_conn, uid, do_not_read=True)
+            broken_msg.delete()
 
     return iter(msgs)
 
@@ -45,11 +48,12 @@ def get_unflagged(imap_conn):
 class IMAPMessage(object):
     recipient_headers = ["To", "Cc", "X-Original-To"]
 
-    def __init__(self, imap_conn, imapuid, dbid=None):
+    def __init__(self, imap_conn, imapuid, dbid=None, do_not_read=False):
         self.imap_conn = imap_conn
         self.imapuid = imapuid
         self.dbid = dbid
-        self.msg = self._get_msg_from_imap()
+        if not do_not_read:
+            self.msg = self._get_msg_from_imap()
 
     @classmethod
     def from_dbid(cls, dbid, imap_conn):
