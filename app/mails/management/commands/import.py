@@ -1,13 +1,12 @@
-from django.contrib.auth.models import User
-from django.core.management.base import BaseCommand
-from django.utils import timezone
-from mails.models import Mail, Statistic, Recipient, Due
-from lockfile import FileLock
-from mails import imaphelper, tools
-from mails.models import ImportLog
 import datetime
 import logging
 import re
+
+from django.contrib.auth.models import User
+from django.core.management.base import BaseCommand
+from django.utils import timezone
+from mails import imaphelper, tools
+from mails.models import Due, ImportLog, Mail, Recipient, Statistic
 
 logger = logging.getLogger("mails")
 
@@ -80,25 +79,23 @@ class Command(BaseCommand):
             return
 
     def handle(self, *args, **kwargs):
+        # Do not run more often than every 30 seconds
+        has_recent_import = ImportLog.objects.filter(
+            date__gt=timezone.now() - datetime.timedelta(seconds=30)
+        ).exists()
+        if has_recent_import:
+            return
+        ImportLog.objects.create()
 
-        lock = FileLock("/tmp/lockfile.tmp")
-        with lock:
+        # Now - import (new) mails
+        imap_conn = imaphelper.get_connection()
+        messages = imaphelper.get_unflagged(imap_conn)
 
-            last_import, created = ImportLog.objects.get_or_create()
-            import_diff = timezone.now() - last_import.date
+        for message in messages:
+            self.import_mail(message)
 
-            if import_diff > datetime.timedelta(seconds=30):
-                last_import.save()
-            else:
-                return
-
-            imap_conn = imaphelper.get_connection()
-            messages = imaphelper.get_unflagged(imap_conn)
-
-            for message in messages:
-                self.import_mail(message)
-
-            imap_conn.expunge()
+        imap_conn.expunge()
+        logger.info("Importing new emails finished")
 
 
 def message_deleted_due_to_invalid_keys(keys, sender, message, account):
