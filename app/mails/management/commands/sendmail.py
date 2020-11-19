@@ -37,10 +37,11 @@ class Command(BaseCommand):
 
             try:
                 send_email_with_attachments(message=message, mail=mail, text=text)
-            except:
+            except Exception as exc:
                 message.delete()
-                print("Failed to write new header")
-                break
+                logger.error("Failed to write new header")
+                logger.exception(exc)
+                continue
 
             stats = Statistic(type="SENT", email=mail.user.email, date=timezone.now())
             stats.save()
