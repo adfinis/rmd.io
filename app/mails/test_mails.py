@@ -1,10 +1,11 @@
-from django.utils.encoding import smart_bytes
-from django.core.mail import send_mail
-from mails import tools
+import base64
 import datetime
 import hashlib
-import base64
+
 import pytest
+from django.core.mail import send_mail
+from django.utils.encoding import smart_bytes
+from mails import tools
 
 
 @pytest.mark.parametrize(
