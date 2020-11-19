@@ -158,7 +158,7 @@ class MailView(generic.ListView):
     def get_queryset(self):
         if self.request.user.is_authenticated:
             mails = Mail.my_mails(self.request.user)
-            return sorted(mails, key=lambda m: m.next_due())
+            return sorted(mails, key=lambda m: (m.next_due() is None, m.next_due()))
 
     @method_decorator(login_required)
     def dispatch(self, *args, **kwargs):
