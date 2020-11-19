@@ -1,14 +1,14 @@
 import logging
-from django.utils import timezone
-from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
-from mails.models import Statistic, Due
-from mails import imaphelper
-from django.core.management.base import BaseCommand
-from django.conf import settings
-from django.template.loader import get_template
-from django.core.mail import EmailMessage
+from email.mime.text import MIMEText
 
+from django.conf import settings
+from django.core.mail import EmailMessage
+from django.core.management.base import BaseCommand
+from django.template.loader import get_template
+from django.utils import timezone
+from mails import imaphelper
+from mails.models import Due, Statistic
 
 logger = logging.getLogger("mails")
 
@@ -37,10 +37,11 @@ class Command(BaseCommand):
 
             try:
                 send_email_with_attachments(message=message, mail=mail, text=text)
-            except:
+            except Exception as exc:
                 message.delete()
-                print("Failed to write new header")
-                break
+                logger.error("Failed to write new header")
+                logger.exception(exc)
+                continue
 
             stats = Statistic(type="SENT", email=mail.user.email, date=timezone.now())
             stats.save()
