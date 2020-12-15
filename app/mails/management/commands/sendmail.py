@@ -1,3 +1,4 @@
+import chardet
 import logging
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
@@ -93,7 +94,7 @@ def send_email_with_attachments(message, mail, text):
 
     email = EmailMessage(
         "Reminder from {}: {}".format(mail.sent.strftime("%b %d %H:%M"), mail.subject),
-        content.decode() + text,
+        autodecode(content) + text,
         settings.EMAIL_HOST_USER,
         [mail.user.email],
     )
@@ -104,3 +105,11 @@ def send_email_with_attachments(message, mail, text):
             attachment.get_content_type(),
         )
     email.send()
+
+
+def autodecode(text):
+    """
+    Detect encoding of the text and then decode it.
+    """
+    encoding = chardet.detect(text)
+    return text.decode(encoding["encoding"])
