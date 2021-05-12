@@ -44,7 +44,7 @@ class Command(BaseCommand):
             account = user.get_account()
         except:
             message.delete()
-            logger.error("Mail from %s deleted: User not registered" % sender)
+            logger.info("Mail from %s deleted: User not registered" % sender)
             tools.send_registration_mail(sender)
 
             return
