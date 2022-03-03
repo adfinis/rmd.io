@@ -192,6 +192,7 @@ EMAIL_HOST_PASSWORD = env.str("EMAIL_HOST_PASSWORD", default="")
 EMAIL_HOST = env.str("EMAIL_HOST", default="mailcatcher")
 EMAIL_PORT = env.int("EMAIL_PORT", default=1025)
 EMAIL_FOLDER = env.int("EMAIL_FOLDER", default="INBOX")
+EMAIL_USE_TLS = env.bool("EMAIL_USE_TLS", default=False)
 
 # Dateparser uses "m" as minutes. Because of that
 # you'll have to use "3months@rmd.io" instead of "3m@rmd.io"
