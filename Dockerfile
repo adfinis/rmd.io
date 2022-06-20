@@ -15,6 +15,8 @@ ENV PYTHONDONTWRITEBYTECODE 1
 # Turns off buffering for easier container logging
 ENV PYTHONUNBUFFERED 1
 
+ENV DJANGO_SETTINGS_MODULE maildelay.settings
+
 # Install pip requirements
 ARG REQUIREMENTS=requirements.txt
 COPY requirements.txt requirements-dev.txt /app/

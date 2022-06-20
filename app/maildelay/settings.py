@@ -181,7 +181,12 @@ LOGGING = {
             "formatter": "verbose",
         },
     },
-    "loggers": {"mails": {"handlers": ["console"], "level": "DEBUG",},},
+    "loggers": {
+        "mails": {
+            "handlers": ["console"],
+            "level": "DEBUG",
+        },
+    },
 }
 
 # Mailserver login settings
