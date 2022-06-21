@@ -72,7 +72,9 @@ def attach_MIMEText_to_mulitpart_messages(message, text):
 
     else:
         msg = MIMEText(
-            "\n\n".join((message.msg.get_payload(), str(text))), "plain", charset,
+            "\n\n".join((message.msg.get_payload(), str(text))),
+            "plain",
+            charset,
         )
     return msg
 

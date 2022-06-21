@@ -20,7 +20,7 @@ jobs:
     - name: Check container status
       run: docker-compose ps
     - name: Check black formatting
-      uses: jpetrucciani/black-check@19.10b0
+      uses: jpetrucciani/black-check@master
     - name: Lint with flake8
       run: |
         docker-compose exec -T rmd flake8 app/ --count --ignore=E231,E402,E501,E722,W503 --max-complexity=10 --show-source --statistics

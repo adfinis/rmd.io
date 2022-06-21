@@ -62,7 +62,10 @@ class Command(BaseCommand):
                 delay_addresses=delay_addresses, mail=mail, sent_date=sent_date
             )
 
-            user_stat = Statistic(type="USER", email=user.email,)
+            user_stat = Statistic(
+                type="USER",
+                email=user.email,
+            )
             user_stat.save()
 
             save_oblivious_statistic(
@@ -119,7 +122,8 @@ def save_received_statistic(delay_addresses, mail, sent_date):
             email=re.sub(r"(^\d+[dmw])(\.[0-9a-z]{10})", r"\1", delay_address),
         )
         due = Due(
-            mail=mail, due=tools.get_reminder_date_from_email_address(delay_address),
+            mail=mail,
+            due=tools.get_reminder_date_from_email_address(delay_address),
         )
         due.save()
         rec_stat.save()
